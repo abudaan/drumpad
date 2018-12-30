@@ -18,7 +18,7 @@ interface Controls {
   props: PropTypes,
 };
 
-interface PropTypes {
+type PropTypes  = {
   disabled: boolean,
   beats: number,
   minBeats: number,

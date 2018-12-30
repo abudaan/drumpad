@@ -2,17 +2,17 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import getStore from './reducers/store';
-import Controls from './containers/controls';
+import Loader from './containers/loader';
 import Song from './containers/song';
+import Controls from './containers/controls';
 
 const store = getStore();
 
 render(
   <Provider store={store}>
-    <div>
-      <Controls></Controls>
-      <Song></Song>
-    </div>
+    <Song></Song>
+    <Loader configUrl="./data/config.json"></Loader>
+    <Controls></Controls>
   </Provider>,
   document.getElementById('container')
 );

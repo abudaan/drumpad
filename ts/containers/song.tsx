@@ -14,7 +14,7 @@ interface Song {
   song: HeartbeatSong,
 };
 
-interface PropTypes {
+type PropTypes = {
   beats: number,
   sounds: number,
   tempo: number,
@@ -28,7 +28,7 @@ interface PropTypes {
 const mapStateToProps = (state: AppState) => {
   return {
     beats: state.song.beats,
-    sounds: state.song.sounds,
+    samples: state.samples,
     tempo: state.song.tempo,
     playing: state.song.playing,
   };
