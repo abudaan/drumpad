@@ -1,5 +1,7 @@
 export interface SongState {
   sequencerReady: boolean,
+  playing: boolean,
+  position: SongPosition,
   loop: boolean,
   beats: number,
   minBeats: number,
@@ -8,6 +10,7 @@ export interface SongState {
   minSounds: number,
   maxSounds: number,
   tempo: number,
+  tempoTmp: number,
   minTempo: number,
   maxTempo: number,
 };
@@ -30,8 +33,11 @@ export interface SongPosition {
 };
 
 export interface HeartbeatSong {
-  isPlaying: () => boolean,
+  playing: boolean,
+  bpm: number,
   play: () => void,
   pause: () => void,
   stop: () => void,
+  setTempo: (bpm: number, update?:boolean) => void,
+  addEventListener: (event:string, callback:() => void) => void,
 };

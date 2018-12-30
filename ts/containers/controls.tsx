@@ -7,7 +7,10 @@ import {
   updateBeats,
   updateSounds,
   updateTempo,
-  updateLoop,
+  setTempo,
+  setLoop,
+  play,
+  stop,
 } from '../actions';
 import { Dispatch } from 'redux';
 
@@ -26,14 +29,20 @@ interface PropTypes {
   maxSounds: number,
   updateSounds: (event: ChangeEvent) => void
   tempo: number,
+  tempoTmp: number,
   minTempo: number,
   maxTempo: number,
-  updateTempo: (event: ChangeEvent) => void
+  updateTempo: (event: ChangeEvent) => void,
+  setTempo: (event: ChangeEvent) => void,
+  play: (event: MouseEvent) => void,
+  stop: (event: MouseEvent) => void,
+  playing: boolean,
 };
 
 const mapStateToProps = (state: AppState) => {
   return {
     disabled: !state.song.sequencerReady,
+    playing: state.song.playing,
     beats: state.song.beats,
     minBeats: state.song.minBeats,
     maxBeats: state.song.maxBeats,
@@ -41,6 +50,7 @@ const mapStateToProps = (state: AppState) => {
     minSounds: state.song.minSounds,
     maxSounds: state.song.maxSounds,
     tempo: state.song.tempo,
+    tempoTmp: state.song.tempoTmp,
     minTempo: state.song.minTempo,
     maxTempo: state.song.maxTempo,
   };
@@ -57,6 +67,15 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     updateTempo: (e) => {
       dispatch(updateTempo(e.target.value));
     },
+    setTempo: (e) => {
+      dispatch(setTempo(e.target.value));
+    },
+    play: () => {
+      dispatch(play());
+    },
+    stop: () => {
+      dispatch(stop());
+    },
   }
 }
 
@@ -64,6 +83,7 @@ class Controls extends React.Component {
   static defaultProps = {
   }
   render() {
+    const label = this.props.playing ? 'pause' : 'play'
     return (<div id="controls">
       <Slider
         min={this.props.minBeats}
@@ -85,10 +105,19 @@ class Controls extends React.Component {
         min={this.props.minTempo}
         max={this.props.maxTempo}
         label="tempo"
-        value={this.props.tempo}
+        value={this.props.tempoTmp}
+        onMouseUp={this.props.setTempo}
         onChange={this.props.updateTempo}
         disabled={this.props.disabled}
       />
+      <button
+        type="button"
+        onClick={this.props.play}
+      >{label}</button>
+      <button
+        type="button"
+        onClick={this.props.stop}
+      >stop</button>
     </div>
     );
   }

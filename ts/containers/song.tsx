@@ -3,7 +3,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { AppState, SongPosition, HeartbeatSong } from '../interfaces';
 import {
-  updatePosition, sequencerReady,
+  updatePosition, 
+  sequencerReady,
+  stop,
 } from '../actions';
 import { Dispatch } from 'redux';
 
@@ -17,6 +19,8 @@ interface PropTypes {
   sounds: number,
   tempo: number,
   samples: Array<any>,
+  playing: boolean,
+  stop: () => void,
   sequencerReady: () => void,
   updatePosition: (position:SongPosition) => void,
 };
@@ -26,6 +30,7 @@ const mapStateToProps = (state: AppState) => {
     beats: state.song.beats,
     sounds: state.song.sounds,
     tempo: state.song.tempo,
+    playing: state.song.playing,
   };
 };
 
@@ -37,6 +42,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     updatePosition: (position: SongPosition) => {
       dispatch(updatePosition(position));
     },
+    stop: () => {
+      dispatch(stop());
+    }
   }
 }
 
@@ -50,7 +58,7 @@ class Song extends React.Component {
         maxNoteNumber: 100,
         minVelocity: 30,
         maxVelocity: 80,
-        numNotes: 60
+        numNotes: 10
       });
 
       const part = sequencer.createPart();
@@ -61,11 +69,22 @@ class Song extends React.Component {
         useMetronome: true
       });
       
+      this.song.addEventListener('end', this.props.stop)
       this.props.sequencerReady();
     });
   }
 
   render() {
+    if (typeof this.song === 'undefined') {
+      return false;
+    }
+    if (this.props.playing === true && !this.song.playing) {
+      this.song.play();
+    } else if  (this.props.playing === false && this.song.playing === true) {
+      this.song.stop();
+    } else if (this.props.tempo !== this.song.bpm) {
+      this.song.setTempo(this.props.tempo);
+    }
     return false;
   }
 }
