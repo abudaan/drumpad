@@ -16,6 +16,7 @@ interface Controls {
 };
 
 interface PropTypes {
+  disabled: boolean,
   beats: number,
   minBeats: number,
   maxBeats: number,
@@ -24,16 +25,24 @@ interface PropTypes {
   minSounds: number,
   maxSounds: number,
   updateSounds: (event: ChangeEvent) => void
+  tempo: number,
+  minTempo: number,
+  maxTempo: number,
+  updateTempo: (event: ChangeEvent) => void
 };
 
 const mapStateToProps = (state: AppState) => {
   return {
+    disabled: !state.song.sequencerReady,
     beats: state.song.beats,
     minBeats: state.song.minBeats,
     maxBeats: state.song.maxBeats,
     sounds: state.song.sounds,
     minSounds: state.song.minSounds,
     maxSounds: state.song.maxSounds,
+    tempo: state.song.tempo,
+    minTempo: state.song.minTempo,
+    maxTempo: state.song.maxTempo,
   };
 };
 
@@ -44,6 +53,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     },
     updateSounds: (e) => {
       dispatch(updateSounds(e.target.value));
+    },
+    updateTempo: (e) => {
+      dispatch(updateTempo(e.target.value));
     },
   }
 }
@@ -59,13 +71,23 @@ class Controls extends React.Component {
         label="beats"
         value={this.props.beats}
         onChange={this.props.updateBeats}
-      />
+        disabled={this.props.disabled}
+        />
       <Slider
         min={this.props.minSounds}
         max={this.props.maxSounds}
         label="sounds"
         value={this.props.sounds}
         onChange={this.props.updateSounds}
+        disabled={this.props.disabled}
+        />
+      <Slider
+        min={this.props.minTempo}
+        max={this.props.maxTempo}
+        label="tempo"
+        value={this.props.tempo}
+        onChange={this.props.updateTempo}
+        disabled={this.props.disabled}
       />
     </div>
     );

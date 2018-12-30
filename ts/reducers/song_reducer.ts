@@ -2,17 +2,26 @@ import * as Actions from '../actions';
 import {ReduxAction} from '../interfaces';
 
 const songInitialState = {
-  beats: 8,
-  sounds: 8,
+  sequencerReady: false,
   loop: true,
+  beats: 8,
   minBeats: 4,
   maxBeats: 16,
+  sounds: 8,
   minSounds: 4,
   maxSounds: 16,
+  tempo: 120,
+  minTempo: 80,
+  maxTempo: 200,
 };
 
 const song = (state = songInitialState, action:ReduxAction) => {
-  if (action.type === Actions.UPDATE_BEATS) {
+  if (action.type === Actions.SEQUENCER_READY) {
+    return {
+      ...state,
+      sequencerReady: true,
+    };
+  } else if (action.type === Actions.UPDATE_BEATS) {
     return {
       ...state,
       beats: parseInt(action.payload.beats, 10)
@@ -31,6 +40,11 @@ const song = (state = songInitialState, action:ReduxAction) => {
     return {
       ...state,
       loop: action.payload.tempo,
+    };
+  } else if (action.type === Actions.UPDATE_POSITION) {
+    return {
+      ...state,
+      position: action.payload.position,
     };
   }
   return state;

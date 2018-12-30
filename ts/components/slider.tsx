@@ -11,6 +11,7 @@ interface PropTypes {
   onMouseUp?: (event: MouseEvent) => any,
   step?: number,
   type?: string,
+  disabled: boolean,
 };
 
 interface Slider {
@@ -41,6 +42,7 @@ class Slider extends React.Component{
         <input
           key={this.props.type}
           type="range"
+          disabled={this.props.disabled}
           defaultValue={`${value}`}
           min={this.props.min}
           max={this.props.max}

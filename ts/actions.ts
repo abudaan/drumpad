@@ -1,7 +1,17 @@
+import {SongPosition} from './interfaces';
+
+export const SEQUENCER_READY = 'sequencer ready';
 export const UPDATE_BEATS = 'update beats';
 export const UPDATE_SOUNDS = 'update sounds';
 export const UPDATE_LOOP = 'update loop';
 export const UPDATE_TEMPO = 'update tempo';
+export const UPDATE_POSITION = 'update position';
+
+export const sequencerReady = () => {
+  return {
+    type: SEQUENCER_READY,
+  };
+};
 
 export const updateBeats = (beats:number) => {
   return {
@@ -35,6 +45,15 @@ export const updateLoop = (loop:boolean) => {
     type: UPDATE_LOOP,
     payload: {
       loop,
+    }
+  };
+};
+
+export const updatePosition = (position:SongPosition) => {
+  return {
+    type: UPDATE_POSITION,
+    payload: {
+      position,
     }
   };
 };
