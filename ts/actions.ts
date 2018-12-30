@@ -1,22 +1,22 @@
-export const UPDATE_BEATS = 'update rows';
-export const UPDATE_SOUNDS = 'update columns';
+export const UPDATE_BEATS = 'update beats';
+export const UPDATE_SOUNDS = 'update sounds';
 export const UPDATE_LOOP = 'update loop';
 export const UPDATE_TEMPO = 'update tempo';
 
-export const updateBeats = (rows:number) => {
+export const updateBeats = (beats:number) => {
   return {
     type: UPDATE_BEATS,
     payload: {
-      rows,
+      beats,
     }
   };
 };
 
-export const updateSounds = (columns:number) => {
+export const updateSounds = (sounds:number) => {
   return {
     type: UPDATE_SOUNDS,
     payload: {
-      columns,
+      sounds,
     }
   };
 };

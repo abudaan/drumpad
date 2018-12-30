@@ -3,8 +3,8 @@ export interface SongState {
   sounds: number,
   tempo: number,
   loop: boolean,
-  minBars: number,
-  maxBars: number,
+  minBeats: number,
+  maxBeats: number,
   minSounds: number,
   maxSounds: number,
 };
