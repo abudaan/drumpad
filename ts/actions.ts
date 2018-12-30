@@ -4,11 +4,11 @@ export const SEQUENCER_READY = 'sequencer ready';
 export const SEQUENCER_PLAY = 'sequencer play';
 export const SEQUENCER_STOP = 'sequencer stop';
 export const UPDATE_BEATS = 'update beats';
-export const UPDATE_SOUNDS = 'update sounds';
-export const UPDATE_TEMPO = 'update tempo';
+export const UPDATE_SAMPLES = 'update sanples';
+export const CHOOSING_TEMPO = 'choosing tempo'; // while dragging the thumb of the range input
+export const UPDATE_TEMPO = 'update tempo'; // while releasing the thumb
 export const UPDATE_POSITION = 'update position';
-export const SET_LOOP = 'update loop';
-export const SET_TEMPO = 'set tempo';
+export const SET_LOOP = 'set loop';
 
 export const sequencerReady = () => {
   return {
@@ -37,11 +37,20 @@ export const updateBeats = (beats:number) => {
   };
 };
 
-export const updateSounds = (sounds:number) => {
+export const updateSamples = (samples:number) => {
   return {
-    type: UPDATE_SOUNDS,
+    type: UPDATE_SAMPLES,
     payload: {
-      sounds,
+      samples,
+    }
+  };
+};
+
+export const choosingTempo = (tempo:number) => {
+  return {
+    type: CHOOSING_TEMPO,
+    payload: {
+      tempo,
     }
   };
 };
@@ -49,15 +58,6 @@ export const updateSounds = (sounds:number) => {
 export const updateTempo = (tempo:number) => {
   return {
     type: UPDATE_TEMPO,
-    payload: {
-      tempo,
-    }
-  };
-};
-
-export const setTempo = (tempo:number) => {
-  return {
-    type: SET_TEMPO,
     payload: {
       tempo,
     }

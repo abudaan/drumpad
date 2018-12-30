@@ -6,17 +6,21 @@ export interface SongState {
   beats: number,
   minBeats: number,
   maxBeats: number,
-  sounds: number,
-  minSounds: number,
-  maxSounds: number,
   tempo: number,
   tempoTmp: number,
   minTempo: number,
   maxTempo: number,
 };
 
+export interface SamplesState {
+  numSamples: number,
+  minSamples: number,
+  maxSamples: number,
+};
+
 export interface AppState {
   song: SongState,
+  samples: SamplesState,
 };
 
 export interface ReduxAction {
@@ -35,9 +39,13 @@ export interface SongPosition {
 export interface HeartbeatSong {
   playing: boolean,
   bpm: number,
+  durationTicks: number,
   play: () => void,
   pause: () => void,
   stop: () => void,
   setTempo: (bpm: number, update?:boolean) => void,
   addEventListener: (event:string, callback:() => void) => void,
+  setLoop: () => void,
+  setLeftLocator: (type: string, value: number) => void,
+  setRightLocator: (type: string, value: number) => void,
 };

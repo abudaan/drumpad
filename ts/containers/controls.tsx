@@ -5,9 +5,9 @@ import Slider from '../components/slider';
 import { AppState } from '../interfaces';
 import {
   updateBeats,
-  updateSounds,
+  updateSamples,
+  choosingTempo,
   updateTempo,
-  setTempo,
   setLoop,
   play,
   stop,
@@ -24,16 +24,16 @@ interface PropTypes {
   minBeats: number,
   maxBeats: number,
   updateBeats: (event: ChangeEvent) => void
-  sounds: number,
-  minSounds: number,
-  maxSounds: number,
+  numSamples: number,
+  minSamples: number,
+  maxSamples: number,
   updateSounds: (event: ChangeEvent) => void
   tempo: number,
   tempoTmp: number,
   minTempo: number,
   maxTempo: number,
+  choosingTempo: (event: ChangeEvent) => void,
   updateTempo: (event: ChangeEvent) => void,
-  setTempo: (event: ChangeEvent) => void,
   play: (event: MouseEvent) => void,
   stop: (event: MouseEvent) => void,
   playing: boolean,
@@ -46,9 +46,9 @@ const mapStateToProps = (state: AppState) => {
     beats: state.song.beats,
     minBeats: state.song.minBeats,
     maxBeats: state.song.maxBeats,
-    sounds: state.song.sounds,
-    minSounds: state.song.minSounds,
-    maxSounds: state.song.maxSounds,
+    numSamples: state.samples.numSamples,
+    minSamples: state.samples.minSamples,
+    maxSamples: state.samples.maxSamples,
     tempo: state.song.tempo,
     tempoTmp: state.song.tempoTmp,
     minTempo: state.song.minTempo,
@@ -62,13 +62,13 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
       dispatch(updateBeats(e.target.value));
     },
     updateSounds: (e) => {
-      dispatch(updateSounds(e.target.value));
+      dispatch(updateSamples(e.target.value));
+    },
+    choosingTempo: (e) => {
+      dispatch(choosingTempo(e.target.value));
     },
     updateTempo: (e) => {
       dispatch(updateTempo(e.target.value));
-    },
-    setTempo: (e) => {
-      dispatch(setTempo(e.target.value));
     },
     play: () => {
       dispatch(play());
@@ -94,10 +94,10 @@ class Controls extends React.Component {
         disabled={this.props.disabled}
         />
       <Slider
-        min={this.props.minSounds}
-        max={this.props.maxSounds}
-        label="sounds"
-        value={this.props.sounds}
+        min={this.props.minSamples}
+        max={this.props.maxSamples}
+        label="samples"
+        value={this.props.numSamples}
         onChange={this.props.updateSounds}
         disabled={this.props.disabled}
         />
@@ -106,8 +106,8 @@ class Controls extends React.Component {
         max={this.props.maxTempo}
         label="tempo"
         value={this.props.tempoTmp}
-        onMouseUp={this.props.setTempo}
-        onChange={this.props.updateTempo}
+        onMouseUp={this.props.updateTempo}
+        onChange={this.props.choosingTempo}
         disabled={this.props.disabled}
       />
       <button

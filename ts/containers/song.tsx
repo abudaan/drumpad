@@ -66,9 +66,11 @@ class Song extends React.Component {
 
       this.song = sequencer.createSong({
         parts: part,
-        useMetronome: true
+        useMetronome: true,
       });
-      
+      this.song.setLeftLocator('ticks', 0);
+      this.song.setRightLocator('ticks', this.song.durationTicks);
+      this.song.setLoop();      
       this.song.addEventListener('end', this.props.stop)
       this.props.sequencerReady();
     });
