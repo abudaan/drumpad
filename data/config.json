@@ -1,4 +1,4 @@
 {
-  "midiFile": "./track2.mid",
-  "instrument": "./drums.json"
+  "midiFile": "/data/track2.mid",
+  "instrument": "/data/Kit-City.json"
 }

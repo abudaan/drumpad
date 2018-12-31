@@ -13,9 +13,9 @@ export interface SongState {
 };
 
 export interface SamplesState {
-  numSamples: number,
-  minSamples: number,
-  maxSamples: number,
+  // numSamples: number,
+  // minSamples: number,
+  // maxSamples: number,
 };
 
 export interface AppState {
@@ -48,4 +48,16 @@ export interface HeartbeatSong {
   setLoop: () => void,
   setLeftLocator: (type: string, value: number) => void,
   setRightLocator: (type: string, value: number) => void,
+};
+
+export interface Config {
+  midiFile: string,
+  instrument: string,
+  assetPack: string,
+};
+
+export interface ConfigData {
+  midiFile?: void | ArrayBuffer
+  instrument?: Object,
+  assetPack?: Object,
 };

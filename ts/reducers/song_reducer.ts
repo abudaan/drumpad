@@ -20,6 +20,11 @@ const song = (state = songInitialState, action: ReduxAction) => {
       ...state,
       sequencerReady: true,
     };
+  } else if (action.type === Actions.DATA_LOADED) {
+    return {
+      ...state,
+      ...action.payload.data,
+    };
   } else if (action.type === Actions.SEQUENCER_PLAY) {
     return {
       ...state,

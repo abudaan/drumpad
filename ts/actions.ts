@@ -1,5 +1,5 @@
-import {Dispatch} from 'redux';
-import {SongPosition} from './interfaces';
+import { Dispatch } from 'redux';
+import { SongPosition, Config, ConfigData } from './interfaces';
 
 export const SEQUENCER_READY = 'sequencer ready'; // initialization of sequencer done
 export const LOADING = 'loading'; // loading config data
@@ -14,24 +14,57 @@ export const UPDATE_TEMPO = 'update tempo'; // while releasing the thumb
 export const UPDATE_POSITION = 'update position';
 export const SET_LOOP = 'set loop';
 
-export const loadData = (url:string) => {
-  return (dispatch:Dispatch) => {
-    fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      dispatch({
-        type: DATA_LOADED,
-        data,
-      })
-    })
+const loadArrayBuffer = async (url: string) => {
+  return fetch(url)
+    .then(response => response.arrayBuffer())
     .catch(e => console.error(e));
+};
+
+const loadJSON = async (url: string) => {
+  return fetch(url)
+    .then(response => response.json())
+    .catch(e => console.error(e));
+};
+
+const parseConfig = (config:Config) => {
+  return new Promise(async (resolve) => {
+    const data:ConfigData = {};
+    if (config.assetPack) {
+      data.assetPack = await loadJSON(config.assetPack);
+    } else {
+      if (config.instrument) {
+        data.instrument = await loadJSON(config.instrument);
+      }
+      if (config.midiFile) {
+        data.midiFile = await loadArrayBuffer(config.midiFile);
+      }
+    } 
+    resolve(data);
+  })
+};
+
+export const loadData = (url: string) => {
+  return (dispatch: Dispatch) => {
+    fetch(url)
+      .then(response => response.json())
+      .then(data => parseConfig(data))
+      .then(data => {
+        dispatch({
+          type: DATA_LOADED,
+          payload: {
+            data,
+          }
+        })
+      })
+      .catch(e => console.error(e));
   };
 };
 
-export const sequencerReady = () => {
-  return {
-    type: SEQUENCER_READY,
-  };
+export const sequencerReady = (configUrl:string) => {
+  return (dispatch: Dispatch) => dispatch(loadData(configUrl));
+  // return {
+  //   type: SEQUENCER_READY,
+  // };
 };
 
 export const play = () => {
@@ -46,7 +79,7 @@ export const stop = () => {
   };
 };
 
-export const updateBeats = (beats:number) => {
+export const updateBeats = (beats: number) => {
   return {
     type: UPDATE_BEATS,
     payload: {
@@ -55,7 +88,7 @@ export const updateBeats = (beats:number) => {
   };
 };
 
-export const updateSamples = (samples:number) => {
+export const updateSamples = (samples: number) => {
   return {
     type: UPDATE_SAMPLES,
     payload: {
@@ -64,7 +97,7 @@ export const updateSamples = (samples:number) => {
   };
 };
 
-export const choosingTempo = (tempo:number) => {
+export const choosingTempo = (tempo: number) => {
   return {
     type: CHOOSING_TEMPO,
     payload: {
@@ -73,7 +106,7 @@ export const choosingTempo = (tempo:number) => {
   };
 };
 
-export const updateTempo = (tempo:number) => {
+export const updateTempo = (tempo: number) => {
   return {
     type: UPDATE_TEMPO,
     payload: {
@@ -82,7 +115,7 @@ export const updateTempo = (tempo:number) => {
   };
 };
 
-export const setLoop = (loop:boolean) => {
+export const setLoop = (loop: boolean) => {
   return {
     type: SET_LOOP,
     payload: {
@@ -91,7 +124,7 @@ export const setLoop = (loop:boolean) => {
   };
 };
 
-export const updatePosition = (position:SongPosition) => {
+export const updatePosition = (position: SongPosition) => {
   return {
     type: UPDATE_POSITION,
     payload: {

@@ -15,13 +15,13 @@ interface Song {
 };
 
 type PropTypes = {
-  beats: number,
-  sounds: number,
   tempo: number,
-  samples: Array<any>,
   playing: boolean,
+  configUrl: string,
+  instrument: object,
+  midiFile: ArrayBuffer,
   stop: () => void,
-  sequencerReady: () => void,
+  sequencerReady: (url:string) => void,
   updatePosition: (position:SongPosition) => void,
 };
 
@@ -45,13 +45,15 @@ const mapStateToProps = (state: AppState) => {
     samples: state.samples,
     tempo: state.song.tempo,
     playing: state.song.playing,
+    instrument: state.song.instrument,
+    midiFile: state.song.midiFile,
   };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
-    sequencerReady: () => {
-      dispatch(sequencerReady());
+    sequencerReady: (url:string) => {
+      dispatch(sequencerReady(url));
     },
     updatePosition: (position: SongPosition) => {
       dispatch(updatePosition(position));
@@ -73,12 +75,19 @@ class Song extends React.Component {
       // this.song.setRightLocator('ticks', this.song.durationTicks);
       // this.song.setLoop();      
       // this.song.addEventListener('end', this.props.stop)
-      this.props.sequencerReady();
+      this.props.sequencerReady(this.props.configUrl);
     });
   }
 
   render() {
     if (typeof this.song === 'undefined') {
+      sequencer.addInstrument(this.props.instrument);
+      sequencer.createMidiFile({arraybuffer: this.props.midiFile})
+      .then(data => {
+        console.log(data);
+        // this.song = sequencer.createSong(this.props.midiFile, 'arraybuffer');
+        this.song = sequencer.createSong(data);
+      });
       return false;
     }
     

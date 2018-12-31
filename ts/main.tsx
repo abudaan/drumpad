@@ -10,8 +10,7 @@ const store = getStore();
 
 render(
   <Provider store={store}>
-    <Song></Song>
-    <Loader configUrl="./data/config.json"></Loader>
+    <Song configUrl="./data/config.json"></Song>
     <Controls></Controls>
   </Provider>,
   document.getElementById('container')
