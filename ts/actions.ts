@@ -1,13 +1,14 @@
 import {Dispatch} from 'redux';
 import {SongPosition} from './interfaces';
 
-export const LOADING = 'loading';
-export const DATA_LOADED = 'data loaded';
-export const SEQUENCER_READY = 'sequencer ready';
+export const SEQUENCER_READY = 'sequencer ready'; // initialization of sequencer done
+export const LOADING = 'loading'; // loading config data
+export const DATA_LOADED = 'data loaded'; // config data loaded
+export const SONG_LOADED = 'song loaded'; // midi file and instrument loaded in song
 export const SEQUENCER_PLAY = 'sequencer play';
 export const SEQUENCER_STOP = 'sequencer stop';
 export const UPDATE_BEATS = 'update beats';
-export const UPDATE_SAMPLES = 'update sanples';
+export const UPDATE_SAMPLES = 'update samples';
 export const CHOOSING_TEMPO = 'choosing tempo'; // while dragging the thumb of the range input
 export const UPDATE_TEMPO = 'update tempo'; // while releasing the thumb
 export const UPDATE_POSITION = 'update position';
@@ -18,7 +19,6 @@ export const loadData = (url:string) => {
     fetch(url)
     .then(response => response.json())
     .then(data => {
-      console.log(data)
       dispatch({
         type: DATA_LOADED,
         data,

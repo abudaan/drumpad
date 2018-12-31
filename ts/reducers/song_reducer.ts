@@ -1,5 +1,5 @@
 import * as Actions from '../actions';
-import {ReduxAction} from '../interfaces';
+import { ReduxAction } from '../interfaces';
 
 const songInitialState = {
   sequencerReady: false,
@@ -14,7 +14,7 @@ const songInitialState = {
   maxTempo: 200,
 };
 
-const song = (state = songInitialState, action:ReduxAction) => {
+const song = (state = songInitialState, action: ReduxAction) => {
   if (action.type === Actions.SEQUENCER_READY) {
     return {
       ...state,

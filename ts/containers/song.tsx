@@ -25,6 +25,20 @@ type PropTypes = {
   updatePosition: (position:SongPosition) => void,
 };
 
+const createSong = (midiFile) => {
+//   sequencer.createMidiFile({blob: request.response}).then(
+//     function onFulfilled(midifile){
+//         createSong(midifile, 'blob');
+//     },
+//     function onRejected(e){
+//         divMessage.textContent = 'error: ' + e;
+//     }
+// );
+  return sequencer.createSong({
+    useMetronome: true,
+  });
+}
+
 const mapStateToProps = (state: AppState) => {
   return {
     beats: state.song.beats,
@@ -53,25 +67,12 @@ class Song extends React.Component {
     super(props);
 
     sequencer.ready(() => {
-      const events = sequencer.util.getRandomNotes({
-        minNoteNumber: 60,
-        maxNoteNumber: 100,
-        minVelocity: 30,
-        maxVelocity: 80,
-        numNotes: 10
-      });
 
-      const part = sequencer.createPart();
-      part.addEvents(events);
-
-      this.song = sequencer.createSong({
-        parts: part,
-        useMetronome: true,
-      });
-      this.song.setLeftLocator('ticks', 0);
-      this.song.setRightLocator('ticks', this.song.durationTicks);
-      this.song.setLoop();      
-      this.song.addEventListener('end', this.props.stop)
+      // this.song = createSong()
+      // this.song.setLeftLocator('ticks', 0);
+      // this.song.setRightLocator('ticks', this.song.durationTicks);
+      // this.song.setLoop();      
+      // this.song.addEventListener('end', this.props.stop)
       this.props.sequencerReady();
     });
   }
@@ -80,6 +81,7 @@ class Song extends React.Component {
     if (typeof this.song === 'undefined') {
       return false;
     }
+    
     if (this.props.playing === true && !this.song.playing) {
       this.song.play();
     } else if  (this.props.playing === false && this.song.playing === true) {

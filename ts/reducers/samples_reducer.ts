@@ -10,16 +10,15 @@ const samplesInitialState = {
 };
 
 const samples = (state = samplesInitialState, action:ReduxAction) => {
-  if (action.type === Actions.DATA_LOADED) {
-    console.log(action.payload.data);
-    return {
-      ...state,
-      data: {...action.payload.data}
-    };
-  } else if (action.type === Actions.UPDATE_SAMPLES) {
+  if (action.type === Actions.UPDATE_SAMPLES) {
     return {
       ...state,
       numSamples: parseInt(action.payload.samples, 10)
+    };
+  } else if (action.type === Actions.DATA_LOADED) {
+    return {
+      ...state,
+      data: { ...action.payload.data }
     };
   }
   return state;

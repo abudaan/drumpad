@@ -1,3 +1,4 @@
 {
-  "aap": "konijn"
+  "midiFile": "./track2.mid",
+  "instrument": "./drums.json"
 }
