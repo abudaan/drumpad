@@ -46,3 +46,8 @@ load new midifile
 
 save midifile:
 - export as midi (binary)
+
+
+## TODO:
+
+Add midi file sanity check to sequencer.createMidiFile();

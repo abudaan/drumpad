@@ -1,4 +1,4 @@
 {
   "midiFile": "/data/track2.mid",
-  "instrument": "/data/Kit-City.json"
+  "assetPack": "/data/Kit-City.json"
 }

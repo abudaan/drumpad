@@ -5,4 +5,4 @@ node_modules
 yarn-error.log
 npm-debug.log
 data/*.json
-data/SH-3-44.mid
+data/*.mid

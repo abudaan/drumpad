@@ -27,13 +27,16 @@ type PropTypes = {
   updateTempo: (event: MouseEvent) => void,
   play: (event: MouseEvent) => void,
   stop: (event: MouseEvent) => void,
+  setLoop: (loop: boolean) => void,
   playing: boolean,
+  loop: boolean,
 };
 
 const mapStateToProps = (state: AppState) => {
   return {
     disabled: !state.data.loading,
     playing: state.song.playing,
+    loop: state.song.loop,
     tempo: state.song.tempo,
     tempoTmp: state.song.tempoTmp,
     minTempo: state.song.minTempo,
@@ -61,6 +64,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     stop: () => {
       dispatch(stop());
     },
+    setLoop: (loop: boolean) => {
+      dispatch(setLoop(loop));
+    },
   }
 }
 
@@ -68,7 +74,8 @@ class Controls extends React.Component {
   static defaultProps = {
   }
   render() {
-    const label = this.props.playing ? 'pause' : 'play'
+    const labelPlay = this.props.playing ? 'pause' : 'play'
+    const labelLoop = this.props.loop ? 'loop off' : 'loop on'
     return (<div id="controls">
       <Slider
         min={this.props.minTempo}
@@ -82,11 +89,15 @@ class Controls extends React.Component {
       <button
         type="button"
         onClick={this.props.play}
-      >{label}</button>
+      >{labelPlay}</button>
       <button
         type="button"
         onClick={this.props.stop}
       >stop</button>
+      <button
+        type="button"
+        onClick={(e) => { this.props.setLoop(!this.props.loop); }}
+      >{labelLoop}</button>
       <button
         type="button"
         onClick={this.props.stop}

@@ -10,20 +10,36 @@ export const SEQUENCER_STOP = 'SEQUENCER STOP';
 export const CHOOSING_TEMPO = 'CHOOSING TEMPO'; // while dragging the thumb of the range input
 export const UPDATE_TEMPO = 'UPDATE TEMPO'; // while releasing the thumb
 export const UPDATE_POSITION = 'UPDATE POSITION';
+export const ASSETPACK_LOADED = 'ASSETPACK LOADED';
 export const INSTRUMENT_LOADED = 'INSTRUMENT LOADED';
 export const SAMPLE_LOADED = 'SAMPLE LOADED';
 export const MIDIFILE_LOADED = 'MIDIFILE LOADED';
 export const SET_LOOP = 'SET LOOP';
 
+
+const status = (response: Response) => {
+  if (response.ok) {
+    return response;
+  }
+  throw new Error(response.statusText);
+  // if (response.status >= 200 && response.status < 300) {
+  //     return Promise.resolve(response);
+  // }
+  // return Promise.reject(new Error(response.statusText));
+};
+
 const loadArrayBuffer = async (url: string) => fetch(url)
+  .then(status)
   .then(response => response.arrayBuffer())
   .catch(e => console.error(e));
 
 const loadJSON = async (url: string) => fetch(url)
+  .then(status)
   .then(response => response.json())
   .catch(e => console.error(e));
 
 const loadConfig = async (url: string): Promise<any> => fetch(url)
+  .then(status)
   .then(response => response.json())
   .then(data => parseConfig(data))
   .catch(e => console.error(e));
@@ -33,13 +49,11 @@ const parseConfig = (config: Config) => {
     const data: ConfigData = {};
     if (config.assetPack) {
       data.assetPack = await loadJSON(config.assetPack);
-    } else {
-      if (config.instrument) {
-        data.instrument = await loadJSON(config.instrument);
-      }
-      if (config.midiFile) {
-        data.midiFile = await loadArrayBuffer(config.midiFile);
-      }
+    } else if (config.instrument) {
+      data.instrument = await loadJSON(config.instrument);
+    }
+    if (config.midiFile) {
+      data.midiFile = await loadArrayBuffer(config.midiFile);
     }
     resolve(data);
   })
@@ -68,9 +82,44 @@ export const loadInstrument = (url: string) => async (dispatch: Dispatch) => {
   });
 }
 
-export const loadMIDIFile = (url: string) => (dispatch: Dispatch) => dispatch(loadArrayBuffer(url));
+export const loadAssetPack = (url: string) => async (dispatch: Dispatch) => {
+  dispatch({
+    type: LOADING,
+  });
+  const assetPack = await loadJSON(url);
+  dispatch({
+    type: ASSETPACK_LOADED,
+    payload: {
+      assetPack,
+    }
+  });
+}
 
-export const loadSample = (url: string) => (dispatch: Dispatch) => dispatch(loadArrayBuffer(url));
+export const loadMIDIFile = (url: string) => async (dispatch: Dispatch) => {
+  dispatch({
+    type: LOADING,
+  });
+  const midiFile = await loadArrayBuffer(url);
+  dispatch({
+    type: MIDIFILE_LOADED,
+    payload: {
+      midiFile,
+    }
+  });
+}
+
+export const loadSample = (url: string) => async (dispatch: Dispatch) => {
+  dispatch({
+    type: LOADING,
+  });
+  const sample = await loadArrayBuffer(url);
+  dispatch({
+    type: SAMPLE_LOADED,
+    payload: {
+      sample,
+    }
+  });
+}
 
 export const play = () => ({
   type: SEQUENCER_PLAY,

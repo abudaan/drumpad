@@ -2,10 +2,9 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import getStore from './reducers/store';
-import Loader from './containers/loader';
 import Song from './containers/song';
 import Controls from './containers/controls';
-import { loadInstrument } from './actions';
+import { loadInstrument, loadMIDIFile, loadAssetPack } from './actions';
 
 const store = getStore();
 
@@ -17,6 +16,9 @@ render(
   document.getElementById('container')
 );
 
-setTimeout(() => {
-  store.dispatch(loadInstrument('./data/Kit-Jungle.json'));
-}, 6000)
+// simulate human interaction
+// setTimeout(() => {
+//   store.dispatch(loadAssetPack('./data/Kit-Jungle.json')).then(() => {
+//     store.dispatch(loadMIDIFile('./data/track9.mid'));
+//   })
+// }, 10000)

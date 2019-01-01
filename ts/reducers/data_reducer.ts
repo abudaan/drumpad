@@ -3,6 +3,7 @@ import { DataState, IAction } from '../interfaces'
 
 const dataInitialState = {
   loading: true,
+  assetPack: null,
   instrument: null,
   midiFile: null,
 };
@@ -19,10 +20,22 @@ const data = (state: DataState = dataInitialState, action: IAction<any>) => {
       ...action.payload.data,
       loading: false,
     };
+  } else if (action.type === Actions.ASSETPACK_LOADED) {
+    return {
+      ...state,
+      assetPack: action.payload.assetPack,
+      loading: false,
+    };
   } else if (action.type === Actions.INSTRUMENT_LOADED) {
     return {
       ...state,
       instrument: action.payload.instrument,
+      loading: false,
+    };
+  } else if (action.type === Actions.MIDIFILE_LOADED) {
+    return {
+      ...state,
+      midiFile: action.payload.midiFile,
       loading: false,
     };
   }
