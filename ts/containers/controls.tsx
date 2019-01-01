@@ -7,6 +7,7 @@ import {
   choosingTempo,
   updateTempo,
   setLoop,
+  setTrack,
   play,
   stop,
 } from '../actions';
@@ -28,13 +29,16 @@ type PropTypes = {
   play: (event: MouseEvent) => void,
   stop: (event: MouseEvent) => void,
   setLoop: (loop: boolean) => void,
+  setTrack: (value: number) => void,
   playing: boolean,
   loop: boolean,
+  tracks: Array<any>,
 };
 
 const mapStateToProps = (state: AppState) => {
   return {
-    disabled: !state.data.loading,
+    disabled: !state.data.songReady,
+    tracks: state.data.tracks,
     playing: state.song.playing,
     loop: state.song.loop,
     tempo: state.song.tempo,
@@ -67,6 +71,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     setLoop: (loop: boolean) => {
       dispatch(setLoop(loop));
     },
+    setTrack: (value: number) => {
+      dispatch(setTrack(value));
+    },
   }
 }
 
@@ -74,8 +81,11 @@ class Controls extends React.Component {
   static defaultProps = {
   }
   render() {
-    const labelPlay = this.props.playing ? 'pause' : 'play'
-    const labelLoop = this.props.loop ? 'loop off' : 'loop on'
+    const labelPlay = this.props.playing ? 'pause' : 'play';
+    const labelLoop = this.props.loop ? 'loop off' : 'loop on';
+    const options = this.props.tracks.map(track => {
+      return <option key={track.value} value={track.value}>{track.label}</option>;
+    });
     return (<div id="controls">
       <Slider
         min={this.props.minTempo}
@@ -98,14 +108,22 @@ class Controls extends React.Component {
         type="button"
         onClick={(e) => { this.props.setLoop(!this.props.loop); }}
       >{labelLoop}</button>
-      <button
+      <select
+        onChange={(e) => {
+          this.props.setTrack(e.nativeEvent.target.selectedIndex)
+        }} 
+      >
+        {options}
+      </select>
+
+      {/* <button
         type="button"
         onClick={this.props.stop}
       >add beat</button>
       <button
         type="button"
         onClick={this.props.stop}
-      >remove beat</button>
+      >remove beat</button> */}
     </div>
     );
   }

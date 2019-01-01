@@ -1,5 +1,5 @@
 import {createSelector} from 'reselect';
-import {AppState, SamplesState, SongState} from '../interfaces';
+import {AppState, DataState, SongState} from '../interfaces';
 
 const getSongState = (state:AppState): SongState => state.song;
 const getSamplesState = (state:AppState): SamplesState => state.samples;

@@ -3,8 +3,12 @@ import { SongPosition, Config, ConfigData, IAction } from './interfaces';
 
 export const SEQUENCER_READY = 'SEQUENCER READY'; // initialization of sequencer done
 export const LOADING = 'LOADING'; // generic load action
+export const LOADING_CONFIG = 'LOADING_CONFIG';
+export const LOADING_MIDIFILE = 'LOADING_MIDIFILE';
+export const LOADING_ASSETPACK = 'LOADING_ASSETPACK';
+export const LOADING_SAMPLE = 'LOADING_SAMPLE';
 export const CONFIG_LOADED = 'CONFIG LOADED'; // config data loaded
-export const SONG_LOADED = 'SONG LOADED'; // midi file and/or instrument loaded in song
+export const SONG_READY = 'SONG READY'; // midi file and/or instrument loaded in song
 export const SEQUENCER_PLAY = 'SEQUENCER PLAY';
 export const SEQUENCER_STOP = 'SEQUENCER STOP';
 export const CHOOSING_TEMPO = 'CHOOSING TEMPO'; // while dragging the thumb of the range input
@@ -15,6 +19,7 @@ export const INSTRUMENT_LOADED = 'INSTRUMENT LOADED';
 export const SAMPLE_LOADED = 'SAMPLE LOADED';
 export const MIDIFILE_LOADED = 'MIDIFILE LOADED';
 export const SET_LOOP = 'SET LOOP';
+export const SET_TRACK = 'SET TRACK';
 
 
 const status = (response: Response) => {
@@ -69,6 +74,20 @@ export const sequencerReady = (configUrl: string) => async (dispatch: Dispatch) 
   });
 };
 
+export const songReady = (tracks: Array<string>) => ({
+  type: SONG_READY,
+  payload: {
+    tracks,
+  }
+});
+
+export const setTrack = (track: number) => ({
+  type: SET_TRACK,
+  payload: {
+    track,
+  }
+});
+
 export const loadInstrument = (url: string) => async (dispatch: Dispatch) => {
   dispatch({
     type: LOADING,
@@ -84,7 +103,7 @@ export const loadInstrument = (url: string) => async (dispatch: Dispatch) => {
 
 export const loadAssetPack = (url: string) => async (dispatch: Dispatch) => {
   dispatch({
-    type: LOADING,
+    type: LOADING_ASSETPACK,
   });
   const assetPack = await loadJSON(url);
   dispatch({
@@ -97,7 +116,7 @@ export const loadAssetPack = (url: string) => async (dispatch: Dispatch) => {
 
 export const loadMIDIFile = (url: string) => async (dispatch: Dispatch) => {
   dispatch({
-    type: LOADING,
+    type: LOADING_MIDIFILE,
   });
   const midiFile = await loadArrayBuffer(url);
   dispatch({
@@ -110,7 +129,7 @@ export const loadMIDIFile = (url: string) => async (dispatch: Dispatch) => {
 
 export const loadSample = (url: string) => async (dispatch: Dispatch) => {
   dispatch({
-    type: LOADING,
+    type: LOADING_SAMPLE,
   });
   const sample = await loadArrayBuffer(url);
   dispatch({

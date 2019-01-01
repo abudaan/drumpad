@@ -13,10 +13,13 @@ export interface SongState {
 };
 
 export interface DataState {
-  loading: boolean,
+  loading: null | string
   midiFile?: null | ArrayBuffer,
   instrument?: null | Object,
   assetPack?: null | Object
+  tracks: Array<any>,
+  songReady: boolean,
+  track: number,
 };
 
 export interface AppState {
@@ -38,6 +41,7 @@ export interface SongPosition {
 };
 
 export interface HeartbeatSong {
+  loop: boolean;
   playing: boolean,
   bpm: number,
   durationTicks: number,
