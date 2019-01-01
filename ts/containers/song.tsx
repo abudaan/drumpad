@@ -12,6 +12,8 @@ import { Dispatch } from 'redux';
 interface Song {
   props: PropTypes,
   song: null | HeartbeatSong,
+  instrument: null | Object,
+  midiFile: null | ArrayBuffer,
 };
 
 type PropTypes = {
@@ -20,6 +22,8 @@ type PropTypes = {
   tempo: number,
   playing: boolean,
   song: HeartbeatSong,
+  midiFile: ArrayBuffer,
+  instrument: Object,
   stop: () => void,
   sequencerReady: (url: string) => void,
   updatePosition: (position: SongPosition) => void,
@@ -30,7 +34,8 @@ const mapStateToProps = (state: AppState) => {
     tempo: state.song.tempo,
     playing: state.song.playing,
     loading: state.data.loading,
-    song: state.song.song,
+    instrument: state.data.instrument,
+    midiFile: state.data.midiFile,
   };
 };
 
@@ -52,6 +57,9 @@ class Song extends React.Component {
   constructor(props: any) {
     super(props);
 
+    this.instrument = null;
+    this.midiFile = null;
+
     sequencer.ready(() => {
       this.props.sequencerReady(this.props.configUrl);
     });
@@ -60,20 +68,30 @@ class Song extends React.Component {
   render() {
     if (this.props.loading === true) {
       this.song = null;
-      return false;
-    }
-    if (this.song === null) {
-      this.song = this.props.song;
-      return false;
+      this.midiFile = null;
+      this.instrument = null;
+    } else if (this.song === null && this.props.midiFile !== null && this.props.instrument !== null) {
+      // this.song = this.props.song;
+      this.midiFile = this.props.midiFile;
+      this.instrument = this.props.instrument.instruments[0];
+      // this.song = sequencer.createSong(this.props.midiFile, 'arraybuffer');
+      sequencer.createMidiFile({ arraybuffer: this.midiFile })
+        .then((json: Object) => {
+          sequencer.addInstrument(this.instrument);
+          console.log(this.instrument);
+          this.song = sequencer.createSong(json);
+          this.song.tracks.forEach(track => track.setInstrument(sequencer.getInstrument(this.instrument.name)));
+        });
+    } else if (this.song !== null) {
+      if (this.props.playing === true && !this.song.playing) {
+        this.song.play();
+      } else if (this.props.playing === false && this.song.playing === true) {
+        this.song.stop();
+      } else if (this.props.tempo !== this.song.bpm) {
+        this.song.setTempo(this.props.tempo);
+      }
     }
 
-    if (this.props.playing === true && !this.song.playing) {
-      this.song.play();
-    } else if (this.props.playing === false && this.song.playing === true) {
-      this.song.stop();
-    } else if (this.props.tempo !== this.song.bpm) {
-      this.song.setTempo(this.props.tempo);
-    }
     return false;
   }
 }

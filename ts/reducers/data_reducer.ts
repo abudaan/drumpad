@@ -4,15 +4,22 @@ import { DataState, IAction } from '../interfaces'
 const dataInitialState = {
   loading: true,
   instrument: null,
+  midiFile: null,
 };
 
 const data = (state: DataState = dataInitialState, action: IAction<any>) => {
   if (action.type === Actions.LOADING) {
-    console.log('LOADING')
     return {
+      ...state,
       loading: true,
     };
   } else if (action.type === Actions.CONFIG_LOADED) {
+    return {
+      ...state,
+      ...action.payload.data,
+      loading: false,
+    };
+  } else if (action.type === Actions.INSTRUMENT_LOADED) {
     return {
       ...state,
       instrument: action.payload.instrument,

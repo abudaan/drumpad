@@ -18,16 +18,6 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       ...state,
       sequencerReady: true,
     };
-  } else if (action.type === Actions.CONFIG_LOADED) {
-    return {
-      ...state,
-      song: action.payload.song,
-    };
-  } else if (action.type === Actions.INSTRUMENT_LOADED) {
-    return {
-      ...state,
-      song: action.payload.song,
-    };
   } else if (action.type === Actions.SEQUENCER_PLAY) {
     return {
       ...state,

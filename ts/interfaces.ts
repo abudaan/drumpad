@@ -14,6 +14,7 @@ export interface SongState {
 
 export interface DataState {
   loading: boolean,
+  midiFile?: null | ArrayBuffer,
   instrument?: null | Object,
   assetPack?: null | Object
 };
