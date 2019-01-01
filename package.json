@@ -1,5 +1,10 @@
 {
+  "name": "drumpad",
+  "description": "simple drumpad app using heartbeat and React/Redux",
+  "version": "0.0.1",
+  "license": "MIT",
   "dependencies": {
+    "@types/redux-thunk": "^2.1.0",
     "heartbeat-sequencer": "^0.0.5",
     "ramda": "^0.26.1",
     "react": "^16.7.0",

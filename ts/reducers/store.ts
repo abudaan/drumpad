@@ -1,13 +1,13 @@
-import {compose, applyMiddleware, createStore, combineReducers} from 'redux';
-import {createLogger} from 'redux-logger';
+import { compose, applyMiddleware, createStore, combineReducers } from 'redux';
+import { createLogger } from 'redux-logger';
 import thunkMiddleware from 'redux-thunk'
-import {song, songInitialState} from './song_reducer';
-import {samples, samplesInitialState} from './samples_reducer';
+import { data, dataInitialState } from './data_reducer';
+import { song, songInitialState } from './song_reducer';
 
-const combinedReducers = combineReducers({ song, samples });
+const combinedReducers = combineReducers({ data, song });
 const initialState = {
+  data: dataInitialState,
   song: songInitialState,
-  samples: samplesInitialState,
 };
 
 const getStore = () => {
@@ -17,7 +17,7 @@ const getStore = () => {
     compose(
       applyMiddleware(
         thunkMiddleware,
-        createLogger({collapsed: true}),
+        createLogger({ collapsed: true }),
       ),
     ),
   );

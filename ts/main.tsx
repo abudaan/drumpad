@@ -5,6 +5,7 @@ import getStore from './reducers/store';
 import Loader from './containers/loader';
 import Song from './containers/song';
 import Controls from './containers/controls';
+import { loadInstrument } from './actions';
 
 const store = getStore();
 
@@ -15,3 +16,7 @@ render(
   </Provider>,
   document.getElementById('container')
 );
+
+setTimeout(() => {
+  store.dispatch(loadInstrument('./data/Kit-Jungle.json'));
+}, 6000)

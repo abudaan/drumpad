@@ -1,34 +1,34 @@
-import { Dispatch } from 'redux';
-import { SongPosition, Config, ConfigData } from './interfaces';
+import { Dispatch, Action } from 'redux';
+import { SongPosition, Config, ConfigData, HeartbeatSong } from './interfaces';
+import sequencer from 'heartbeat-sequencer';
 
 export const SEQUENCER_READY = 'sequencer ready'; // initialization of sequencer done
-export const LOADING = 'loading'; // loading config data
-export const DATA_LOADED = 'data loaded'; // config data loaded
-export const SONG_LOADED = 'song loaded'; // midi file and instrument loaded in song
+export const LOADING = 'loading'; // generic load action
+export const CONFIG_LOADED = 'config loaded'; // config data loaded
+export const SONG_LOADED = 'song loaded'; // midi file and/or instrument loaded in song
 export const SEQUENCER_PLAY = 'sequencer play';
 export const SEQUENCER_STOP = 'sequencer stop';
-export const UPDATE_BEATS = 'update beats';
-export const UPDATE_SAMPLES = 'update samples';
 export const CHOOSING_TEMPO = 'choosing tempo'; // while dragging the thumb of the range input
 export const UPDATE_TEMPO = 'update tempo'; // while releasing the thumb
 export const UPDATE_POSITION = 'update position';
+export const INSTRUMENT_LOADED = 'instrument loaded';
+export const SAMPLE_LOADED = 'sample loaded';
+export const MIDIFILE_LOADED = 'midifile loaded';
 export const SET_LOOP = 'set loop';
 
-const loadArrayBuffer = async (url: string) => {
-  return fetch(url)
-    .then(response => response.arrayBuffer())
-    .catch(e => console.error(e));
-};
+const loadArrayBuffer = async (url: string) => fetch(url)
+  .then(response => response.arrayBuffer())
+  .catch(e => console.error(e));
 
-const loadJSON = async (url: string) => {
-  return fetch(url)
-    .then(response => response.json())
-    .catch(e => console.error(e));
-};
 
-const parseConfig = (config:Config) => {
+const loadJSON = async (url: string) => fetch(url)
+  .then(response => response.json())
+  .catch(e => console.error(e));
+
+
+const parseConfig = (config: Config) => {
   return new Promise(async (resolve) => {
-    const data:ConfigData = {};
+    const data: ConfigData = {};
     if (config.assetPack) {
       data.assetPack = await loadJSON(config.assetPack);
     } else {
@@ -38,34 +38,63 @@ const parseConfig = (config:Config) => {
       if (config.midiFile) {
         data.midiFile = await loadArrayBuffer(config.midiFile);
       }
-    } 
+    }
     resolve(data);
   })
 };
 
-export const loadData = (url: string) => {
-  return (dispatch: Dispatch) => {
-    fetch(url)
-      .then(response => response.json())
-      .then(data => parseConfig(data))
-      .then(data => {
+const loadConfig = async (url: string): Promise<any> => fetch(url)
+  .then(response => response.json())
+  .then(data => parseConfig(data))
+  .catch(e => console.error(e));
+
+
+export const sequencerReady = (configUrl: string) => {
+  return async (dispatch: Dispatch) => {
+    const data = await loadConfig(configUrl);
+    const instrument = data.instrument.instruments[0];
+    let song = null;
+    sequencer.addInstrument(instrument);
+    // this.song = sequencer.createSong(this.props.midiFile, 'arraybuffer');
+    sequencer.createMidiFile({ arraybuffer: data.midiFile })
+      .then((json: Object) => {
+        song = sequencer.createSong(json);
+        song.tracks.forEach(track => track.setInstrument(sequencer.getInstrument(instrument.name)));
+
         dispatch({
-          type: DATA_LOADED,
+          type: CONFIG_LOADED,
           payload: {
-            data,
+            song,
+            instrument,
           }
-        })
-      })
-      .catch(e => console.error(e));
-  };
+        });
+      }
+      );
+  }
 };
 
-export const sequencerReady = (configUrl:string) => {
-  return (dispatch: Dispatch) => dispatch(loadData(configUrl));
-  // return {
-  //   type: SEQUENCER_READY,
-  // };
-};
+export const loadInstrument = (url: string) => {  
+  return async (dispatch: Dispatch) => {
+    dispatch({
+      type: LOADING
+    });
+    const instrument = await loadJSON(url);
+    dispatch({
+      type: INSTRUMENT_LOADED,
+      payload: {
+        instrument,
+      }
+    });
+  }
+}
+
+export const loadMIDIFile = (url: string) => {
+  return (dispatch: Dispatch) => dispatch(loadArrayBuffer(url));
+}
+
+export const loadSample = (url: string) => {
+  return (dispatch: Dispatch) => dispatch(loadArrayBuffer(url));
+}
 
 export const play = () => {
   return {
@@ -73,27 +102,9 @@ export const play = () => {
   };
 };
 
-export const stop = () => {
+export const stop = (): Action => {
   return {
     type: SEQUENCER_STOP,
-  };
-};
-
-export const updateBeats = (beats: number) => {
-  return {
-    type: UPDATE_BEATS,
-    payload: {
-      beats,
-    }
-  };
-};
-
-export const updateSamples = (samples: number) => {
-  return {
-    type: UPDATE_SAMPLES,
-    payload: {
-      samples,
-    }
   };
 };
 

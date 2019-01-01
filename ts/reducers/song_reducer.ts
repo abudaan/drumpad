@@ -1,29 +1,32 @@
 import * as Actions from '../actions';
-import { ReduxAction } from '../interfaces';
+import { SongState, IAction } from '../interfaces';
 
 const songInitialState = {
   sequencerReady: false,
   playing: false,
   loop: true,
-  beats: 16,
-  minBeats: 8,
-  maxBeats: 32,
   tempo: 120,
   tempoTmp: 120,
-  minTempo: 80,
-  maxTempo: 200,
+  minTempo: 30,
+  maxTempo: 300,
+  song: null,
 };
 
-const song = (state = songInitialState, action: ReduxAction) => {
+const song = (state: SongState = songInitialState, action: IAction<any>) => {
   if (action.type === Actions.SEQUENCER_READY) {
     return {
       ...state,
       sequencerReady: true,
     };
-  } else if (action.type === Actions.DATA_LOADED) {
+  } else if (action.type === Actions.CONFIG_LOADED) {
     return {
       ...state,
-      ...action.payload.data,
+      song: action.payload.song,
+    };
+  } else if (action.type === Actions.INSTRUMENT_LOADED) {
+    return {
+      ...state,
+      song: action.payload.song,
     };
   } else if (action.type === Actions.SEQUENCER_PLAY) {
     return {
@@ -34,11 +37,6 @@ const song = (state = songInitialState, action: ReduxAction) => {
     return {
       ...state,
       playing: false,
-    };
-  } else if (action.type === Actions.UPDATE_BEATS) {
-    return {
-      ...state,
-      beats: parseInt(action.payload.beats, 10)
     };
   } else if (action.type === Actions.CHOOSING_TEMPO) {
     return {
@@ -53,7 +51,7 @@ const song = (state = songInitialState, action: ReduxAction) => {
   } else if (action.type === Actions.SET_LOOP) {
     return {
       ...state,
-      loop: action.payload.tempo,
+      loop: action.payload.loop,
     };
   } else if (action.type === Actions.UPDATE_POSITION) {
     return {

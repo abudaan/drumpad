@@ -1,11 +1,9 @@
 // import * as R from 'ramda';
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, MouseEvent } from 'react';
 import { connect } from 'react-redux';
 import Slider from '../components/slider';
 import { AppState } from '../interfaces';
 import {
-  updateBeats,
-  updateSamples,
   choosingTempo,
   updateTempo,
   setLoop,
@@ -18,22 +16,15 @@ interface Controls {
   props: PropTypes,
 };
 
-type PropTypes  = {
+type PropTypes = {
   disabled: boolean,
   beats: number,
-  minBeats: number,
-  maxBeats: number,
-  updateBeats: (event: ChangeEvent) => void
-  numSamples: number,
-  minSamples: number,
-  maxSamples: number,
-  updateSounds: (event: ChangeEvent) => void
   tempo: number,
   tempoTmp: number,
   minTempo: number,
   maxTempo: number,
   choosingTempo: (event: ChangeEvent) => void,
-  updateTempo: (event: ChangeEvent) => void,
+  updateTempo: (event: MouseEvent) => void,
   play: (event: MouseEvent) => void,
   stop: (event: MouseEvent) => void,
   playing: boolean,
@@ -41,14 +32,8 @@ type PropTypes  = {
 
 const mapStateToProps = (state: AppState) => {
   return {
-    disabled: !state.song.sequencerReady,
+    disabled: !state.data.loading,
     playing: state.song.playing,
-    beats: state.song.beats,
-    minBeats: state.song.minBeats,
-    maxBeats: state.song.maxBeats,
-    numSamples: state.samples.numSamples,
-    minSamples: state.samples.minSamples,
-    maxSamples: state.samples.maxSamples,
     tempo: state.song.tempo,
     tempoTmp: state.song.tempoTmp,
     minTempo: state.song.minTempo,
@@ -56,19 +41,19 @@ const mapStateToProps = (state: AppState) => {
   };
 };
 
+type Event = {
+  target: {
+    value: number,
+  }
+};
+
 const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
-    updateBeats: (e) => {
-      dispatch(updateBeats(e.target.value));
+    choosingTempo: (e: ChangeEvent<HTMLInputElement>) => {
+      dispatch(choosingTempo(parseInt(e.target.value, 10)));
     },
-    updateSounds: (e) => {
-      dispatch(updateSamples(e.target.value));
-    },
-    choosingTempo: (e) => {
-      dispatch(choosingTempo(e.target.value));
-    },
-    updateTempo: (e) => {
-      dispatch(updateTempo(e.target.value));
+    updateTempo: (e: { target: HTMLInputElement; }) => {
+      dispatch(updateTempo(parseInt(e.target.value, 10)));
     },
     play: () => {
       dispatch(play());
@@ -86,22 +71,6 @@ class Controls extends React.Component {
     const label = this.props.playing ? 'pause' : 'play'
     return (<div id="controls">
       <Slider
-        min={this.props.minBeats}
-        max={this.props.maxBeats}
-        label="beats"
-        value={this.props.beats}
-        onChange={this.props.updateBeats}
-        disabled={this.props.disabled}
-        />
-      <Slider
-        min={this.props.minSamples}
-        max={this.props.maxSamples}
-        label="samples"
-        value={this.props.numSamples}
-        onChange={this.props.updateSounds}
-        disabled={this.props.disabled}
-        />
-      <Slider
         min={this.props.minTempo}
         max={this.props.maxTempo}
         label="tempo"
@@ -118,6 +87,14 @@ class Controls extends React.Component {
         type="button"
         onClick={this.props.stop}
       >stop</button>
+      <button
+        type="button"
+        onClick={this.props.stop}
+      >add beat</button>
+      <button
+        type="button"
+        onClick={this.props.stop}
+      >remove beat</button>
     </div>
     );
   }

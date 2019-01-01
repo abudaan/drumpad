@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react'
+import React, { ChangeEvent, MouseEvent } from 'react'
 
 interface PropTypes {
   max: number,
@@ -6,9 +6,9 @@ interface PropTypes {
   value: number
   id?: string,
   label?: string,
-  onChange: (event: ChangeEvent) => any,
-  onMouseDown?: (event: MouseEvent) => any,
-  onMouseUp?: (event: MouseEvent) => any,
+  onChange: (event: ChangeEvent) => void,
+  onMouseDown?: (event: MouseEvent) => void,
+  onMouseUp?: (event: MouseEvent) => void,
   step?: number,
   type?: string,
   disabled: boolean,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dispatch, AnyAction } from 'redux';
 import { connect } from 'react-redux';
-import { loadData } from '../actions'
+import { loadConfig } from '../actions'
 import { AppState } from '../interfaces';
 
 interface Loader {
@@ -23,7 +23,7 @@ const mapStateToProps = (state: AppState) => {
 const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
     loadData: (url:string) => {
-      dispatch(loadData(url));
+      dispatch(loadConfig(url));
     }
   }
 }
@@ -32,7 +32,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
 class Loader extends React.Component {
   constructor(props: PropTypes) {
     super(props);
-    loadData(this.props.configUrl);
+    loadConfig(this.props.configUrl);
   }
   render() {
     if (this.props.sequencerReady) {
