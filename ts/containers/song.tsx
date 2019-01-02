@@ -185,6 +185,7 @@ class Song extends React.Component {
     this.song.setRightLocator('barsbeats', 2, 1, 1, 0);
     this.song.setLoop();
     this.song.addEventListener('end', this.props.stop);
+    this.getQuantizeValue();
     this.props.songReady(tracks);
   }
 
@@ -209,6 +210,25 @@ class Song extends React.Component {
     this.song.tracks.forEach((track, index) => {
       track.mute = index !== this.props.track
     });
+  }
+
+  getQuantizeValue() {
+    let ticks = 0;
+    let quantize = 960; // just a big number, it is a common ppq value
+    const events = this.song.tracks[this.props.track].events;
+    this.song.update();
+    events.forEach(event => {
+      console.log(event.ticks);
+      if (event.type === 128) {
+        var diff = event.ticks - ticks;
+        ticks = event.ticks;
+        // console.log(ticks, event);
+        if (diff < quantize) {
+          quantize = diff;
+        }
+      }
+    });
+    console.log(quantize);
   }
 }
 
