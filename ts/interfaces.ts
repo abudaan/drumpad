@@ -4,6 +4,7 @@ export interface SongState {
   sequencerReady: boolean,
   song: null | HeartbeatSong,
   playing: boolean,
+  stopped: boolean,
   position?: SongPosition,
   loop: boolean,
   tempo: number,
@@ -13,7 +14,6 @@ export interface SongState {
 };
 
 export interface DataState {
-  loading: null | string
   midiFile?: null | ArrayBuffer,
   instrument?: null | Object,
   instrumentIndex: number,

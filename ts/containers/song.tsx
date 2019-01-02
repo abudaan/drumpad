@@ -1,13 +1,3 @@
-export const WAIT = 'WAIT';
-export const CREATE_SONG = 'CREATE_SONG';
-export const PLAY = 'PLAY';
-export const PAUSE = 'PAUSE';
-export const STOP = 'STOP';
-export const TEMPO = 'TEMPO';
-export const LOAD_ASSETPACK = 'LOAD_ASSETPACK';
-export const LOAD_MIDIFILE = 'LOAD_MIDIFILE';
-
-
 import sequencer from 'heartbeat-sequencer';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -17,7 +7,6 @@ import {
   sequencerReady,
   songReady,
   stop,
-  SET_TRACK,
 } from '../actions';
 import { Dispatch } from 'redux';
 import getSongUpdate from '../reducers/song_selector'
@@ -33,13 +22,14 @@ export type SongPropTypes = {
   track: number,
   tempo: number,
   playing: boolean,
+  stopped: boolean,
   song: HeartbeatSong,
   midiFile: null | ArrayBuffer,
   instrumentIndex: number,
   assetPack: null | Object,
   stop: () => void,
-  sequencerReady: (url: string) => void,
   songReady: (tracks: Array<any>) => void,
+  sequencerReady: (url: string) => void,
   updatePosition: (position: SongPosition) => void,
 };
 
@@ -73,7 +63,7 @@ class Song extends React.Component {
     super(props);
 
     this.song = null;
-    this.songAction = WAIT;
+    this.songAction = PASS;
     this.instrumentName = '';
   }
 
@@ -84,7 +74,7 @@ class Song extends React.Component {
   }
 
   shouldComponentUpdate(nextProps: SongPropTypes, nextState: SongState) {
-    this.songAction = WAIT;
+    this.songAction = PASS;
     if (
       nextProps.assetPack !== null && nextProps.midiFile !== null &&
       this.props.assetPack === null && this.props.midiFile === null
@@ -100,6 +90,9 @@ class Song extends React.Component {
     } else if (nextProps.playing === true && this.props.playing === false) {
       this.songAction = PLAY;
 
+    } else if (nextProps.stopped === true && this.props.stopped === false) {
+      this.songAction = STOP;
+
     } else if (nextProps.playing === false && this.props.playing === true) {
       this.songAction = PAUSE;
 
@@ -107,13 +100,16 @@ class Song extends React.Component {
       this.songAction = TEMPO;
 
     } else if (nextProps.track !== this.props.track) {
-      this.songAction = SET_TRACK;
+      this.songAction = SOLO_TRACK;
+
+    } else if (nextProps.loop !== this.props.loop) {
+      this.songAction = SET_LOOP;
     }
-    return this.songAction !== WAIT;
+    return this.songAction !== PASS;
   }
 
   render() {
-    console.log('render Song', this.songAction);
+    console.log('<Song> render', this.songAction);
     if (this.song === null) {
       if (this.songAction === CREATE_SONG) {
         this.loadConfig();
@@ -136,8 +132,12 @@ class Song extends React.Component {
           this.song.setTempo(this.props.tempo);
           break;
 
-        case SET_TRACK:
+        case SOLO_TRACK:
           this.soloTrack();
+          break;
+
+        case SET_LOOP:
+          this.song.setLoop();
           break;
 
         case LOAD_MIDIFILE:
@@ -211,7 +211,18 @@ class Song extends React.Component {
     });
   }
 }
+
 export default connect(mapStateToProps, mapDispatchToProps)(Song);
 
+export const PASS = 'PASS';
+export const CREATE_SONG = 'CREATE_SONG';
+export const PLAY = 'PLAY';
+export const PAUSE = 'PAUSE';
+export const STOP = 'STOP';
+export const TEMPO = 'TEMPO';
+export const SET_LOOP = 'SET_LOOP';
+export const SOLO_TRACK = 'SOLO_TRACK';
+export const LOAD_ASSETPACK = 'LOAD_ASSETPACK';
+export const LOAD_MIDIFILE = 'LOAD_MIDIFILE';
 
 

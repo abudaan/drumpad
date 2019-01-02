@@ -4,6 +4,7 @@ import { SongState, IAction } from '../interfaces';
 const songInitialState = {
   sequencerReady: false,
   playing: false,
+  stopped: true,
   loop: true,
   tempo: 120,
   tempoTmp: 120,
@@ -22,11 +23,13 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     return {
       ...state,
       playing: !state.playing,
+      stopped: false,
     };
   } else if (action.type === Actions.SEQUENCER_STOP) {
     return {
       ...state,
       playing: false,
+      stopped: true,
     };
   } else if (action.type === Actions.CHOOSING_TEMPO) {
     return {

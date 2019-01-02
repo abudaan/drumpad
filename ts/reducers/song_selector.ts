@@ -13,11 +13,11 @@ export default createSelector(
       tempo,
       loop,
       playing,
+      stopped,
     } = songState;
 
     const {
       track,
-      loading,
       assetPack,
       midiFile,
       instrumentIndex,
@@ -27,8 +27,8 @@ export default createSelector(
       tempo,
       loop,
       playing,
+      stopped,
       track,
-      loading,
       assetPack,
       midiFile,
       instrumentIndex,
