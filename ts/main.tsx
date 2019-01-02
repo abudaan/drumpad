@@ -10,7 +10,14 @@ const store = getStore();
 
 render(
   <Provider store={store}>
-    <Song configUrl="./data/config.json"></Song>
+    <Song 
+      configUrl="./data/config.json"
+      midiFile={null}
+      assetPack={null}
+      loop={true}
+      playing={false}
+      tempo={120}
+    ></Song>
     <Controls></Controls>
   </Provider>,
   document.getElementById('container')
@@ -21,4 +28,5 @@ render(
 //   store.dispatch(loadAssetPack('./data/Kit-Jungle.json')).then(() => {
 //     store.dispatch(loadMIDIFile('./data/track9.mid'));
 //   })
-// }, 10000)
+//   // store.dispatch(loadMIDIFile('./data/track9.mid'));
+// }, 3000)

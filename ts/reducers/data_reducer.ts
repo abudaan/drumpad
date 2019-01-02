@@ -7,7 +7,9 @@ const dataInitialState = {
   assetPack: null,
   instrument: null,
   midiFile: null,
-  tracks: []
+  track: 0,
+  tracks: [],
+  instrumentIndex: 0,
 };
 
 const data = (state: DataState = dataInitialState, action: IAction<any>) => {

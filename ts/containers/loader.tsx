@@ -3,6 +3,7 @@ import { Dispatch, AnyAction } from 'redux';
 import { connect } from 'react-redux';
 import { loadConfig } from '../actions'
 import { AppState } from '../interfaces';
+import getSongUpdate from '../reducers/song_selector'
 
 interface Loader {
   props: PropTypes,
@@ -14,10 +15,8 @@ type PropTypes = {
   loadData: (url:string) => (dispatch: Dispatch<AnyAction>) => void,
 };
 
-const mapStateToProps = (state: AppState) => {
-  return {
-    sequencerReady: state.song.sequencerReady,
-  };
+const mapStateToProps = (state: AppState, ownProps: PropTypes) => {
+  return {...getSongUpdate(state, ownProps)}
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => {

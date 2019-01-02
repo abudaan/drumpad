@@ -16,6 +16,7 @@ export interface DataState {
   loading: null | string
   midiFile?: null | ArrayBuffer,
   instrument?: null | Object,
+  instrumentIndex: number,
   assetPack?: null | Object
   tracks: Array<any>,
   songReady: boolean,

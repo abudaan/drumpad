@@ -1,52 +1,50 @@
+export const WAIT = 'WAIT';
+export const CREATE_SONG = 'CREATE_SONG';
+export const PLAY = 'PLAY';
+export const PAUSE = 'PAUSE';
+export const STOP = 'STOP';
+export const TEMPO = 'TEMPO';
+export const LOAD_ASSETPACK = 'LOAD_ASSETPACK';
+export const LOAD_MIDIFILE = 'LOAD_MIDIFILE';
+
+
 import sequencer from 'heartbeat-sequencer';
 import React from 'react';
 import { connect } from 'react-redux';
-import { AppState, SongPosition, HeartbeatSong } from '../interfaces';
+import { AppState, SongPosition, HeartbeatSong, SongState } from '../interfaces';
 import {
   updatePosition,
   sequencerReady,
   songReady,
   stop,
+  SET_TRACK,
 } from '../actions';
 import { Dispatch } from 'redux';
+import getSongUpdate from '../reducers/song_selector'
 
 interface Song {
-  props: PropTypes,
-  song: null | HeartbeatSong,
-  assetPack: null | Object,
-  instrument: null | Object,
-  midiFile: null | Object,
-  instrumentName: null | string,
+  props: SongPropTypes,
 };
 
-type PropTypes = {
+export type SongPropTypes = {
   configUrl: string,
-  loading: null | string,
+  songAction: string,
   loop: boolean,
   track: number,
   tempo: number,
   playing: boolean,
   song: HeartbeatSong,
-  midiFile: ArrayBuffer,
-  instrument: Object,
-  assetPack: Object,
+  midiFile: null | ArrayBuffer,
+  instrumentIndex: number,
+  assetPack: null | Object,
   stop: () => void,
   sequencerReady: (url: string) => void,
   songReady: (tracks: Array<any>) => void,
   updatePosition: (position: SongPosition) => void,
 };
 
-const mapStateToProps = (state: AppState) => {
-  return {
-    tempo: state.song.tempo,
-    loop: state.song.loop,
-    playing: state.song.playing,
-    track: state.data.track,
-    loading: state.data.loading,
-    assetPack: state.data.assetPack,
-    instrument: state.data.instrument,
-    midiFile: state.data.midiFile,
-  };
+const mapStateToProps = (state: AppState & SongState, ownProps: SongPropTypes) => {
+  return { ...getSongUpdate(state, ownProps) }
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
@@ -67,30 +65,115 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
 }
 
 class Song extends React.Component {
-  currentTrack: number;
+  song: null | HeartbeatSong
+  songAction: string;
+  instrumentName: string;
+
   constructor(props: any) {
     super(props);
 
     this.song = null;
-    this.midiFile = null;
-    this.assetPack = null;
-    this.instrument = null;
-    this.currentTrack = 0;
+    this.songAction = WAIT;
+    this.instrumentName = '';
+  }
 
+  componentDidMount() {
     sequencer.ready(() => {
       this.props.sequencerReady(this.props.configUrl);
     });
   }
 
-  createSong(json: Object) {
-    const tracks = [];
-    json.tracks.forEach((track: any, index: number) => {
-      track.setInstrument(sequencer.getInstrument(this.instrumentName));
-      track.mute = index !== 0;
-      tracks.push({
-        value: index,
-        label: track.name,
+  shouldComponentUpdate(nextProps: SongPropTypes, nextState: SongState) {
+    this.songAction = WAIT;
+    if (
+      nextProps.assetPack !== null && nextProps.midiFile !== null &&
+      this.props.assetPack === null && this.props.midiFile === null
+    ) {
+      this.songAction = CREATE_SONG;
+
+    } else if (nextProps.assetPack !== null && nextProps.assetPack !== this.props.assetPack) {
+      this.songAction = LOAD_ASSETPACK;
+
+    } else if (nextProps.midiFile !== null && this.props.midiFile !== nextProps.midiFile) {
+      this.songAction = LOAD_MIDIFILE;
+
+    } else if (nextProps.playing === true && this.props.playing === false) {
+      this.songAction = PLAY;
+
+    } else if (nextProps.playing === false && this.props.playing === true) {
+      this.songAction = PAUSE;
+
+    } else if (nextProps.tempo !== this.props.tempo) {
+      this.songAction = TEMPO;
+
+    } else if (nextProps.track !== this.props.track) {
+      this.songAction = SET_TRACK;
+    }
+    return this.songAction !== WAIT;
+  }
+
+  render() {
+    console.log('render Song', this.songAction);
+    if (this.song === null) {
+      if (this.songAction === CREATE_SONG) {
+        this.loadConfig();
+      }
+    } else {
+      switch (this.songAction) {
+        case PLAY:
+          this.song.play();
+          break;
+
+        case PAUSE:
+          this.song.pause();
+          break;
+
+        case STOP:
+          this.song.stop();
+          break;
+
+        case TEMPO:
+          this.song.setTempo(this.props.tempo);
+          break;
+
+        case SET_TRACK:
+          this.soloTrack();
+          break;
+
+        case LOAD_MIDIFILE:
+          this.loadMIDIFile();
+          break;
+
+        case LOAD_ASSETPACK:
+          this.loadAssetPack();
+          break;
+      }
+    }
+    return false;
+  }
+
+  loadConfig() {
+    sequencer.createMidiFile({ arraybuffer: this.props.midiFile })
+      .then((json: Object) => {
+        sequencer.addAssetPack(this.props.assetPack, () => {
+          this.createSong(json);
+        });
+      })
+      .catch((e: Error) => {
+        console.log(e);
       });
+  }
+
+  createSong(json: Object) {
+    if (this.song !== null) {
+      sequencer.deleteSong(this.song);
+    }
+    const tracks = [];
+    const instrument = this.props.assetPack.instruments[this.props.instrumentIndex].name;
+    json.tracks.forEach((track: any, index: number) => {
+      track.setInstrument(sequencer.getInstrument(instrument));
+      track.mute = index !== 0;
+      tracks.push(track.name);
     });
     this.song = sequencer.createSong({
       bpm: json.bpm,
@@ -105,68 +188,27 @@ class Song extends React.Component {
     this.props.songReady(tracks);
   }
 
-  render() {
-    if (this.props.loading === 'config') {
-      if (this.song !== null) {
-        sequencer.deleteSong(this.song);
-        this.song = null;
-      }
-      this.midiFile = null;
-      this.instrument = null;
-
-    } else if (this.props.loading === 'midifile') {
-      this.midiFile = null;
-      sequencer.deleteSong(this.song);
-      this.song = null;
-
-    } else if (this.props.loading === 'assetpack') {
-      this.assetPack = null;
-
-    } else if (this.midiFile === null && this.props.midiFile !== null && this.assetPack === null && this.props.assetPack !== null) {
-      this.assetPack = this.props.assetPack;
-      this.instrumentName = this.props.assetPack.instruments[0].name;
-      // this.song = sequencer.createSong(this.props.midiFile, 'arraybuffer');
-      sequencer.createMidiFile({ arraybuffer: this.props.midiFile })
-        .then((json: Object) => {
-          this.midiFile = json;
-          sequencer.addAssetPack(this.props.assetPack, () => {
-            this.createSong(json);
-          });
-        })
-        .catch((e: Error) => {
-          console.log(e);
-        });
-
-    } else if (this.midiFile === null && this.props.midiFile !== null) {
-      this.midiFile = this.props.midiFile;
-      this.instrumentName = this.props.assetPack.instruments[0].name;
-      sequencer.createMidiFile({ arraybuffer: this.midiFile })
-        .then(this.createSong);
-
-    } else if (this.assetPack === null && this.props.assetPack !== null) {
-      this.assetPack = this.props.assetPack;
-      sequencer.addAssetPack(this.props.assetPack, () => {
-        // dispatch song ready
+  loadMIDIFile() {
+    sequencer.deleteSong(this.song);
+    sequencer.createMidiFile({ arraybuffer: this.props.midiFile })
+      .then((json: Object) => {
+        this.createSong(json);
       });
+  }
 
-    } else if (this.song !== null) {
-      if (this.props.playing === true && !this.song.playing) {
-        this.song.play();
-      } else if (this.props.playing === false && this.song.playing === true) {
-        this.song.stop();
-      } else if (this.props.tempo !== this.song.bpm) {
-        this.song.setTempo(this.props.tempo);
-      } else if (this.props.loop !== this.song.loop) {
-        this.song.setLoop();
-      } else if (this.props.track !== this.currentTrack) {
-        this.currentTrack = this.props.track;
-        this.song.tracks.forEach((track, index) => {
-          track.mute = index !== this.currentTrack
-        });
-      }
-    }
+  loadAssetPack() {
+    sequencer.addAssetPack(this.props.assetPack, () => {
+      const instrument = this.props.assetPack.instruments[this.props.instrumentIndex].name;
+      this.song.tracks.forEach((track: any) => {
+        track.setInstrument(sequencer.getInstrument(instrument));
+      });
+    });
+  }
 
-    return false;
+  soloTrack() {
+    this.song.tracks.forEach((track, index) => {
+      track.mute = index !== this.props.track
+    });
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Song);

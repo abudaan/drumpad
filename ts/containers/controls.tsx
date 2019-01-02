@@ -83,9 +83,21 @@ class Controls extends React.Component {
   render() {
     const labelPlay = this.props.playing ? 'pause' : 'play';
     const labelLoop = this.props.loop ? 'loop off' : 'loop on';
-    const options = this.props.tracks.map(track => {
-      return <option key={track.value} value={track.value}>{track.label}</option>;
-    });
+    let select;
+    if (this.props.tracks.length > 1) {
+      const options = this.props.tracks.map(track => {
+        return <option key={track}>{track}</option>;
+      });
+      select = <select
+        onChange={(e) => {
+          if (e.nativeEvent.target !== null) {
+            this.props.setTrack(e.nativeEvent.target.selectedIndex)
+          }
+        }}
+      >
+        {options}
+      </select>
+    }
     return (<div id="controls">
       <Slider
         min={this.props.minTempo}
@@ -108,13 +120,8 @@ class Controls extends React.Component {
         type="button"
         onClick={(e) => { this.props.setLoop(!this.props.loop); }}
       >{labelLoop}</button>
-      <select
-        onChange={(e) => {
-          this.props.setTrack(e.nativeEvent.target.selectedIndex)
-        }} 
-      >
-        {options}
-      </select>
+
+      {select}
 
       {/* <button
         type="button"
