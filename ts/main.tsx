@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import getStore from './reducers/store';
 import App from './containers/app';
-import { loadInstrument, loadMIDIFile, loadAssetPack } from './actions';
+import { loadInstrument, loadMIDIFile, loadAssetPack, loadConfig } from './actions';
 
 const store = getStore();
 
@@ -15,6 +15,8 @@ render(
   </Provider>,
   document.getElementById('container')
 );
+
+// store.dispatch(loadConfig('./data/config.json'));
 
 // simulate human interaction
 // setTimeout(() => {

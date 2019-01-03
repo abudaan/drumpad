@@ -16,7 +16,8 @@ export interface AppState {
   instrumentIndex: number,
   tracks: Array<any>,
   trackIndex: number,
-  songReady: boolean,
+  songReady: () => void,
+  controlsEnabled: boolean,
   minTempo: number,
   maxTempo: number,
 };

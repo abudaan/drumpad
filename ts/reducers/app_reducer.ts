@@ -1,17 +1,17 @@
 import * as Actions from '../actions';
 import { AppState, IAction } from '../interfaces'
 
-const dataInitialState = {
-  songReady: false,
+const appInitialState = {
+  controlsEnabled: false,
   assetPack: null,
   instrument: null,
   midiFile: null,
-  track: 0,
   tracks: [],
+  trackIndex: 0,
   instrumentIndex: 0,
 };
 
-const data = (state: AppState = dataInitialState, action: IAction<any>) => {
+const app = (state: AppState = appInitialState, action: IAction<any>) => {
   if (action.type === Actions.LOADING) {
     return {
       ...state,
@@ -36,18 +36,18 @@ const data = (state: AppState = dataInitialState, action: IAction<any>) => {
     return {
       ...state,
       ...action.payload,
-      songReady: true,
+      controlsEnabled: true,
     };
   } else if (action.type === Actions.SET_TRACK) {
     return {
       ...state,
-      track: action.payload.track,
+      trackIndex: action.payload.trackIndex,
     };
   }
   return state;
 };
 
 export {
-  data,
-  dataInitialState,
+  app,
+  appInitialState,
 };

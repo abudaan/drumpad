@@ -1,14 +1,12 @@
 import { createSelector } from 'reselect';
-import { AppState, SongState, State } from '../interfaces';
+import { State, AppState, SongState } from '../interfaces';
 
-const getAppState = (state: State): AppState => state.app;
 const getSongState = (state: State): SongState => state.song;
+const getAppState = (state: State): AppState => state.app;
 
 export default createSelector(
-  // [getSongState, (state: SongState, props: SongPropTypes) => props, getDataState],
-  // (songState: SongState, props: SongPropTypes, dataState: AppState) => {
-  [getAppState, getSongState],
-  (appState: AppState, songState: SongState) => {
+  [getSongState, getAppState],
+  (songState: SongState, appState: AppState) => {
     const {
       tempo,
       loop,
@@ -21,6 +19,7 @@ export default createSelector(
       assetPack,
       midiFile,
       instrumentIndex,
+      controlsEnabled,
     } = appState;
     
     return {
@@ -31,6 +30,7 @@ export default createSelector(
       trackIndex,
       assetPack,
       midiFile,
+      controlsEnabled,
       instrumentIndex,
     };
   }

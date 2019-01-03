@@ -80,6 +80,7 @@ const load = async (url: string): Promise<any> => fetch(url)
 
 export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
   const data = await load(configUrl);
+  // console.log(data);
   dispatch({
     type: CONFIG_LOADED,
     payload: {
@@ -95,10 +96,10 @@ export const songReady = (songInfo: SongInfo) => ({
   }
 });
 
-export const setTrack = (track: number) => ({
+export const setTrack = (trackIndex: number) => ({
   type: SET_TRACK,
   payload: {
-    track,
+    trackIndex,
   }
 });
 
