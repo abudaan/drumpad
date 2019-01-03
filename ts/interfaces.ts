@@ -1,31 +1,29 @@
 import { Action } from "redux";
 
 export interface SongState {
-  sequencerReady: boolean,
-  song: null | HeartbeatSong,
   playing: boolean,
   stopped: boolean,
   position?: SongPosition,
   loop: boolean,
   tempo: number,
   tempoTmp: number,
+};
+
+export interface AppState {
+  assetPack?: null | Object
+  midiFile?: null | ArrayBuffer,
+  instrument?: null | Object,
+  instrumentIndex: number,
+  tracks: Array<any>,
+  trackIndex: number,
+  songReady: boolean,
   minTempo: number,
   maxTempo: number,
 };
 
-export interface DataState {
-  midiFile?: null | ArrayBuffer,
-  instrument?: null | Object,
-  instrumentIndex: number,
-  assetPack?: null | Object
-  tracks: Array<any>,
-  songReady: boolean,
-  track: number,
-};
-
-export interface AppState {
+export interface State {
   song: SongState,
-  data: DataState,
+  app: AppState,
 };
 
 export interface IAction<T> extends Action {

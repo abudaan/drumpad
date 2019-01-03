@@ -1,5 +1,5 @@
 import * as Actions from '../actions';
-import { DataState, IAction } from '../interfaces'
+import { AppState, IAction } from '../interfaces'
 
 const dataInitialState = {
   songReady: false,
@@ -11,7 +11,7 @@ const dataInitialState = {
   instrumentIndex: 0,
 };
 
-const data = (state: DataState = dataInitialState, action: IAction<any>) => {
+const data = (state: AppState = dataInitialState, action: IAction<any>) => {
   if (action.type === Actions.LOADING) {
     return {
       ...state,
@@ -35,7 +35,7 @@ const data = (state: DataState = dataInitialState, action: IAction<any>) => {
   } else if (action.type === Actions.SONG_READY) {
     return {
       ...state,
-      tracks: action.payload.tracks,
+      ...action.payload,
       songReady: true,
     };
   } else if (action.type === Actions.SET_TRACK) {

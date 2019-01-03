@@ -39,12 +39,6 @@ const loadJSON = async (url: string) => fetch(url)
   .then(response => response.json())
   .catch(e => console.error(e));
 
-const loadConfig = async (url: string): Promise<any> => fetch(url)
-  .then(status)
-  .then(response => response.json())
-  .then(data => parseConfig(data))
-  .catch(e => console.error(e));
-
 const parseConfig = (config: Config) => {
   return new Promise(async (resolve) => {
     const data: ConfigData = {};
@@ -60,8 +54,32 @@ const parseConfig = (config: Config) => {
   })
 };
 
+/*
+const loadConfig = async (url: string): Promise<any> => fetch(url)
+  .then(status)
+  .then(response => response.json())
+  .then(data => parseConfig(data))
+  .catch(e => console.error(e));
+
 export const sequencerReady = (configUrl: string) => async (dispatch: Dispatch) => {
   const data = await loadConfig(configUrl);
+  dispatch({
+    type: CONFIG_LOADED,
+    payload: {
+      data,
+    }
+  });
+};
+*/
+
+const load = async (url: string): Promise<any> => fetch(url)
+  .then(status)
+  .then(response => response.json())
+  .then(data => parseConfig(data))
+  .catch(e => console.error(e));
+
+export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
+  const data = await load(configUrl);
   dispatch({
     type: CONFIG_LOADED,
     payload: {
