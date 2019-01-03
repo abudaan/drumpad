@@ -32,12 +32,14 @@ class Song extends React.Component {
     this.song = null;
     this.songAction = PASS;
     this.instrumentName = '';
-    // console.log(sequencer.initialized);
-    // sequencer.ready(() => {
-    //   console.log('ready');
-    // })
   }
-
+/*  
+  componentDidMount() {
+    sequencer.ready(() => {
+      console.log('ready');
+    })
+  }
+*/
   shouldComponentUpdate(nextProps: SongPropTypes, nextState: SongState) {
     this.songAction = PASS;
     if (
