@@ -1,6 +1,7 @@
 import sequencer from 'heartbeat-sequencer';
 import React from 'react';
 import { connect } from 'react-redux';
+import { uniq, remove, compose } from 'ramda';
 import { AppState, SongPosition, HeartbeatSong, SongState } from '../interfaces';
 import {
   updatePosition,
@@ -185,8 +186,12 @@ class Song extends React.Component {
     this.song.setRightLocator('barsbeats', 2, 1, 1, 0);
     this.song.setLoop();
     this.song.addEventListener('end', this.props.stop);
-    this.getQuantizeValue();
-    this.props.songReady(tracks);
+    const songInfo = {
+      tracks,
+      quantizeValue: this.getQuantizeValue(),
+      numNotes: this.getNumUniqNotes(),
+    }
+    this.props.songReady(songInfo);
   }
 
   loadMIDIFile() {
@@ -214,21 +219,27 @@ class Song extends React.Component {
 
   getQuantizeValue() {
     let ticks = 0;
-    let quantize = 960; // just a big number, it is a common ppq value
+    let quantize = this.song.ppq * 4;
     const events = this.song.tracks[this.props.track].events;
-    this.song.update();
     events.forEach(event => {
-      console.log(event.ticks);
-      if (event.type === 128) {
+      if (event.type === 144 && event.data2 !== 0) {
         var diff = event.ticks - ticks;
         ticks = event.ticks;
-        // console.log(ticks, event);
-        if (diff < quantize) {
+        // console.log(ticks, event.ticks);
+        if (diff !== 0 && diff < quantize) {
           quantize = diff;
         }
       }
     });
-    console.log(quantize);
+    // console.log(quantize, this.song.ppq);
+    return quantize;
+  }
+
+  getNumUniqNotes() {
+    const notes = this.song.tracks[this.props.track].events
+      .filter(e => typeof e.noteName !== 'undefined')
+      .map(e => e.noteNumber);
+    return uniq(notes).length;
   }
 }
 

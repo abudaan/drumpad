@@ -1,5 +1,5 @@
 import { Dispatch, Action } from 'redux';
-import { SongPosition, Config, ConfigData, IAction } from './interfaces';
+import { SongPosition, Config, ConfigData, IAction, SongInfo } from './interfaces';
 
 export const SEQUENCER_READY = 'SEQUENCER READY'; // initialization of sequencer done
 export const LOADING = 'LOADING'; // generic load action
@@ -70,10 +70,10 @@ export const sequencerReady = (configUrl: string) => async (dispatch: Dispatch) 
   });
 };
 
-export const songReady = (tracks: Array<string>) => ({
+export const songReady = (songInfo: SongInfo) => ({
   type: SONG_READY,
   payload: {
-    tracks,
+    ...songInfo,
   }
 });
 

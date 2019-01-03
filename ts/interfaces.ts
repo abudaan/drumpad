@@ -67,3 +67,9 @@ export interface ConfigData {
   instrument?: Object,
   assetPack?: Object,
 };
+
+export interface SongInfo {
+  tracks: Array<any>,
+  numNotes: number,
+  quantizeValue: number,
+}
