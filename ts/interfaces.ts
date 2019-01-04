@@ -1,6 +1,9 @@
 import { Action } from "redux";
 
 export interface SongState {
+};
+
+export interface AppState {
   tracks: Array<any>,
   playing: boolean,
   stopped: boolean,
@@ -12,21 +15,20 @@ export interface SongState {
   denominator: number,
   position?: SongPosition,
   song: null | HeartbeatSong,
-};
-
-export interface AppState {
   assetPack?: null | Object
   midiFile?: null | ArrayBuffer,
   instrument?: null | Object,
   instrumentIndex: number,
   trackIndex: number,
-  songReady: () => void,
   controlsEnabled: boolean,
   tempoTmp: number,
   tempoMin: number,
   tempoMax: number,
   rows: number,
   columns: number,
+  granularity: number,
+  beats: Array<any>,
+  notes: Array<any>,
 };
 
 export interface State {

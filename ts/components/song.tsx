@@ -21,7 +21,7 @@ class Song extends React.PureComponent {
   }
 
   render() {
-    console.log('<Song> render');
+    // console.log('<Song> render');
     if (this.props.song === null) {
       return false;
     } else {

@@ -12,12 +12,14 @@ const initialState = {
 
 const getStore = () => {
   return createStore(
-    combinedReducers,
-    initialState,
+    // combinedReducers,
+    // initialState,
+    app,
+    appInitialState,
     compose(
       applyMiddleware(
         thunkMiddleware,
-        createLogger({ collapsed: true }),
+        // createLogger({ collapsed: true }),
       ),
     ),
   );

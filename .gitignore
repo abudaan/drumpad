@@ -6,4 +6,3 @@ yarn-error.log
 npm-debug.log
 data/*.json
 data/*.mid
-render.ts

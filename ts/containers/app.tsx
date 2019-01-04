@@ -23,6 +23,7 @@ interface App {
 };
 
 type PropTypes = {
+  beat: number,
   configUrl: string,
   assetPack: null | Object,
   midiFile: null | ArrayBuffer,
@@ -37,8 +38,9 @@ type PropTypes = {
   tempoTmp: number,
   tempoMin: number,
   tempoMax: number,
-  rows: number,
-  columns: number,
+  notes: Array<any>,
+  beats: Array<any>,
+  activeNotes: Array<any>,
   song: null | HeartbeatSong,
   loadConfig: (url: string) => (dispatch: Dispatch<AnyAction>) => void,
   setTrack: () => void,
@@ -51,8 +53,8 @@ type PropTypes = {
 };
 
 const mapStateToProps = (state: State) => {
-  return { 
-    ...getAppProps(state) 
+  return {
+    ...getAppProps(state)
     // ...getSongProps(state) 
   }
 };
@@ -75,12 +77,36 @@ class App extends React.PureComponent {
     super(props);
   }
 
+  updateUI() {
+    if (this.props.song !== null) {
+      const {
+        bar,
+        beat,
+        barsAsString,
+        activeNotes,
+      } = this.props.song;
+
+      this.props.updatePosition({
+        bar,
+        beat,
+        barsAsString,
+        activeNotes,
+      });
+    }
+    requestAnimationFrame(this.updateUI.bind(this));
+  }
+
   componentDidMount() {
     this.props.loadConfig(this.props.configUrl);
+    requestAnimationFrame(this.updateUI.bind(this));
   }
 
   render() {
-    console.log('<App>');
+    // const s = '\n';
+    // this.props.activeNotes.forEach(note => {
+    //   s += `${note.note.number} ${note.ticks}\n`  
+    // });
+    // console.log('<App>', s);
     return <div>
       <Controls
         enabled={this.props.controlsEnabled}
@@ -98,13 +124,16 @@ class App extends React.PureComponent {
         choosingTempo={this.props.choosingTempo}
         updateTempo={this.props.updateTempo}
         setLoop={this.props.setLoop}
-        >
-      </Controls>      
+      >
+      </Controls>
       <Grid
-        rows={this.props.rows}
-        columns={this.props.columns}
+        beat={this.props.beat}
+        notes={this.props.notes}
+        beats={this.props.beats}
+        playing={this.props.playing}
         enabled={this.props.controlsEnabled}
-        ></Grid>
+        activeNotes={this.props.activeNotes}
+      ></Grid>
       <Song
         song={this.props.song}
         trackIndex={this.props.trackIndex}

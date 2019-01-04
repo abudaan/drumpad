@@ -7,7 +7,7 @@ const songInitialState = {
   loop: true,
   tempo: 120,
   tracks: [],
-  song: null,
+  activeNotes: [],
 };
 
 const song = (state: SongState = songInitialState, action: IAction<any>) => {
@@ -16,11 +16,6 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       ...state,
       playing: !state.playing,
       stopped: false,
-    };
-  } else if (action.type === Actions.SONG_READY) {
-    return {
-      ...state,
-      ...action.payload,
     };
   } else if (action.type === Actions.SEQUENCER_STOP) {
     return {
@@ -41,7 +36,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
   } else if (action.type === Actions.UPDATE_POSITION) {
     return {
       ...state,
-      position: action.payload.position,
+      ...action.payload.position,
     };
   }
   return state;

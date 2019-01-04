@@ -56,13 +56,13 @@ const parseConfig = (config: Config) => {
     }
     if (data.assetPack) {
       sequencer.addAssetPack(data.assetPack, () => {
-        if(data.assetPack.instruments[0]) {
+        if (data.assetPack.instruments[0]) {
           data.instrumentName = data.assetPack.instruments[0].name;
         }
-        if(typeof config.midiFile === 'undefined') {
+        if (typeof config.midiFile === 'undefined') {
           try {
             data.song = sequencer.createSong(sequencer.getMidiFile(config.assetPack.midifiles[0].name));
-          } catch(e) {
+          } catch (e) {
             data.song = null;
           }
         } else {
@@ -76,25 +76,16 @@ const parseConfig = (config: Config) => {
 };
 
 export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
-  const data: ConfigData = await loadJSON(configUrl).then(parseConfig);  
+  const data: ConfigData = await loadJSON(configUrl).then(parseConfig);
   const { song } = data;
   if (song) {
     song.update();
     song.setLeftLocator('barsbeats', 1, 1, 1, 0);
     song.setRightLocator('barsbeats', song.bars, 1, 1, 0);
-    song.setLoop();  
-    song.addEventListener('end', stop);
-    song.addEventListener('position', 'beat', () => {
-      const {
-        bar,
-        beat,
-        barsAsString,
-      } = song;
-      updatePosition({
-        bar,
-        beat,
-        barsAsString,
-      });
+    song.setLoop();
+    song.addEventListener('end', () => { 
+      console.log('end')
+      dispatch(stop()) 
     });
   }
   // console.log(data);
@@ -105,13 +96,6 @@ export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
     }
   });
 };
-
-export const songReady = (songInfo: SongInfo) => ({
-  type: SONG_READY,
-  payload: {
-    ...songInfo,
-  }
-});
 
 export const setTrack = (trackIndex: number) => ({
   type: SET_TRACK,
@@ -197,7 +181,7 @@ export const updateTempo = (e: { target: HTMLInputElement; }): IAction<any> => (
 export const updatePostion = (position: SongPosition): IAction<any> => ({
   type: UPDATE_POSITION,
   payload: {
-    position,
+    ...position,
   }
 });
 

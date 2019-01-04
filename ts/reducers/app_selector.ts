@@ -3,9 +3,9 @@ import { State, AppState, SongState } from '../interfaces';
 import { uniq } from 'ramda';
 
 const getSongState = (state: State): SongState => state.song;
-const getAppState = (state: State): AppState => state.app;
+const getAppState = (state: State): AppState => state;
 
-const getQuantizeValue = (tracks: Array<any>, trackIndex: number) => {
+const getGranularity = (tracks: Array<any>, trackIndex: number) => {
   let ticks = 0;
   let quantize = Number.MAX_VALUE;
   const events = tracks[trackIndex].events;
@@ -22,19 +22,29 @@ const getQuantizeValue = (tracks: Array<any>, trackIndex: number) => {
   return quantize;
 }
 
-const getNumBeats = (tracks: Array<any>, trackIndex: number, ppq: number, nominator: number, denominator: number) => {
-  const q = getQuantizeValue(tracks, trackIndex);
+const getBeats = (
+  bars: number,
+  ppq: number,
+  nominator: number,
+  denominator: number,
+  granularity: number,
+) => {
   const ticksPerBar = nominator * ((4 / denominator) * ppq);
-  // console.log(ticksPerBar, ppq, nominator, denominator, q);
-  const numBeats = ticksPerBar / q;
-  return numBeats;
+  const numBeats = (ticksPerBar / granularity) * (bars - 1);
+  const beats = [];
+  let ticks = 0;
+  for (let i = 0; i < numBeats; i++) {
+    beats.push(ticks + (i * granularity))
+  }
+  return beats;
 }
 
-const getNumUniqNotes = (tracks: Array<any>, trackIndex: number) => {
+const getUniqNotes = (tracks: Array<any>, trackIndex: number) => {
   const events = tracks[trackIndex].events
     .filter(e => typeof e.noteName !== 'undefined')
     .map(e => e.noteNumber);
-  return uniq(events).length;
+  // console.log(uniq(events).sort());
+  return uniq(events).sort((a, b) => a - b);
 }
 
 
@@ -42,13 +52,16 @@ export default createSelector(
   [getSongState, getAppState],
   (songState: SongState, appState: AppState) => {
     const {
+    } = songState;
+
+    const {
       tempo,
       loop,
       playing,
       stopped,
-    } = songState;
-    
-    const {
+      bar,
+      beat,
+      barsAsString,
       trackIndex,
       assetPack,
       midiFile,
@@ -62,18 +75,29 @@ export default createSelector(
     } = appState;
 
     let {
-      rows,
-      columns,
+      granularity,
+      beats,
+      notes,
+      activeNotes,
     } = appState;
 
     let trackList = [];
+    let activeNotesArray = [];
     if (song !== null && song.tracks.length > 0) {
-      rows = getNumUniqNotes(song.tracks, trackIndex);
-      columns = getNumBeats(song.tracks, trackIndex, song.ppq, song.nominator, song.denominator);
+      granularity = getGranularity(song.tracks, trackIndex);
+      notes = getUniqNotes(song.tracks, trackIndex);
+      beats = getBeats(song.bars, song.ppq, song.nominator, song.denominator, granularity);
       trackList = song.tracks.map((track: any) => track.name)
+      const trackId = song.tracks[trackIndex].id;
+      activeNotesArray = Object.values(activeNotes).filter(note => {
+        if (note.trackId === trackId) {
+          return note;
+        }
+      });
     }
 
     return {
+      beat,
       tempo,
       tempoTmp,
       loop,
@@ -87,9 +111,11 @@ export default createSelector(
       instrumentName,
       tempoMin,
       tempoMax,
-      rows,
-      columns,
+      notes,
+      beats,
       song,
+      activeNotes: activeNotesArray,
+      granularity,
     };
   }
 );
