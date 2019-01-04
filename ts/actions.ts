@@ -2,7 +2,6 @@ import { Dispatch, Action } from 'redux';
 import { SongPosition, Config, ConfigData, IAction, SongInfo } from './interfaces';
 import { ChangeEvent } from 'react';
 
-export const SEQUENCER_READY = 'SEQUENCER READY'; // initialization of sequencer done
 export const LOADING = 'LOADING'; // generic load action
 export const CONFIG_LOADED = 'CONFIG LOADED'; // config data loaded
 export const SONG_READY = 'SONG READY'; // midi file and/or instrument loaded in song

@@ -25,18 +25,19 @@ type PropTypes = {
   configUrl: string,
   assetPack: null | Object,
   midiFile: null | ArrayBuffer,
-  trackList: Array<any>,
+  trackList: Array<string>,
   trackIndex: number,
   instrumentIndex: number,
   controlsEnabled: boolean,
   playing: boolean,
+  stopped: boolean,
   loop: boolean,
   tempo: number,
   tempoTmp: number,
   tempoMin: number,
   tempoMax: number,
-  columns: number,
   rows: number,
+  columns: number,
   loadConfig: (url: string) => (dispatch: Dispatch<AnyAction>) => void,
   songReady: () => void,
   setTrack: () => void,
@@ -77,8 +78,8 @@ class App extends React.PureComponent {
     console.log('<App>', this.props);
     return <div>
       <Grid
-        columns={4}
-        rows={4}
+        rows={this.props.rows}
+        columns={this.props.columns}
         enabled={this.props.controlsEnabled}
       ></Grid>
       <Song
@@ -88,8 +89,10 @@ class App extends React.PureComponent {
         instrumentIndex={this.props.instrumentIndex}
         songReady={this.props.songReady}
         playing={this.props.playing}
+        stopped={this.props.stopped}
         tempo={this.props.tempo}
         loop={this.props.loop}
+        stop={this.props.stop}
       >
       </Song>
       <Controls

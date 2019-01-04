@@ -1,6 +1,5 @@
 import sequencer from 'heartbeat-sequencer';
 import React from 'react';
-import { uniq } from 'ramda';
 import { SongPosition, HeartbeatSong, SongState, SongInfo } from '../interfaces';
 
 interface Song {
@@ -16,7 +15,7 @@ export type SongPropTypes = {
   assetPack: null | Object,
   trackIndex: number,
   instrumentIndex: number,
-  sequencerReady: () => void,
+  stop: () => void,
   songReady: (info: SongInfo) => void,
   updatePosition: (position: SongPosition) => void,
 };
@@ -33,13 +32,7 @@ class Song extends React.Component {
     this.songAction = PASS;
     this.instrumentName = '';
   }
-/*  
-  componentDidMount() {
-    sequencer.ready(() => {
-      console.log('ready');
-    })
-  }
-*/
+
   shouldComponentUpdate(nextProps: SongPropTypes, nextState: SongState) {
     this.songAction = PASS;
     if (
@@ -54,11 +47,11 @@ class Song extends React.Component {
     } else if (nextProps.midiFile !== null && this.props.midiFile !== nextProps.midiFile) {
       this.songAction = LOAD_MIDIFILE;
 
-    } else if (nextProps.playing === true && this.props.playing === false) {
-      this.songAction = PLAY;
-
     } else if (nextProps.stopped === true && this.props.stopped === false) {
       this.songAction = STOP;
+
+    } else if (nextProps.playing === true && this.props.playing === false) {
+      this.songAction = PLAY;
 
     } else if (nextProps.playing === false && this.props.playing === true) {
       this.songAction = PAUSE;
@@ -135,12 +128,12 @@ class Song extends React.Component {
     if (this.song !== null) {
       sequencer.deleteSong(this.song);
     }
-    const trackList = [];
+    const tracks = [];
     const instrument = this.props.assetPack.instruments[this.props.instrumentIndex].name;
     json.tracks.forEach((track: any, index: number) => {
       track.setInstrument(sequencer.getInstrument(instrument));
       track.mute = index !== 0;
-      trackList.push(track.name);
+      tracks.push(track);
     });
     this.song = sequencer.createSong({
       bpm: json.bpm,
@@ -148,14 +141,15 @@ class Song extends React.Component {
     })
     this.song.update();
     this.song.setLeftLocator('barsbeats', 1, 1, 1, 0);
-    // this.song.setRightLocator('barsbeats', this.song.bars + 1, 1, 1, 0);
-    this.song.setRightLocator('barsbeats', 2, 1, 1, 0);
+    this.song.setRightLocator('barsbeats', this.song.bars, 1, 1, 0);
     this.song.setLoop();
     this.song.addEventListener('end', this.props.stop);
     const songInfo = {
-      trackList,
-      quantizeValue: this.getQuantizeValue(),
-      numNotes: this.getNumUniqNotes(),
+      tracks,
+      ppq: this.song.ppq,
+      bars: this.song.bars,
+      nominator: this.song.nominator,
+      denominator: this.song.denominator,
     }
     this.props.songReady(songInfo);
   }
@@ -181,31 +175,6 @@ class Song extends React.Component {
     this.song.tracks.forEach((track, index) => {
       track.mute = index !== this.props.trackIndex;
     });
-  }
-
-  getQuantizeValue() {
-    let ticks = 0;
-    let quantize = this.song.ppq * 4;
-    const events = this.song.tracks[this.props.trackIndex].events;
-    events.forEach(event => {
-      if (event.type === 144 && event.data2 !== 0) {
-        var diff = event.ticks - ticks;
-        ticks = event.ticks;
-        // console.log(ticks, event.ticks);
-        if (diff !== 0 && diff < quantize) {
-          quantize = diff;
-        }
-      }
-    });
-    // console.log(quantize, this.song.ppq);
-    return quantize;
-  }
-
-  getNumUniqNotes() {
-    const notes = this.song.tracks[this.props.trackIndex].events
-      .filter(e => typeof e.noteName !== 'undefined')
-      .map(e => e.noteNumber);
-    return uniq(notes).length;
   }
 }
 

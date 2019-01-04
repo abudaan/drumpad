@@ -12,6 +12,8 @@ const appInitialState = {
   tempoTmp: 120,
   tempoMin: 20,
   tempoMax: 300,
+  rows: 4,
+  columns: 4,
 };
 
 const app = (state: AppState = appInitialState, action: IAction<any>) => {
@@ -38,7 +40,7 @@ const app = (state: AppState = appInitialState, action: IAction<any>) => {
   } else if (action.type === Actions.SONG_READY) {
     return {
       ...state,
-      ...action.payload,
+      // ...action.payload,
       controlsEnabled: true,
     };
   } else if (action.type === Actions.CHOOSING_TEMPO) {

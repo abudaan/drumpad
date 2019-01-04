@@ -6,6 +6,7 @@ const songInitialState = {
   stopped: true,
   loop: true,
   tempo: 120,
+  tracks: [],
 };
 
 const song = (state: SongState = songInitialState, action: IAction<any>) => {
@@ -14,6 +15,11 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       ...state,
       playing: !state.playing,
       stopped: false,
+    };
+  } else if (action.type === Actions.SONG_READY) {
+    return {
+      ...state,
+      ...action.payload,
     };
   } else if (action.type === Actions.SEQUENCER_STOP) {
     return {

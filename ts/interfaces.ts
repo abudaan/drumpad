@@ -1,11 +1,16 @@
 import { Action } from "redux";
 
 export interface SongState {
+  tracks: Array<any>,
   playing: boolean,
   stopped: boolean,
-  position?: SongPosition,
   loop: boolean,
   tempo: number,
+  bars: number,
+  ppq: number,
+  nominator: number,
+  denominator: number,
+  position?: SongPosition,
 };
 
 export interface AppState {
@@ -13,13 +18,14 @@ export interface AppState {
   midiFile?: null | ArrayBuffer,
   instrument?: null | Object,
   instrumentIndex: number,
-  trackList: Array<any>,
   trackIndex: number,
   songReady: () => void,
   controlsEnabled: boolean,
   tempoTmp: number,
   tempoMin: number,
   tempoMax: number,
+  rows: number,
+  columns: number,
 };
 
 export interface State {
@@ -69,6 +75,8 @@ export interface ConfigData {
 
 export interface SongInfo {
   tracks: Array<any>,
-  numNotes: number,
-  quantizeValue: number,
+  bars: number,
+  ppq: number,
+  nominator: number,
+  denominator: number,
 }
