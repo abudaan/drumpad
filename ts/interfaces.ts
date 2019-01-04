@@ -47,6 +47,7 @@ export interface SongPosition {
   barsAsString: string,
 };
 
+
 export interface HeartbeatSong {
   loop: boolean;
   playing: boolean,
@@ -56,7 +57,7 @@ export interface HeartbeatSong {
   pause: () => void,
   stop: () => void,
   setTempo: (bpm: number, update?: boolean) => void,
-  addEventListener: (event: string, callback: () => void) => void,
+  addEventListener: (event: string, typeOrCallback: any, callback?: () => void) => void,
   setLoop: () => void,
   setLeftLocator: (type: string, value: number) => void,
   setRightLocator: (type: string, value: number) => void,

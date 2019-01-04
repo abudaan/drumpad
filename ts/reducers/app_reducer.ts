@@ -21,12 +21,12 @@ const app = (state: AppState = appInitialState, action: IAction<any>) => {
   if (action.type === Actions.LOADING) {
     return {
       ...state,
-      songReady: false,
     };
   } else if (action.type === Actions.CONFIG_LOADED) {
     return {
       ...state,
       ...action.payload.data,
+      controlsEnabled: true,
     };
   } else if (action.type === Actions.ASSETPACK_LOADED) {
     return {
@@ -37,12 +37,6 @@ const app = (state: AppState = appInitialState, action: IAction<any>) => {
     return {
       ...state,
       midiFile: action.payload.midiFile,
-    };
-  } else if (action.type === Actions.SONG_READY) {
-    return {
-      ...state,
-      // ...action.payload,
-      controlsEnabled: true,
     };
   } else if (action.type === Actions.CHOOSING_TEMPO) {
     return {

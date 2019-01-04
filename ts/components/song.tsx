@@ -1,5 +1,5 @@
 import React from 'react';
-import { SongPosition, HeartbeatSong } from '../interfaces';
+import { HeartbeatSong } from '../interfaces';
 
 interface Song {
   props: SongPropTypes,
@@ -11,9 +11,8 @@ export type SongPropTypes = {
   playing: boolean,
   stopped: boolean,
   trackIndex: number,
-  instrumentIndex: number,
+  instrumentName: string,
   song: null | HeartbeatSong,
-  updatePosition: (position: SongPosition) => void,
 };
 
 class Song extends React.PureComponent {
@@ -26,9 +25,15 @@ class Song extends React.PureComponent {
     if (this.props.song === null) {
       return false;
     } else {
-      this.soloTrack();
+      this.props.song.tracks.forEach((track, index) => {
+        track.mute = index !== this.props.trackIndex;
+        track.setInstrument(this.props.instrumentName);
+      });
+
       this.props.song.setTempo(this.props.tempo);
-      // this.props.song.setLoop();
+      
+      this.props.song.setLoop(this.props.loop);
+
       if (this.props.playing === true && this.props.song.playing === false) {
         this.props.song.play()
       } else if(this.props.playing === false && this.props.song.playing === true) {
@@ -36,12 +41,6 @@ class Song extends React.PureComponent {
       }
       return false;
     }
-  }
-
-  soloTrack() {
-    this.props.song.tracks.forEach((track, index) => {
-      track.mute = index !== this.props.trackIndex;
-    });
   }
 }
 

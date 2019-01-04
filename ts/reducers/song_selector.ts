@@ -10,17 +10,6 @@ const getAppState = (state: State): AppState => state.app;
 const getSongState = (state: State): SongState => state.song;
 
 
-const parseConfig = (midiFile: ArrayBuffer, assetPack: Object) => {
-  return sequencer.createMidiFile({ arraybuffer: midiFile })
-    .then((json: Object) => {
-      sequencer.addAssetPack(assetPack, () => {
-        return json;
-      });
-    })
-    .catch((e: Error) => {
-      console.log(e);
-    });
-}
 
 const createSong = (song: null | HeartbeatSong, json: Object, assetPack: Object, instrumentIndex: number) => {
   if (song !== null) {

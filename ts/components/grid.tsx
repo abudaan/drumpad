@@ -17,11 +17,11 @@ interface Grid {
 class Grid extends React.Component{
   static defaultProps = {
     rows: 4,
-    columns: 5,
+    columns: 4,
   }
   render(){
     const cellStyle = {
-      width: `calc(100vw - 30px) / ${this.props.columns})`,
+      width: `calc((100vw - 30px) / ${this.props.columns})`,
       height: `calc((100vh - 120px) / ${this.props.rows})`, 
     };
 

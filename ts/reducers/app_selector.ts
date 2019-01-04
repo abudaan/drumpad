@@ -46,18 +46,13 @@ export default createSelector(
       loop,
       playing,
       stopped,
-      bars,
-      ppq,
-      nominator,
-      denominator,
-      tracks,
-      position,
     } = songState;
-
+    
     const {
       trackIndex,
       assetPack,
       midiFile,
+      instrumentName,
       instrumentIndex,
       controlsEnabled,
       tempoTmp,
@@ -71,9 +66,11 @@ export default createSelector(
       columns,
     } = appState;
 
-    if (tracks.length > 0) {
-      rows = getNumUniqNotes(tracks, trackIndex);
-      columns = getNumBeats(tracks, trackIndex, ppq, nominator, denominator);
+    let trackList = [];
+    if (song !== null && song.tracks.length > 0) {
+      rows = getNumUniqNotes(song.tracks, trackIndex);
+      columns = getNumBeats(song.tracks, trackIndex, song.ppq, song.nominator, song.denominator);
+      trackList = song.tracks.map((track: any) => track.name)
     }
 
     return {
@@ -82,12 +79,12 @@ export default createSelector(
       loop,
       playing,
       stopped,
-      trackList: tracks.map((track: any) => track.name),
+      trackList,
       trackIndex,
       assetPack,
       midiFile,
       controlsEnabled,
-      instrumentIndex,
+      instrumentName,
       tempoMin,
       tempoMax,
       rows,

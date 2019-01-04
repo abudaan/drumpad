@@ -28,7 +28,7 @@ type PropTypes = {
   midiFile: null | ArrayBuffer,
   trackList: Array<string>,
   trackIndex: number,
-  instrumentIndex: number,
+  instrumentName: string,
   controlsEnabled: boolean,
   playing: boolean,
   stopped: boolean,
@@ -108,13 +108,12 @@ class App extends React.PureComponent {
       <Song
         song={this.props.song}
         trackIndex={this.props.trackIndex}
-        instrumentIndex={this.props.instrumentIndex}
+        instrumentName={this.props.instrumentName}
         playing={this.props.playing}
         stopped={this.props.stopped}
         tempo={this.props.tempo}
         loop={this.props.loop}
         stop={this.props.stop}
-        updatePosition={this.props.updatePosition}
       >
       </Song>
     </div>

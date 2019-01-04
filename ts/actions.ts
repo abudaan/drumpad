@@ -5,7 +5,6 @@ import { ChangeEvent } from 'react';
 
 export const LOADING = 'LOADING'; // generic load action
 export const CONFIG_LOADED = 'CONFIG LOADED'; // config data loaded
-export const SONG_READY = 'SONG READY'; // midi file and/or instrument loaded in song
 export const SEQUENCER_PLAY = 'SEQUENCER PLAY';
 export const SEQUENCER_STOP = 'SEQUENCER STOP';
 export const CHOOSING_TEMPO = 'CHOOSING TEMPO'; // while dragging the thumb of the range input
@@ -24,12 +23,9 @@ const status = (response: Response) => {
     return response;
   }
   throw new Error(response.statusText);
-  // if (response.status >= 200 && response.status < 300) {
-  //     return Promise.resolve(response);
-  // }
-  // return Promise.reject(new Error(response.statusText));
 };
 
+// load binary midi file and create song from it
 const loadArrayBuffer = async (url: string) => fetch(url)
   .then(status)
   .then(response => response.arrayBuffer())
@@ -37,38 +33,41 @@ const loadArrayBuffer = async (url: string) => fetch(url)
   .then(json => { return sequencer.createSong(json) })
   .catch(e => console.error(e));
 
+// generic json loader
 const loadJSON = async (url: string) => fetch(url)
   .then(status)
   .then(response => response.json())
   .catch(e => console.error(e));
 
+// parse config file and load all assets that are listed in the config file
 const parseConfig = (config: Config) => {
+  const songs = sequencer.getSongs();
+  Object.keys(songs).forEach((k, v, s) => {
+    sequencer.deleteSong(s);
+  });
+
   return new Promise(async (resolve) => {
     const data: ConfigData = {};
-    if (config.assetPack) {
-      data.assetPack = await loadJSON(config.assetPack);
-    } else if (config.instrument) {
-      data.instrument = await loadJSON(config.instrument);
-    }
     if (config.midiFile) {
       data.song = await loadArrayBuffer(config.midiFile);
     }
+    if (config.assetPack) {
+      data.assetPack = await loadJSON(config.assetPack);
+    }
     if (data.assetPack) {
       sequencer.addAssetPack(data.assetPack, () => {
-        // data.song.tracks.forEach((track: any, index: number) => {
-        //   track.setInstrument(sequencer.getInstrument(instrument));
-        //   track.mute = index !== 0;
-        //   tracks.push(track);
-        // });
-        // const song = sequencer.createSong({
-        //   bpm: json.bpm,
-        //   tracks: json.tracks,
-        // })
-        // song.update();
-        // song.setLeftLocator('barsbeats', 1, 1, 1, 0);
-        // song.setRightLocator('barsbeats', song.bars, 1, 1, 0);
-        // song.setLoop();
-        resolve(data);
+        if(data.assetPack.instruments[0]) {
+          data.instrumentName = data.assetPack.instruments[0].name;
+        }
+        if(typeof config.midiFile === 'undefined') {
+          try {
+            data.song = sequencer.createSong(sequencer.getMidiFile(config.assetPack.midifiles[0].name));
+          } catch(e) {
+            data.song = null;
+          }
+        } else {
+          resolve(data);
+        }
       });
     } else {
       resolve(data);
@@ -76,32 +75,8 @@ const parseConfig = (config: Config) => {
   })
 };
 
-/*
-const loadConfig = async (url: string): Promise<any> => fetch(url)
-  .then(status)
-  .then(response => response.json())
-  .then(data => parseConfig(data))
-  .catch(e => console.error(e));
-
-export const sequencerReady = (configUrl: string) => async (dispatch: Dispatch) => {
-  const data = await loadConfig(configUrl);
-  dispatch({
-    type: CONFIG_LOADED,
-    payload: {
-      data,
-    }
-  });
-};
-*/
-
-const load = async (url: string): Promise<any> => fetch(url)
-  .then(status)
-  .then(response => response.json())
-  .then(data => parseConfig(data))
-  .catch(e => console.error(e));
-
 export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
-  const data = await load(configUrl);
+  const data: ConfigData = await loadJSON(configUrl).then(parseConfig);  
   const { song } = data;
   if (song) {
     song.update();
@@ -240,4 +215,23 @@ export const updatePosition = (position: SongPosition): IAction<any> => ({
   }
 });
 
+
+
+/*
+const loadConfig = async (url: string): Promise<any> => fetch(url)
+  .then(status)
+  .then(response => response.json())
+  .then(data => parseConfig(data))
+  .catch(e => console.error(e));
+
+export const sequencerReady = (configUrl: string) => async (dispatch: Dispatch) => {
+  const data = await loadConfig(configUrl);
+  dispatch({
+    type: CONFIG_LOADED,
+    payload: {
+      data,
+    }
+  });
+};
+*/
 
