@@ -6,7 +6,6 @@ const songInitialState = {
   stopped: true,
   loop: true,
   tempo: 120,
-  tempoTmp: 120,
 };
 
 const song = (state: SongState = songInitialState, action: IAction<any>) => {
@@ -22,15 +21,10 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       playing: false,
       stopped: true,
     };
-  } else if (action.type === Actions.CHOOSING_TEMPO) {
-    return {
-      ...state,
-      tempoTmp: parseInt(action.payload.tempo, 10),
-    };
   } else if (action.type === Actions.UPDATE_TEMPO) {
     return {
       ...state,
-      tempo: parseInt(action.payload.tempo, 10),
+      tempo: action.payload.tempo
     };
   } else if (action.type === Actions.SET_LOOP) {
     return {

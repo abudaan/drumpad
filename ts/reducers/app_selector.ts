@@ -13,25 +13,33 @@ export default createSelector(
       playing,
       stopped,
     } = songState;
-
+    
     const {
+      trackList,
       trackIndex,
       assetPack,
       midiFile,
       instrumentIndex,
       controlsEnabled,
+      tempoTmp,
+      tempoMin,
+      tempoMax,
     } = appState;
     
     return {
       tempo,
+      tempoTmp,
       loop,
       playing,
       stopped,
+      trackList,
       trackIndex,
       assetPack,
       midiFile,
       controlsEnabled,
       instrumentIndex,
+      tempoMin,
+      tempoMax,
     };
   }
 );

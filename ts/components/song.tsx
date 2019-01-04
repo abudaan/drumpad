@@ -135,12 +135,12 @@ class Song extends React.Component {
     if (this.song !== null) {
       sequencer.deleteSong(this.song);
     }
-    const tracks = [];
+    const trackList = [];
     const instrument = this.props.assetPack.instruments[this.props.instrumentIndex].name;
     json.tracks.forEach((track: any, index: number) => {
       track.setInstrument(sequencer.getInstrument(instrument));
       track.mute = index !== 0;
-      tracks.push(track.name);
+      trackList.push(track.name);
     });
     this.song = sequencer.createSong({
       bpm: json.bpm,
@@ -153,7 +153,7 @@ class Song extends React.Component {
     this.song.setLoop();
     this.song.addEventListener('end', this.props.stop);
     const songInfo = {
-      tracks,
+      trackList,
       quantizeValue: this.getQuantizeValue(),
       numNotes: this.getNumUniqNotes(),
     }

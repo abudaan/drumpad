@@ -1,18 +1,6 @@
 // import * as R from 'ramda';
 import React, { ChangeEvent, MouseEvent } from 'react';
-import { connect } from 'react-redux';
 import Slider from './slider';
-import { AppState, State } from '../interfaces';
-import {
-  choosingTempo,
-  updateTempo,
-  setLoop,
-  setTrack,
-  play,
-  stop,
-} from '../actions';
-import { Dispatch } from 'redux';
-
 interface Controls {
   props: PropTypes,
 };
@@ -32,60 +20,18 @@ type PropTypes = {
   setTrack: (value: number) => void,
   playing: boolean,
   loop: boolean,
-  tracks: Array<any>,
+  trackList: Array<any>,
 };
 
-const mapStateToProps = (state: State) => {
-  return {
-    disabled: !state.app.controlsEnabled,
-    tracks: state.app.tracks,
-    playing: state.song.playing,
-    loop: state.song.loop,
-    tempo: state.song.tempo,
-    tempoTmp: state.song.tempoTmp,
-    minTempo: state.app.minTempo,
-    maxTempo: state.app.maxTempo,
-  };
-};
-
-type Event = {
-  target: {
-    value: number,
-  }
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => {
-  return {
-    choosingTempo: (e: ChangeEvent<HTMLInputElement>) => {
-      dispatch(choosingTempo(parseInt(e.target.value, 10)));
-    },
-    updateTempo: (e: { target: HTMLInputElement; }) => {
-      dispatch(updateTempo(parseInt(e.target.value, 10)));
-    },
-    play: () => {
-      dispatch(play());
-    },
-    stop: () => {
-      dispatch(stop());
-    },
-    setLoop: (loop: boolean) => {
-      dispatch(setLoop(loop));
-    },
-    setTrack: (value: number) => {
-      dispatch(setTrack(value));
-    },
-  }
-}
-
-class Controls extends React.Component {
+class Controls extends React.PureComponent {
   static defaultProps = {
   }
   render() {
     const labelPlay = this.props.playing ? 'pause' : 'play';
     const labelLoop = this.props.loop ? 'loop off' : 'loop on';
     let select;
-    if (this.props.tracks.length > 1) {
-      const options = this.props.tracks.map(track => {
+    if (this.props.trackList.length > 1) {
+      const options = this.props.trackList.map(track => {
         return <option key={track}>{track}</option>;
       });
       select = <select
@@ -135,7 +81,7 @@ class Controls extends React.Component {
     );
   }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(Controls);
+export default Controls;
 
 
 

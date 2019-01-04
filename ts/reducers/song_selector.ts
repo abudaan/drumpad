@@ -1,3 +1,6 @@
+
+// not in use, keep for reference
+
 import { createSelector } from 'reselect';
 import { AppState, SongState, State } from '../interfaces';
 

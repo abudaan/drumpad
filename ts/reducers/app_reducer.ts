@@ -6,9 +6,12 @@ const appInitialState = {
   assetPack: null,
   instrument: null,
   midiFile: null,
-  tracks: [],
+  trackList: [],
   trackIndex: 0,
   instrumentIndex: 0,
+  tempoTmp: 120,
+  tempoMin: 20,
+  tempoMax: 300,
 };
 
 const app = (state: AppState = appInitialState, action: IAction<any>) => {
@@ -37,6 +40,11 @@ const app = (state: AppState = appInitialState, action: IAction<any>) => {
       ...state,
       ...action.payload,
       controlsEnabled: true,
+    };
+  } else if (action.type === Actions.CHOOSING_TEMPO) {
+    return {
+      ...state,
+      tempoTmp: action.payload.tempoTmp,
     };
   } else if (action.type === Actions.SET_TRACK) {
     return {

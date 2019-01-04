@@ -6,7 +6,6 @@ export interface SongState {
   position?: SongPosition,
   loop: boolean,
   tempo: number,
-  tempoTmp: number,
 };
 
 export interface AppState {
@@ -14,12 +13,13 @@ export interface AppState {
   midiFile?: null | ArrayBuffer,
   instrument?: null | Object,
   instrumentIndex: number,
-  tracks: Array<any>,
+  trackList: Array<any>,
   trackIndex: number,
   songReady: () => void,
   controlsEnabled: boolean,
-  minTempo: number,
-  maxTempo: number,
+  tempoTmp: number,
+  tempoMin: number,
+  tempoMax: number,
 };
 
 export interface State {
