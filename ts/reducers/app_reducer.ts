@@ -14,6 +14,7 @@ const appInitialState = {
   tempoMax: 300,
   rows: 4,
   columns: 4,
+  song: null,
 };
 
 const app = (state: AppState = appInitialState, action: IAction<any>) => {

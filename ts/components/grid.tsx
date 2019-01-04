@@ -21,8 +21,8 @@ class Grid extends React.Component{
   }
   render(){
     const cellStyle = {
-      width: `calc(100vh - 110px) / ${this.props.columns})`,
-      height: `calc((100vh - 110px) / ${this.props.rows})`, 
+      width: `calc(100vw - 30px) / ${this.props.columns})`,
+      height: `calc((100vh - 120px) / ${this.props.rows})`, 
     };
 
     const rows = [];

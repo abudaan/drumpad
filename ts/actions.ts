@@ -1,3 +1,4 @@
+import sequencer from 'heartbeat-sequencer';
 import { Dispatch, Action } from 'redux';
 import { SongPosition, Config, ConfigData, IAction, SongInfo } from './interfaces';
 import { ChangeEvent } from 'react';
@@ -32,6 +33,8 @@ const status = (response: Response) => {
 const loadArrayBuffer = async (url: string) => fetch(url)
   .then(status)
   .then(response => response.arrayBuffer())
+  .then(ab => sequencer.createMidiFile({ arraybuffer: ab }))
+  .then(json => { return sequencer.createSong(json) })
   .catch(e => console.error(e));
 
 const loadJSON = async (url: string) => fetch(url)
@@ -48,9 +51,28 @@ const parseConfig = (config: Config) => {
       data.instrument = await loadJSON(config.instrument);
     }
     if (config.midiFile) {
-      data.midiFile = await loadArrayBuffer(config.midiFile);
+      data.song = await loadArrayBuffer(config.midiFile);
     }
-    resolve(data);
+    if (data.assetPack) {
+      sequencer.addAssetPack(data.assetPack, () => {
+        // data.song.tracks.forEach((track: any, index: number) => {
+        //   track.setInstrument(sequencer.getInstrument(instrument));
+        //   track.mute = index !== 0;
+        //   tracks.push(track);
+        // });
+        // const song = sequencer.createSong({
+        //   bpm: json.bpm,
+        //   tracks: json.tracks,
+        // })
+        // song.update();
+        // song.setLeftLocator('barsbeats', 1, 1, 1, 0);
+        // song.setRightLocator('barsbeats', song.bars, 1, 1, 0);
+        // song.setLoop();
+        resolve(data);
+      });
+    } else {
+      resolve(data);
+    }
   })
 };
 
@@ -80,6 +102,26 @@ const load = async (url: string): Promise<any> => fetch(url)
 
 export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
   const data = await load(configUrl);
+  const { song } = data;
+  if (song) {
+    song.update();
+    song.setLeftLocator('barsbeats', 1, 1, 1, 0);
+    song.setRightLocator('barsbeats', song.bars, 1, 1, 0);
+    song.setLoop();  
+    song.addEventListener('end', stop);
+    song.addEventListener('position', 'beat', () => {
+      const {
+        bar,
+        beat,
+        barsAsString,
+      } = song;
+      updatePosition({
+        bar,
+        beat,
+        barsAsString,
+      });
+    });
+  }
   // console.log(data);
   dispatch({
     type: CONFIG_LOADED,
@@ -174,6 +216,13 @@ export const updateTempo = (e: { target: HTMLInputElement; }): IAction<any> => (
   type: UPDATE_TEMPO,
   payload: {
     tempo: parseInt(e.target.value, 10),
+  }
+
+});
+export const updatePostion = (position: SongPosition): IAction<any> => ({
+  type: UPDATE_POSITION,
+  payload: {
+    position,
   }
 });
 

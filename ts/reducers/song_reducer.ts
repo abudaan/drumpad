@@ -7,6 +7,7 @@ const songInitialState = {
   loop: true,
   tempo: 120,
   tracks: [],
+  song: null,
 };
 
 const song = (state: SongState = songInitialState, action: IAction<any>) => {

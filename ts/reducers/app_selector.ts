@@ -51,6 +51,7 @@ export default createSelector(
       nominator,
       denominator,
       tracks,
+      position,
     } = songState;
 
     const {
@@ -62,6 +63,7 @@ export default createSelector(
       tempoTmp,
       tempoMin,
       tempoMax,
+      song,
     } = appState;
 
     let {
@@ -90,6 +92,7 @@ export default createSelector(
       tempoMax,
       rows,
       columns,
+      song,
     };
   }
 );

@@ -3,16 +3,17 @@ import { Dispatch, AnyAction, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {
   loadConfig,
-  songReady,
   choosingTempo,
   updateTempo,
+  updatePosition,
   setLoop,
   setTrack,
   play,
   stop,
 } from '../actions'
-import { State } from '../interfaces';
+import { State, SongPosition, HeartbeatSong } from '../interfaces';
 import getAppProps from '../reducers/app_selector'
+import getSongProps from '../reducers/song_selector'
 import Grid from '../components/grid';
 import Controls from '../components/controls';
 import Song from '../components/song';
@@ -38,26 +39,30 @@ type PropTypes = {
   tempoMax: number,
   rows: number,
   columns: number,
+  song: null | HeartbeatSong,
   loadConfig: (url: string) => (dispatch: Dispatch<AnyAction>) => void,
-  songReady: () => void,
   setTrack: () => void,
   setLoop: () => void,
   play: () => void,
   stop: () => void,
   choosingTempo: (e: ChangeEvent) => void,
   updateTempo: (e: Event<HTMLElement, Event>) => void,
+  updatePosition: (pos: SongPosition) => void,
 };
 
 const mapStateToProps = (state: State) => {
-  return { ...getAppProps(state) }
+  return { 
+    ...getAppProps(state) 
+    // ...getSongProps(state) 
+  }
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
   return bindActionCreators({
     loadConfig,
-    songReady,
     choosingTempo,
     updateTempo,
+    updatePosition,
     play,
     stop,
     setLoop,
@@ -75,26 +80,8 @@ class App extends React.PureComponent {
   }
 
   render() {
-    console.log('<App>', this.props);
+    console.log('<App>');
     return <div>
-      <Grid
-        rows={this.props.rows}
-        columns={this.props.columns}
-        enabled={this.props.controlsEnabled}
-      ></Grid>
-      <Song
-        assetPack={this.props.assetPack}
-        midiFile={this.props.midiFile}
-        trackIndex={this.props.trackIndex}
-        instrumentIndex={this.props.instrumentIndex}
-        songReady={this.props.songReady}
-        playing={this.props.playing}
-        stopped={this.props.stopped}
-        tempo={this.props.tempo}
-        loop={this.props.loop}
-        stop={this.props.stop}
-      >
-      </Song>
       <Controls
         enabled={this.props.controlsEnabled}
         disabled={!this.props.controlsEnabled}
@@ -111,8 +98,25 @@ class App extends React.PureComponent {
         choosingTempo={this.props.choosingTempo}
         updateTempo={this.props.updateTempo}
         setLoop={this.props.setLoop}
+        >
+      </Controls>      
+      <Grid
+        rows={this.props.rows}
+        columns={this.props.columns}
+        enabled={this.props.controlsEnabled}
+        ></Grid>
+      <Song
+        song={this.props.song}
+        trackIndex={this.props.trackIndex}
+        instrumentIndex={this.props.instrumentIndex}
+        playing={this.props.playing}
+        stopped={this.props.stopped}
+        tempo={this.props.tempo}
+        loop={this.props.loop}
+        stop={this.props.stop}
+        updatePosition={this.props.updatePosition}
       >
-      </Controls>
+      </Song>
     </div>
   }
 }

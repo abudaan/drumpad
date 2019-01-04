@@ -11,6 +11,7 @@ export interface SongState {
   nominator: number,
   denominator: number,
   position?: SongPosition,
+  song: null | HeartbeatSong,
 };
 
 export interface AppState {
@@ -68,7 +69,7 @@ export interface Config {
 };
 
 export interface ConfigData {
-  midiFile?: void | ArrayBuffer
+  song?: null | HeartbeatSong,
   instrument?: Object,
   assetPack?: Object,
 };
