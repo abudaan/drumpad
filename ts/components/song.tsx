@@ -17,12 +17,12 @@ interface Song {
 
 export type SongPropTypes = {
   song: null | HeartbeatSong,
-  instrumentName: null | string,
   loop: boolean,
   tempo: number,
   playing: boolean,
   stopped: boolean,
   trackIndex: number,
+  instrumentName: string,
 };
 
 class Song extends React.Component {
@@ -108,7 +108,7 @@ class Song extends React.Component {
 
   setupSong(song: HeartbeatSong) {
     const events = song.tracks[this.props.trackIndex].events.filter((e: MIDIEvent) => e.type === 144);
-    const lastBar = events[events.length - 1].bar;
+    const lastBar =  events[events.length - 1].bar;
     // this.song.update();
     song.setLeftLocator('barsbeats', 1, 1, 1, 0);
     song.setRightLocator('barsbeats', lastBar + 1, 1, 1, 0);

@@ -3,11 +3,9 @@ import { Action } from "redux";
 export interface SongState {
   song: null | HeartbeatSong,
   trackList: Array<Track>
-  instrumentList: Array<Instrument>
-  assetPack: AssetPack,
-  instrumentName: string,
+  instrumentList: Array<string>
+  midiFileList: Array<string>
   position?: SongPosition,
-  granularityTrack: number,
   bar: number,
   beat: number,
   sixteenth: number,
@@ -22,8 +20,9 @@ export interface ControlsState {
   loop: boolean,
   tempo: number,
   bars: number,
-  instrumentIndex: number,
   trackIndex: number,
+  midiFileIndex: number,
+  instrumentIndex: number,
   controlsEnabled: boolean,
   tempoTmp: number,
   tempoMin: number,
@@ -67,7 +66,7 @@ export interface HeartbeatSong {
   playing: boolean,
   bpm: number,
   durationTicks: number,
-  tracks: Array<any>
+  tracks: Array<Track>
   play: () => void,
   pause: () => void,
   stop: () => void,
@@ -80,6 +79,7 @@ export interface HeartbeatSong {
 };
 
 export interface MIDIEvent {
+  bar: number,
   type: number,
   data1: number,
   data2: number,
@@ -110,6 +110,8 @@ export interface AssetPack {
 }
 
 export interface MIDIFileJSON {
+  id: string,
+  url: string,
   name: string,
 }
 
@@ -128,7 +130,6 @@ export interface Config {
 export interface ConfigData {
   song: null | HeartbeatSong,
   assetPack: null | AssetPack,
-  instrumentName: null | string,
 };
 
 export interface SongInfo {

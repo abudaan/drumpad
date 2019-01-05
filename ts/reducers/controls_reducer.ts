@@ -2,19 +2,17 @@ import * as Actions from '../actions';
 import { ControlsState, IAction } from '../interfaces'
 
 const controlsInitialState = {
+  controlsEnabled: false,
   playing: false,
   stopped: true,
   loop: true,
-  tempo: 120,
-  activeNotes: [],
-  controlsEnabled: false,
   trackIndex: 0,
+  midiFileIndex: 0,
   instrumentIndex: 0,
+  tempo: 120,
   tempoTmp: 120,
   tempoMin: 20,
   tempoMax: 300,
-  notes: [60, 61, 62, 63],
-  beats: [0, 1, 2, 3, 4, 5, 6, 7].map((v) => v * (960 / 8)), // default ppq / granularity
 };
 
 const controls = (state: ControlsState = controlsInitialState, action: IAction<any>) => {
@@ -43,6 +41,11 @@ const controls = (state: ControlsState = controlsInitialState, action: IAction<a
       ...state,
       tempoTmp: action.payload.tempoTmp,
     };
+  } else if (action.type === Actions.UPDATE_TEMPO) {
+    return {
+      ...state,
+      tempo: action.payload.tempo
+    };
   } else if (action.type === Actions.SET_TRACK) {
     return {
       ...state,
@@ -52,6 +55,12 @@ const controls = (state: ControlsState = controlsInitialState, action: IAction<a
     return {
       ...state,
       instrumentIndex: action.payload.instrumentIndex,
+    };
+  } else if (action.type === Actions.SET_MIDIFILE) {
+    return {
+      ...state,
+      trackIndex: 0,
+      midiFileIndex: action.payload.midiFileIndex,
     };
   } else   if (action.type === Actions.SEQUENCER_PLAY) {
     return {
@@ -64,11 +73,6 @@ const controls = (state: ControlsState = controlsInitialState, action: IAction<a
       ...state,
       playing: false,
       stopped: true,
-    };
-  } else if (action.type === Actions.UPDATE_TEMPO) {
-    return {
-      ...state,
-      tempo: action.payload.tempo
     };
   } else if (action.type === Actions.SET_LOOP) {
     return {

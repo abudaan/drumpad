@@ -19,9 +19,11 @@ render(
 // store.dispatch(loadConfig('./data/config.json'));
 
 // simulate human interaction
-// setTimeout(() => {
-//   store.dispatch(loadAssetPack('./data/Kit-Jungle.json')).then(() => {
-//     store.dispatch(loadMIDIFile('./data/track9.mid'));
-//   })
-//   // store.dispatch(loadMIDIFile('./data/track9.mid'));
-// }, 3000)
+setTimeout(() => {
+  // store.dispatch(loadAssetPack('./data/Kit-Jungle.json')).then(() => {
+  //   store.dispatch(loadMIDIFile('./data/track9.mid'));
+  // })
+  store.dispatch(loadMIDIFile('./data/track9.mid'));
+  // store.dispatch(loadMIDIFile('./data/track14.mid'));
+  // store.dispatch(loadAssetPack('./data/Kit-Jungle.json'));
+}, 3000)

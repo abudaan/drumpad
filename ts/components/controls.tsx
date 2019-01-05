@@ -1,12 +1,13 @@
 // import * as R from 'ramda';
 import React, { ChangeEvent, MouseEvent } from 'react';
 import Slider from './slider';
+import { MIDIFileJSON } from '../interfaces';
 interface Controls {
   props: PropTypes,
 };
 
 type PropTypes = {
-  disabled: boolean,
+  enabled: boolean,
   tempo: number,
   tempoTmp: number,
   minTempo: number,
@@ -14,6 +15,7 @@ type PropTypes = {
   playing: boolean,
   loop: boolean,
   trackList: Array<string>,
+  midiFileList: Array<string>,
   instrumentList: Array<string>,
 
   choosingTempo: (event: ChangeEvent) => void,
@@ -22,6 +24,8 @@ type PropTypes = {
   stop: (event: MouseEvent) => void,
   setLoop: (loop: boolean) => void,
   setTrack: (value: number) => void,
+  setMIDIFile: (value: number) => void,
+  setInstrument: (value: number) => void,
 };
 
 class Controls extends React.PureComponent {
@@ -30,15 +34,48 @@ class Controls extends React.PureComponent {
   render() {
     const labelPlay = this.props.playing ? 'pause' : 'play';
     const labelLoop = this.props.loop ? 'loop off' : 'loop on';
-    let select;
+
+    let selectMIDIFile;
+    if (this.props.midiFileList.length > 1) {
+      const options = this.props.midiFileList.map(mf => {
+        return <option key={mf}>{mf}</option>;
+      });
+      selectMIDIFile = <select
+        onChange={(e) => {
+          if (e.nativeEvent.target !== null) {
+            this.props.setMIDIFile(e.nativeEvent.target.selectedIndex)
+          }
+        }}
+      >
+        {options}
+      </select>
+    }
+
+    let selectTrack;
     if (this.props.trackList.length > 1) {
       const options = this.props.trackList.map(track => {
         return <option key={track}>{track}</option>;
       });
-      select = <select
+      selectTrack = <select
         onChange={(e) => {
           if (e.nativeEvent.target !== null) {
             this.props.setTrack(e.nativeEvent.target.selectedIndex)
+          }
+        }}
+      >
+        {options}
+      </select>
+    }
+
+    let selectInstrument;
+    if (this.props.instrumentList.length > 1) {
+      const options = this.props.instrumentList.map(instrument => {
+        return <option key={instrument}>{instrument}</option>;
+      });
+      selectInstrument = <select
+        onChange={(e) => {
+          if (e.nativeEvent.target !== null) {
+            this.props.setInstrument(e.nativeEvent.target.selectedIndex)
           }
         }}
       >
@@ -53,22 +90,27 @@ class Controls extends React.PureComponent {
         value={this.props.tempoTmp}
         onMouseUp={this.props.updateTempo}
         onChange={this.props.choosingTempo}
-        disabled={this.props.disabled}
-      />
+        disabled={!this.props.enabled}
+        />
       <button
         type="button"
+        disabled={!this.props.enabled}
         onClick={this.props.play}
-      >{labelPlay}</button>
+        >{labelPlay}</button>
       <button
         type="button"
+        disabled={!this.props.enabled}
         onClick={this.props.stop}
-      >stop</button>
+        >stop</button>
       <button
         type="button"
+        disabled={!this.props.enabled}
         onClick={(e) => { this.props.setLoop(!this.props.loop); }}
       >{labelLoop}</button>
 
-      {select}
+      {selectMIDIFile}
+      {selectTrack}
+      {selectInstrument}
 
       {/* <button
         type="button"
