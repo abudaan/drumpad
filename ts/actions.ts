@@ -1,6 +1,7 @@
 import sequencer from 'heartbeat-sequencer';
 import { Dispatch, Action } from 'redux';
-import { SongPosition, Config, ConfigData, IAction, SongInfo } from './interfaces';
+import { isNil } from 'ramda';
+import { SongPosition, Config, ConfigData, IAction, SongInfo, HeartbeatSong } from './interfaces';
 import { ChangeEvent } from 'react';
 
 export const LOADING = 'LOADING'; // generic load action
@@ -16,6 +17,7 @@ export const SAMPLE_LOADED = 'SAMPLE LOADED';
 export const MIDIFILE_LOADED = 'MIDIFILE LOADED';
 export const SET_LOOP = 'SET LOOP';
 export const SET_TRACK = 'SET TRACK';
+export const SET_INSTRUMENT = 'SET SET_INSTRUMENT';
 
 
 const status = (response: Response) => {
@@ -42,12 +44,19 @@ const loadJSON = async (url: string) => fetch(url)
 // parse config file and load all assets that are listed in the config file
 const parseConfig = (config: Config) => {
   const songs = sequencer.getSongs();
-  Object.keys(songs).forEach((k, v, s) => {
-    sequencer.deleteSong(s);
+  Object.values(songs).forEach((s) => {
+    const song = s as HeartbeatSong;
+    console.log('deleting song', song);
+    song.removeEventListener('end');
+    sequencer.deleteSong(song);
   });
 
   return new Promise(async (resolve) => {
-    const data: ConfigData = {};
+    const data: ConfigData = {
+      song: null,
+      assetPack: null,
+      instrumentName: null,
+    };
     if (config.midiFile) {
       data.song = await loadArrayBuffer(config.midiFile);
     }
@@ -56,14 +65,12 @@ const parseConfig = (config: Config) => {
     }
     if (data.assetPack) {
       sequencer.addAssetPack(data.assetPack, () => {
-        if (data.assetPack.instruments[0]) {
+        if (data.assetPack !== null && isNil(config.instrument) && data.assetPack.instruments[0]) {
           data.instrumentName = data.assetPack.instruments[0].name;
         }
-        if (typeof config.midiFile === 'undefined') {
-          try {
-            data.song = sequencer.createSong(sequencer.getMidiFile(config.assetPack.midifiles[0].name));
-          } catch (e) {
-            data.song = null;
+        if (isNil(config.midiFile)) {
+          if (data.assetPack !== null && !isNil(data.assetPack.midifiles[0])) {
+            data.song = sequencer.createSong(sequencer.getMidiFile(data.assetPack.midifiles[0].name));
           }
         } else {
           resolve(data);
@@ -77,22 +84,15 @@ const parseConfig = (config: Config) => {
 
 export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
   const data: ConfigData = await loadJSON(configUrl).then(parseConfig);
-  const { song } = data;
-  if (song) {
-    song.update();
-    song.setLeftLocator('barsbeats', 1, 1, 1, 0);
-    song.setRightLocator('barsbeats', song.bars, 1, 1, 0);
-    song.setLoop();
-    song.addEventListener('end', () => { 
-      console.log('end')
-      dispatch(stop()) 
-    });
+  if (data.song !== null) {
+    data.song.addEventListener('end', () => {
+      dispatch(stop());
+    })
   }
-  // console.log(data);
   dispatch({
     type: CONFIG_LOADED,
     payload: {
-      data,
+      ...data,
     }
   });
 };

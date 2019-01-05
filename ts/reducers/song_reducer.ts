@@ -1,42 +1,55 @@
 import * as Actions from '../actions';
-import { SongState, IAction } from '../interfaces';
+import { SongState, IAction, Track, Instrument } from '../interfaces';
 
 const songInitialState = {
-  playing: false,
-  stopped: true,
-  loop: true,
-  tempo: 120,
-  tracks: [],
+  song: null,
+  assetPack: null,
+  instrumentName: null,
+  trackList: [],
+  instrumentList: [],
   activeNotes: [],
 };
 
 const song = (state: SongState = songInitialState, action: IAction<any>) => {
-  if (action.type === Actions.SEQUENCER_PLAY) {
+  if (action.type === Actions.CONFIG_LOADED) {
+    const {
+      song,
+      assetPack,
+      instrumentName,
+    } = action.payload;
+
+    let trackList: Array<string> = [];
+    let instrumentList: Array<string> = [];
+    if (song !== null) {
+      trackList = song.tracks.map((t: Track) => t.name);
+    }
+    if (assetPack !== null) {
+      instrumentList = assetPack.instruments.map((i: Instrument) => i.name);
+    }
+    
     return {
       ...state,
-      playing: !state.playing,
-      stopped: false,
-    };
-  } else if (action.type === Actions.SEQUENCER_STOP) {
-    return {
-      ...state,
-      playing: false,
-      stopped: true,
-    };
-  } else if (action.type === Actions.UPDATE_TEMPO) {
-    return {
-      ...state,
-      tempo: action.payload.tempo
-    };
-  } else if (action.type === Actions.SET_LOOP) {
-    return {
-      ...state,
-      loop: action.payload.loop,
+      song,
+      assetPack,
+      instrumentName,
+      trackList,
+      instrumentList,
     };
   } else if (action.type === Actions.UPDATE_POSITION) {
     return {
       ...state,
       ...action.payload.position,
+    };
+
+  } else if (action.type === Actions.ASSETPACK_LOADED) {
+    return {
+      ...state,
+      assetPack: action.payload.assetPack,
+    };
+  } else if (action.type === Actions.MIDIFILE_LOADED) {
+    return {
+      ...state,
+      midiFile: action.payload.midiFile,
     };
   }
   return state;

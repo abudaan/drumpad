@@ -1,4 +1,14 @@
 {
   "midiFile": "/data/SH-3-44.2.mid",
-  "assetPack": "/data/Kit-Shapes.json"
+  "assetPack": "/data/Kit-Shapes.json",
+  "tempoMin": 20,
+  "tempoMax": 300,
+  "granularity": 8,
+  "granularityOptions": [
+    4,
+    8,
+    16,
+    32
+  ],
+  "loop": true
 }

@@ -11,9 +11,9 @@ import {
   play,
   stop,
 } from '../actions'
-import { State, SongPosition, HeartbeatSong } from '../interfaces';
-import getAppProps from '../reducers/app_selector'
-import getSongProps from '../reducers/song_selector'
+import { State, SongPosition, HeartbeatSong, AssetPack, MIDINote } from '../interfaces';
+import getTrackProps from '../reducers/track_selector';
+import getActiveNotes from '../reducers/notes_selector';
 import Grid from '../components/grid';
 import Controls from '../components/controls';
 import Song from '../components/song';
@@ -23,13 +23,11 @@ interface App {
 };
 
 type PropTypes = {
-  beat: number,
+  // passed
   configUrl: string,
-  assetPack: null | Object,
-  midiFile: null | ArrayBuffer,
-  trackList: Array<string>,
+  
+  // from controls_reducer
   trackIndex: number,
-  instrumentName: string,
   controlsEnabled: boolean,
   playing: boolean,
   stopped: boolean,
@@ -38,10 +36,23 @@ type PropTypes = {
   tempoTmp: number,
   tempoMin: number,
   tempoMax: number,
-  notes: Array<any>,
-  beats: Array<any>,
-  activeNotes: Array<any>,
-  song: null | HeartbeatSong,
+
+  // from song_reducer
+  song: null | HeartbeatSong
+  assetPack: null | AssetPack,
+  instrumentName: null | string,
+  trackList: Array<string>,
+  instrumentList: Array<string>,
+  beat: number,
+  sixteenth: number,
+
+  // from track_selector
+  noteNumbers: Array<number>,
+
+  // from notes_selector
+  activeNotes: Array<MIDINote>,
+
+  // actions
   loadConfig: (url: string) => (dispatch: Dispatch<AnyAction>) => void,
   setTrack: () => void,
   setLoop: () => void,
@@ -50,13 +61,35 @@ type PropTypes = {
   choosingTempo: (e: ChangeEvent) => void,
   updateTempo: (e: Event<HTMLElement, Event>) => void,
   updatePosition: (pos: SongPosition) => void,
+
 };
 
 const mapStateToProps = (state: State) => {
   return {
-    ...getAppProps(state)
-    // ...getSongProps(state) 
-  }
+    ...getTrackProps(state),
+
+    ...getActiveNotes(state),
+
+    // from song_reducer
+    song: state.song.song,
+    assetPack: state.song.assetPack,
+    instrumentName: state.song.instrumentName,
+    trackList: state.song.trackList,
+    instrumentList: state.song.instrumentList,
+    beat: state.song.beat,
+    sixteenth: state.song.sixteenth,
+
+    // from controls
+    trackIndex: state.controls.trackIndex,
+    controlsEnabled: state.controls.controlsEnabled,
+    playing: state.controls.playing,
+    stopped: state.controls.stopped,
+    loop: state.controls.loop,
+    tempo: state.controls.tempo,
+    tempoTmp: state.controls.tempoTmp,
+    tempoMin: state.controls.tempoMin,
+    tempoMax: state.controls.tempoMax,
+    };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
@@ -82,16 +115,20 @@ class App extends React.PureComponent {
       const {
         bar,
         beat,
+        sixteenth,
         barsAsString,
         activeNotes,
       } = this.props.song;
-
-      this.props.updatePosition({
-        bar,
-        beat,
-        barsAsString,
-        activeNotes,
-      });
+      
+      if(sixteenth !== this.props.sixteenth) {
+        this.props.updatePosition({
+          bar,
+          beat,
+          sixteenth,
+          barsAsString,
+          activeNotes,
+        });
+      }
     }
     requestAnimationFrame(this.updateUI.bind(this));
   }
@@ -102,16 +139,16 @@ class App extends React.PureComponent {
   }
 
   render() {
-    // const s = '\n';
-    // this.props.activeNotes.forEach(note => {
-    //   s += `${note.note.number} ${note.ticks}\n`  
-    // });
-    // console.log('<App>', s);
+    let s = '\n';
+    this.props.activeNotes.forEach(note => {
+      s += `${note.number} ${note.ticks}\n`  
+    });
+    console.log('<App>', s);
     return <div>
       <Controls
-        enabled={this.props.controlsEnabled}
         disabled={!this.props.controlsEnabled}
         trackList={this.props.trackList}
+        instrumentList={this.props.instrumentList}
         playing={this.props.playing}
         loop={this.props.loop}
         tempo={this.props.tempo}
@@ -126,14 +163,16 @@ class App extends React.PureComponent {
         setLoop={this.props.setLoop}
       >
       </Controls>
-      <Grid
+
+      {/* <Grid
         beat={this.props.beat}
         notes={this.props.notes}
         beats={this.props.beats}
         playing={this.props.playing}
-        enabled={this.props.controlsEnabled}
+        disabled={!this.props.controlsEnabled}
         activeNotes={this.props.activeNotes}
-      ></Grid>
+      ></Grid> */}
+
       <Song
         song={this.props.song}
         trackIndex={this.props.trackIndex}

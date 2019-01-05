@@ -1,39 +1,42 @@
 import { Action } from "redux";
 
 export interface SongState {
+  song: null | HeartbeatSong,
+  trackList: Array<Track>
+  instrumentList: Array<Instrument>
+  assetPack: AssetPack,
+  instrumentName: string,
+  position?: SongPosition,
+  granularityTrack: number,
+  bar: number,
+  beat: number,
+  sixteenth: number,
+  tick: number,
+  barsAsString: string,
+  activeNotes: Array<MIDINote>
 };
 
-export interface AppState {
-  tracks: Array<any>,
+export interface ControlsState {
   playing: boolean,
   stopped: boolean,
   loop: boolean,
   tempo: number,
   bars: number,
-  ppq: number,
-  nominator: number,
-  denominator: number,
-  position?: SongPosition,
-  song: null | HeartbeatSong,
-  assetPack?: null | Object
-  midiFile?: null | ArrayBuffer,
-  instrument?: null | Object,
   instrumentIndex: number,
   trackIndex: number,
   controlsEnabled: boolean,
   tempoTmp: number,
   tempoMin: number,
   tempoMax: number,
-  rows: number,
-  columns: number,
   granularity: number,
+  granularityOptions: Array<number>,
   beats: Array<any>,
   notes: Array<any>,
 };
 
 export interface State {
   song: SongState,
-  app: AppState,
+  controls: ControlsState,
 };
 
 export interface IAction<T> extends Action {
@@ -46,35 +49,86 @@ export interface IAction<T> extends Action {
 export interface SongPosition {
   bar: number,
   beat: number,
+  sixteenth: number,
   barsAsString: string,
+  activeNotes: Array<MIDIEvent>,
 };
 
 
 export interface HeartbeatSong {
+  bar: number,
+  beat: number,
+  sixteenth: number,
+  tick: number,
+  barsAsString: string,
+  activeNotes: Array<MIDIEvent>,
+  id: string,
   loop: boolean;
   playing: boolean,
   bpm: number,
   durationTicks: number,
+  tracks: Array<any>
   play: () => void,
   pause: () => void,
   stop: () => void,
   setTempo: (bpm: number, update?: boolean) => void,
   addEventListener: (event: string, typeOrCallback: any, callback?: () => void) => void,
-  setLoop: () => void,
-  setLeftLocator: (type: string, value: number) => void,
-  setRightLocator: (type: string, value: number) => void,
+  removeEventListener: (type: string) => void,
+  setLoop: (loop?: boolean) => void,
+  setLeftLocator: (type: string, bar: number, beat?: number, sixteenth?: number, tick?: number) => void,
+  setRightLocator: (type: string, bar: number, beat?: number, sixteenth?: number, tick?: number) => void,
 };
 
+export interface MIDIEvent {
+  type: number,
+  data1: number,
+  data2: number,
+  ticks: number,
+  noteName: string,
+  noteNumber: number,
+};
+
+export interface MIDINote extends MIDIEvent {
+  trackId: string,
+  track: Track,
+  number: number,
+}
+
+export interface Track {
+  id: string,
+  name: string,
+  events: Array<MIDIEvent>,
+};
+
+export interface Instrument {
+  name: string,
+};
+
+export interface AssetPack {
+  instruments: Array<Instrument>,
+  midifiles: Array<MIDIFileJSON>,
+}
+
+export interface MIDIFileJSON {
+  name: string,
+}
+
+// config file that gets loaded when the app starts
 export interface Config {
   midiFile: string,
-  instrument: string,
   assetPack: string,
+  instrument: string,
+  tempoMin: number,
+  tempoMax: number,
+  granularity: number,
+  granularityOptions: Array<number>,
 };
 
+// result of parsing the config file
 export interface ConfigData {
-  song?: null | HeartbeatSong,
-  instrument?: Object,
-  assetPack?: Object,
+  song: null | HeartbeatSong,
+  assetPack: null | AssetPack,
+  instrumentName: null | string,
 };
 
 export interface SongInfo {

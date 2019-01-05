@@ -7,20 +7,21 @@ interface Controls {
 
 type PropTypes = {
   disabled: boolean,
-  beats: number,
   tempo: number,
   tempoTmp: number,
   minTempo: number,
   maxTempo: number,
+  playing: boolean,
+  loop: boolean,
+  trackList: Array<string>,
+  instrumentList: Array<string>,
+
   choosingTempo: (event: ChangeEvent) => void,
   updateTempo: (event: MouseEvent) => void,
   play: (event: MouseEvent) => void,
   stop: (event: MouseEvent) => void,
   setLoop: (loop: boolean) => void,
   setTrack: (value: number) => void,
-  playing: boolean,
-  loop: boolean,
-  trackList: Array<any>,
 };
 
 class Controls extends React.PureComponent {
