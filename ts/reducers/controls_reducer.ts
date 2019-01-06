@@ -2,6 +2,7 @@ import * as Actions from '../actions';
 import { ControlsState, IAction } from '../interfaces'
 
 const controlsInitialState = {
+  grid: null,
   controlsEnabled: false,
   playing: false,
   stopped: true,
@@ -13,6 +14,13 @@ const controlsInitialState = {
   tempoTmp: 120,
   tempoMin: 20,
   tempoMax: 300,
+  granularity: 8,
+  granularityOptions: [
+    4,
+    8,
+    16,
+    32
+  ],
 };
 
 const controls = (state: ControlsState = controlsInitialState, action: IAction<any>) => {

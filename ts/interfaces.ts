@@ -5,82 +5,86 @@ export interface SongState {
   trackList: Array<Track>
   instrumentList: Array<string>
   songList: Array<HeartbeatSong>
-  position?: SongPosition,
-  bar?: number,
-  beat?: number,
-  sixteenth?: number,
-  tick?: number,
-  barsAsString?: string,
+  position?: SongPosition
+  bar?: number
+  beat?: number
+  sixteenth?: number
+  tick?: number
+  barsAsString?: string
   activeNotes: Array<MIDINote>
 };
 
 export interface ControlsState {
-  playing: boolean,
-  stopped: boolean,
-  loop: boolean,
-  tempo: number,
-  bars: number,
-  trackIndex: number,
-  songIndex: number,
-  instrumentIndex: number,
-  controlsEnabled: boolean,
-  tempoTmp: number,
-  tempoMin: number,
-  tempoMax: number,
-  granularity: number,
-  granularityOptions: Array<number>,
-  beats: Array<any>,
-  notes: Array<any>,
+  playing: boolean
+  stopped: boolean
+  loop: boolean
+  tempo: number
+  bars: number
+  trackIndex: number
+  songIndex: number
+  instrumentIndex: number
+  controlsEnabled: boolean
+  tempoTmp: number
+  tempoMin: number
+  tempoMax: number
+  granularity: number
+  granularityOptions: Array<number>
+  beats: Array<any>
+  notes: Array<any>
 };
 
 export interface State {
-  song: SongState,
-  controls: ControlsState,
+  song: SongState
+  controls: ControlsState
 };
 
 export interface IAction<T> extends Action {
-  type: string;
-  payload?: T;
-  // error?: boolean;
-  // meta?: any;
+  type: string
+  payload?: T
+  // error?: boolean
+  // meta?: any
 }
 
 export interface SongPosition {
-  bar: number,
-  beat: number,
-  sixteenth: number,
-  barsAsString: string,
-  activeNotes: Array<MIDIEvent>,
+  bar: number
+  beat: number
+  sixteenth: number
+  barsAsString: string
+  activeNotes: Array<MIDIEvent>
 };
 
 export type Listener = {
-  [key: string]: any,
+  [key: string]: any
 }
 
 export interface HeartbeatSong {
-  bar: number,
-  beat: number,
-  sixteenth: number,
-  tick: number,
-  barsAsString: string,
-  activeNotes: Array<MIDIEvent>,
-  id: string,
-  name: string,
-  loop: boolean;
-  playing: boolean,
-  bpm: number,
+  bar: number
+  ppq: number
+  nominator: number
+  denominator: number
+  beat: number
+  sixteenth: number
+  tick: number
+  barsAsString: string
+  activeNotes: Array<MIDIEvent>
+  id: string
+  name: string
+  loop: boolean
+  playing: boolean
+  bpm: number
   durationTicks: number
   tracks: Array<Track>
   listeners: Listener
+  loopEndPosition: SongPosition
   play: () => void
   pause: () => void
   stop: () => void
-  setTempo: (bpm: number, update?: boolean) => void,
-  addEventListener: (event: string, typeOrCallback: any, callback?: () => void) => void,
-  removeEventListener: (type: string) => void,
-  setLoop: (loop?: boolean) => void,
-  setLeftLocator: (type: string, bar: number, beat?: number, sixteenth?: number, tick?: number) => void,
-  setRightLocator: (type: string, bar: number, beat?: number, sixteenth?: number, tick?: number) => void,
+  setTempo: (bpm: number, update?: boolean) => void
+  addEventListener: (event: string, typeOrCallback: any, callback?: () => void) => void
+  removeEventListener: (type: string) => void
+  setLoop: (loop?: boolean) => void
+  setLeftLocator: (type: string, bar: number, beat?: number, sixteenth?: number, tick?: number) => void
+  setRightLocator: (type: string, bar: number, beat?: number, sixteenth?: number, tick?: number) => void
 };
 
 export interface MIDIEvent {
@@ -110,8 +114,8 @@ export interface Instrument {
 };
 
 export interface AssetPack {
-  instruments: Array<Instrument>,
-  midifiles: Array<string>,
+  instruments: Array<Instrument>
+  midifiles: Array<string>
 }
 
 export interface MIDIFileJSON {
@@ -122,24 +126,30 @@ export interface MIDIFileJSON {
 
 // config file that gets loaded when the app starts
 export interface Config {
-  midiFile: string,
-  assetPack: string,
-  instrument: string,
-  tempoMin: number,
-  tempoMax: number,
-  granularity: number,
-  granularityOptions: Array<number>,
+  midiFile: string
+  assetPack: string
+  instrument: string
+  tempoMin: number
+  tempoMax: number
+  granularity: number
+  granularityOptions: Array<number>
 };
 
 // result of parsing the config file
 export interface ConfigData {
-  assetPack: null | AssetPack,
+  assetPack: null | AssetPack
 };
 
 export interface SongInfo {
-  tracks: Array<any>,
-  bars: number,
-  ppq: number,
-  nominator: number,
-  denominator: number,
+  tracks: Array<any>
+  bars: number
+  ppq: number
+  nominator: number
+  denominator: number
+}
+
+export interface GridItem {
+  ticks: number,
+  noteNumber: number,
+  midiEvent: null | MIDIEvent,
 }

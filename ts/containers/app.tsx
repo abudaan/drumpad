@@ -51,7 +51,7 @@ type PropTypes = {
   sixteenth: number,
 
   // from track_selector
-  noteNumbers: Array<number>,
+  grid: Array<Array<any>>,
 
   // from notes_selector
   activeNotes: Array<MIDINote>,
@@ -178,14 +178,10 @@ class App extends React.PureComponent {
       >
       </Controls>
 
-      {/* <Grid
-        beat={this.props.beat}
-        notes={this.props.notes}
-        beats={this.props.beats}
-        playing={this.props.playing}
-        enables={this.props.controlsEnabled}
-        activeNotes={this.props.activeNotes}
-      ></Grid> */}
+      <Grid
+        grid={this.props.grid}
+        enabled={this.props.controlsEnabled}
+      ></Grid>
 
       <Song
         song={this.props.song}

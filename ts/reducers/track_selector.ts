@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { State, ControlsState, SongState, Track, MIDIEvent } from '../interfaces';
+import { State, ControlsState, SongState, Track, MIDIEvent, HeartbeatSong, GridItem } from '../interfaces';
 import { uniq, isNil } from 'ramda';
 
 const getSongState = (state: State): SongState => state.song;
@@ -17,26 +17,32 @@ export default createSelector(
       granularity,
     } = controlsState;
 
-    let noteNumbers: Array<number> = [];
+    let grid = null;
     let granularityTrack: number = Number.MAX_VALUE;
-    
+    let newGranularity = granularity;
+
     if (!isNil(song) && song.tracks.length > 0) {
       const track = song.tracks[trackIndex];
-      granularityTrack = getGranularity(track);
-      noteNumbers = getUniqNotes(track);
+      const events = filterEvents(track.events);
+      granularityTrack = getGranularity(events, song.ppq);
+      newGranularity = Math.max(granularity, granularityTrack);
+      // console.log(granularity, granularityTrack, newGranularity);
+      grid = getGrid(events, newGranularity, song);
     }
 
     return {
-      noteNumbers,
-      granularity: Math.min(granularity, granularityTrack),
+      grid,
     };
   }
 );
 
-const getGranularity = (track: Track) => {
+const filterEvents = (events: Array<MIDIEvent>) => events.filter((e: MIDIEvent) => typeof e.noteName !== 'undefined');
+
+const getUniqNotes = (events: Array<MIDIEvent>): Array<number> => uniq(events.map(e => e.noteNumber)); //.sort((a, b) => a - b);
+
+const getGranularity = (events: Array<MIDIEvent>, ppq: number) => {
   let ticks = 0;
   let granularity = Number.MAX_VALUE;
-  const events = track.events;
   events.forEach(event => {
     if (event.type === 144 && event.data2 !== 0) {
       var diff = event.ticks - ticks;
@@ -47,14 +53,35 @@ const getGranularity = (track: Track) => {
       }
     }
   });
-  return granularity;
+  return ppq / granularity;
 }
 
-const getUniqNotes = (track: Track): Array<number> => {
-  const events = track.events.filter((e:MIDIEvent) => typeof e.noteName !== 'undefined')
-    .map(e => e.noteNumber);
-  // console.log(uniq(events).sort());
-  return uniq(events).sort((a, b) => a - b);
+const getEvent = (events: Array<MIDIEvent>, ticks: number, noteNumber: number): null | MIDIEvent => {
+  const event = events.filter(event => event.ticks === ticks && event.noteNumber === noteNumber);
+  return event[0] || null;
+}
+
+const getGrid = (events: Array<MIDIEvent>, granularity: number, song: HeartbeatSong) => {
+  const numBars = events[events.length - 1].bar;
+  const notes = getUniqNotes(events);
+  const totalTicks = numBars * (song.nominator * (4 / song.denominator) * song.ppq);
+  const granularityTicks = (4 / granularity) * song.ppq;
+  const grid = [];
+  for (let i = 0; i < notes.length; i++) {
+    const row = [];
+    for (let j = 0; j < totalTicks; j += granularityTicks) {
+      const noteNumber = notes[i];
+      const item: GridItem = {
+        ticks: j,
+        noteNumber,
+        midiEvent: getEvent(events, j, noteNumber),
+      }
+      row.push(item);
+    }
+    grid.push(row);
+  }
+  // console.log(totalTicks, granularityTicks, grid);
+  return grid;
 }
 
 /*
