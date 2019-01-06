@@ -1,10 +1,17 @@
-import sequencer from 'heartbeat-sequencer';
 import { Dispatch, Action } from 'redux';
-import { isNil } from 'ramda';
-import { SongPosition, Config, ConfigData, IAction, SongInfo, HeartbeatSong, MIDIFileJSON, Instrument, AssetPack } from './interfaces';
+import { SongPosition, IAction } from './interfaces';
 import { ChangeEvent } from 'react';
-import { SSL_OP_SINGLE_DH_USE } from 'constants';
-import { MsHyphenateLimitLinesProperty } from 'csstype';
+import { 
+  loadJSON, 
+  parseConfig, 
+  createSongList, 
+  addEndListener, 
+  getLoadedInstruments, 
+  addAssetPack, 
+  addMIDIFile, 
+  loadArrayBuffer, 
+  stopAllSongs
+} from './action_song_utils';
 
 export const LOADING = 'LOADING'; // generic load action
 export const LOAD_ERROR = 'LOAD_ERROR';
@@ -23,108 +30,17 @@ export const SELECT_TRACK = 'SELECT_TRACK';
 export const SELECT_SONG = 'SELECT_SONG';
 export const SELECT_INSTRUMENT = 'SELECT_INSTRUMENT';
 
-const status = (response: Response) => {
-  if (response.ok) {
-    return response;
-  }
-  throw new Error(response.statusText);
-};
-
-const getLoadedMIDIFiles = () =>
-  sequencer.getMidiFiles()
-    .map((mf: MIDIFileJSON) => mf.name);
-
-const getLoadedInstruments = () =>
-  sequencer.getInstruments()
-    .map((i: Instrument) => i.name)
-    .filter((name: string) => name !== 'metronome');
-
-const stopAllSongs = () => {
-  const songs = sequencer.getSongs();
-  Object.values(songs).forEach((s) => {
-    const song = s as HeartbeatSong;
-    song.stop();
-    // song.removeEventListener('end');
-    // sequencer.deleteSong(song);
-  });
-};
-
-// generic json loader
-const loadJSON = (url: string) => fetch(url)
-  .then(status)
-  .then(response => response.json())
-  .catch(e => console.error(e));
-
-// generic ab loader
-const loadArrayBuffer = (url: string) => fetch(url)
-  .then(status)
-  .then(response => response.arrayBuffer())
-  .catch(e => console.error(e));
-
-const addMIDIFile = (url: string): Promise<MIDIFileJSON> => new Promise(resolve => {
-  sequencer.addMidiFile({ url }, (json: MIDIFileJSON) => {
-    resolve(json);
-  });
-});
-
-const addAssetPack = (url: string): Promise<AssetPack> => new Promise(async (resolve) => {
-  const ap = await loadJSON(url);
-  sequencer.addAssetPack(ap, () => {
-    resolve(ap as AssetPack);
-  });
-})
-
-// load binary MIDI file, add it to the assets and create a song from it
-const createSongFromMIDIFile = (url: string): Promise<HeartbeatSong> => {
-  return new Promise(resolve => {
-    sequencer.addMidiFile({ url }, (json: MIDIFileJSON) => {
-      resolve(sequencer.createSong(json) as HeartbeatSong);
-    });
-  });
-}
-
-// load binary MIDI file and create song from it (MIDI file is not added to the assets)
-const createSongFromMIDIFile2 = (url: string) => loadArrayBuffer(url)
-  .then(ab => sequencer.createMidiFile({ arraybuffer: ab }))
-  .then(json => { return sequencer.createSong(json) })
-  .catch(e => console.error(e));
-
-// parse config file and load all assets that are listed in the config file
-const parseConfig = (config: Config): Promise<null | AssetPack> => {
-  // stopAllSongs();
-  return new Promise(async (resolve) => {
-    let assetPack = null;
-    if (config.midiFile) {
-      await addMIDIFile(config.midiFile);
-    }
-    if (config.assetPack) {
-      assetPack = await addAssetPack(config.assetPack);
-    }
-    resolve(assetPack);
-  });
-}
-
-const createSongList = (): Array<HeartbeatSong> => sequencer.getMidiFiles().map((mf: MIDIFileJSON) => sequencer.createSong(mf));
-
-const addEndListener = (songList: Array<HeartbeatSong>, dispatch: Dispatch) => {
-  songList.forEach(song => {
-    if (isNil(song.listeners['end'])) {
-      song.addEventListener('end', () => {
-        dispatch(stop());
-      })
-    }
-  });
-}
-
 export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
-  const assetPack = await loadJSON(configUrl).then(parseConfig);
+  const config = await loadJSON(configUrl);
+  const assetPack = await parseConfig(config);
   const songList = createSongList();
-  addEndListener(songList, dispatch);
+  addEndListener(songList, dispatch(stop()));
   dispatch({
     type: CONFIG_LOADED,
     payload: {
+      ...config,
+      assetPack, // intentionally overwrites assetPack key in config!
       songList,
-      assetPack,
       instrumentList: getLoadedInstruments(),
     }
   });
@@ -135,14 +51,12 @@ export const loadAssetPack = (url: string) => async (dispatch: Dispatch) => {
     type: LOADING,
   });
   const assetPack = await addAssetPack(url);
-  sequencer.addAssetPack(assetPack, () => {
-    dispatch({
-      type: ASSETPACK_LOADED,
-      payload: {
-        assetPack,
-        instrumentList: getLoadedInstruments(),
-      }
-    });
+  dispatch({
+    type: ASSETPACK_LOADED,
+    payload: {
+      assetPack,
+      instrumentList: getLoadedInstruments(),
+    }
   });
 }
 
@@ -152,7 +66,7 @@ export const loadMIDIFile = (url: string) => async (dispatch: Dispatch) => {
   });
   await addMIDIFile(url);
   const songList = createSongList();
-  addEndListener(songList, dispatch);
+  addEndListener(songList, dispatch(stop()));
   dispatch({
     type: MIDIFILE_LOADED,
     payload: {

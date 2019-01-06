@@ -1,3 +1,8 @@
+
+
+// NOT IN USE, KEPT FOR REFERENCE
+
+
 import { createSelector } from 'reselect';
 import { State, ControlsState, SongState, Track, MIDIEvent, HeartbeatSong, GridItem } from '../interfaces';
 import { uniq, isNil } from 'ramda';
@@ -38,7 +43,7 @@ export default createSelector(
 
 const filterEvents = (events: Array<MIDIEvent>) => events.filter((e: MIDIEvent) => typeof e.noteName !== 'undefined');
 
-const getUniqNotes = (events: Array<MIDIEvent>): Array<number> => uniq(events.map(e => e.noteNumber)); //.sort((a, b) => a - b);
+const getUniqNotes = (events: Array<MIDIEvent>): Array<number> => uniq(events.map(e => e.noteNumber)).sort((a, b) => b - a);
 
 const getGranularity = (events: Array<MIDIEvent>, ppq: number) => {
   let ticks = 0;
@@ -57,8 +62,8 @@ const getGranularity = (events: Array<MIDIEvent>, ppq: number) => {
 }
 
 const getEvent = (events: Array<MIDIEvent>, ticks: number, noteNumber: number): null | MIDIEvent => {
-  const event = events.filter(event => event.ticks === ticks && event.noteNumber === noteNumber);
-  return event[0] || null;
+  const match = events.filter(event => event.ticks === ticks && event.noteNumber === noteNumber);
+  return match[0] || null;
 }
 
 const getGrid = (events: Array<MIDIEvent>, granularity: number, song: HeartbeatSong) => {
@@ -67,18 +72,18 @@ const getGrid = (events: Array<MIDIEvent>, granularity: number, song: HeartbeatS
   const totalTicks = numBars * (song.nominator * (4 / song.denominator) * song.ppq);
   const granularityTicks = (4 / granularity) * song.ppq;
   const grid = [];
-  for (let i = 0; i < notes.length; i++) {
-    const row = [];
-    for (let j = 0; j < totalTicks; j += granularityTicks) {
-      const noteNumber = notes[i];
+  for (let i = 0; i < totalTicks; i += granularityTicks) {
+    const column = [];
+      for (let j = 0; j < notes.length; j++) {
+      const noteNumber = notes[j];
       const item: GridItem = {
-        ticks: j,
+        ticks: i,
         noteNumber,
-        midiEvent: getEvent(events, j, noteNumber),
+        midiEvent: getEvent(events, i, noteNumber),
       }
-      row.push(item);
+      column.push(item);
     }
-    grid.push(row);
+    grid.push(column);
   }
   // console.log(totalTicks, granularityTicks, grid);
   return grid;

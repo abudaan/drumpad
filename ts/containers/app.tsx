@@ -13,9 +13,9 @@ import {
   play,
   stop,
 } from '../actions'
-import { State, SongPosition, HeartbeatSong, AssetPack, MIDINote } from '../interfaces';
+import { State, SongPosition, HeartbeatSong, AssetPack, MIDINote, GridItem } from '../interfaces';
 // import getSong from '../reducers/song_selector';
-import getTrack from '../reducers/track_selector';
+// import getTrack from '../reducers/track_selector';
 import getInstrument from '../reducers/instrument_selector';
 import getActiveNotes from '../reducers/notes_selector';
 import Grid from '../components/grid';
@@ -42,6 +42,7 @@ type PropTypes = {
   tempoMax: number,
 
   // from song_reducer
+  grid: null | Array<Array<GridItem>>,
   song: null | HeartbeatSong
   assetPack: null | AssetPack,
   trackList: Array<string>,
@@ -51,7 +52,7 @@ type PropTypes = {
   sixteenth: number,
 
   // from track_selector
-  grid: Array<Array<any>>,
+  // grid: Array<Array<any>>,
 
   // from notes_selector
   activeNotes: Array<MIDINote>,
@@ -75,12 +76,13 @@ type PropTypes = {
 const mapStateToProps = (state: State) => {
   return {
     // ...getSong(state),
-    ...getTrack(state),
+    // ...getTrack(state),
     ...getInstrument(state),
     ...getActiveNotes(state),
 
     // from song_reducer
     song: state.song.song,
+    grid: state.song.grid,
     trackList: state.song.trackList,
     instrumentList: state.song.instrumentList,
     songList: state.song.songList,

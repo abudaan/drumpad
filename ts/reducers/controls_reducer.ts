@@ -2,7 +2,6 @@ import * as Actions from '../actions';
 import { ControlsState, IAction } from '../interfaces'
 
 const controlsInitialState = {
-  grid: null,
   controlsEnabled: false,
   playing: false,
   stopped: true,

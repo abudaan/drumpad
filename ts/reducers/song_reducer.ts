@@ -1,13 +1,16 @@
 import * as Actions from '../actions';
 import { SongState, IAction, Track } from '../interfaces';
+import { createGrid } from '../action_grid_utils';
 
 const songInitialState = {
+  grid: null,
   song: null,
   songList: [],
   trackList: [],
   activeNotes: [],
   instrumentList: [],
   instrumentName: null,
+  granularity: 8,
 };
 
 const song = (state: SongState = songInitialState, action: IAction<any>) => {
@@ -16,11 +19,16 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       assetPack,
       songList,
       instrumentList,
-    } = action.payload;    
+      granularity,
+    } = action.payload;
     const song = songList[0];
+    const data = createGrid(song, 0, granularity);
+
     return {
       ...state,
       song,
+      grid: data.grid,
+      granularity: data.granularity,
       assetPack,
       songList,
       trackList: song.tracks.map((t: Track) => t.name),
@@ -63,6 +71,12 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       song,
       trackList: song.tracks.map((t: Track) => t.name),
       activeNotes: [],
+    };
+  } else if (action.type === Actions.SELECT_TRACK) {
+    const { grid } = createGrid(state.song, action.payload.trackIndex, state.granularity)
+    return {
+      ...state,
+      grid,
     };
   }
   return state;

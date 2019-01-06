@@ -6,7 +6,7 @@ interface PropTypes {
   onChange: (event: ChangeEvent) => void,
   onMouseDown?: (event: MouseEvent) => void,
   onMouseUp?: (event: MouseEvent) => void,
-  grid: Array<Array<GridItem>>,
+  grid: null | Array<Array<GridItem>>,
   enabled: boolean,
   playing: boolean,
   activeNotes: Array<any>,
@@ -21,33 +21,33 @@ class Grid extends React.Component {
     if (this.props.grid === null) {
       return false;
     }
-    const numRows = this.props.grid.length;
-    const numColumns = this.props.grid[0].length
+    const numColumns = this.props.grid.length;
+    const numRows = this.props.grid[0].length;
     const cellStyle = {
-      width: `calc((100vw - 30px) / ${numRows})`,
-      height: `calc((100vh - 120px) / ${numColumns})`,
+      width: `calc((100vw - 30px) / ${numColumns})`,
+      height: `calc((100vh - 120px) / ${numRows})`,
     };
-    const rows = [];
-    for (let i = 0; i < numRows; i++) {
-      const columns = [];
-      for (let j = 0; j < numColumns; j++) {
-        const item = this.props.grid[i][j];
-        columns.push(
+    const columns = [];
+    for (let c = 0; c < numColumns; c++) {
+      const rows = [];
+      for (let r = 0; r < numRows; r++) {
+        const item = this.props.grid[c][r];
+        rows.push(
           <Cell
-            key={`cell-${i}-${j}`}
+            key={`cell-${c}-${r}`}
             style={cellStyle}
-            className="cell"
+            className={item.midiEvent === null ? "cell" : "cell selected"}
             item={item}
           ></Cell>
         );
       }
-      rows.push(
-        <div key={`row${i}`} className="row">{columns}</div>
+      columns.push(
+        <div key={`column${c}`} className="column">{rows}</div>
       )
     }
     return (
       <div id="grid">
-        {rows}
+        {columns}
       </div>
     )
   }

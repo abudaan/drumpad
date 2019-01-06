@@ -14,28 +14,35 @@
 
 #grid
     margin-top: 10px
-    .row
+    display: flex
+    flex-direction: row
+    &:last-child
+        border-bottom: 1px solid #444
+
+    .column
         display: flex
-        flex-direction: row
+        flex-direction: column
         flex-wrap: nowrap
         &:last-child
-            border-bottom: 1px solid #444
-    .cell 
-        text-align: center
-        border-top: 1px solid #444
-        border-left: 1px solid #444
-        &:last-child
             border-right: 1px solid #444
-        display: flex
-        justify-content: center  
-        align-items: center
-        font-family: monospace
-        color: #dddddd
-        font-size: 25px
-        background-color: #efefef
-        // margin: 3px
-        &:hover 
-            background-color: darkgrey
-        &.active 
-            background-color: yellow
-            color: #00ff00
+
+        .cell 
+            text-align: center
+            border-top: 1px solid #444
+            border-left: 1px solid #444
+            display: flex
+            justify-content: center  
+            align-items: center
+            font-family: monospace
+            color: #dddddd
+            font-size: 25px
+            background-color: #efefef
+            // margin: 3px
+            &:hover 
+                background-color: darkgrey
+            &.active 
+                background-color: yellow
+                color: #00ff00
+            &.selected
+                background-color: lightblue
+                color: #0000ff

@@ -9,6 +9,7 @@ export default createSelector(
   (songState: SongState, controlsState: ControlsState) => {
     const {
       song,
+      grid,
       activeNotes,
     } = songState;
 
@@ -17,6 +18,7 @@ export default createSelector(
     } = controlsState;
 
     let activeNotesArray:Array<MIDINote> = [];
+    
     if (song !== null && song.tracks.length > 0) {
       const trackId = song.tracks[trackIndex].id;
       activeNotesArray = Object.values(activeNotes).filter((note: MIDINote) => {

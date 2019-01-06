@@ -2,6 +2,7 @@ import { Action } from "redux";
 
 export interface SongState {
   song: null | HeartbeatSong
+  grid: null | Array<Array<GridItem>>
   trackList: Array<Track>
   instrumentList: Array<string>
   songList: Array<HeartbeatSong>
@@ -12,6 +13,7 @@ export interface SongState {
   tick?: number
   barsAsString?: string
   activeNotes: Array<MIDINote>
+  granularity: number
 };
 
 export interface ControlsState {
