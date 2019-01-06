@@ -112,7 +112,7 @@ class Song extends React.Component {
     // this.song.update();
     song.setLeftLocator('barsbeats', 1, 1, 1, 0);
     song.setRightLocator('barsbeats', lastBar + 1, 1, 1, 0);
-    song.setLoop();
+    song.setLoop(true);
     this.setInstrument(song);
     this.soloTrack(song);
   }

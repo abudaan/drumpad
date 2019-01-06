@@ -6,11 +6,11 @@ export interface SongState {
   instrumentList: Array<string>
   songList: Array<HeartbeatSong>
   position?: SongPosition,
-  bar: number,
-  beat: number,
-  sixteenth: number,
-  tick: number,
-  barsAsString: string,
+  bar?: number,
+  beat?: number,
+  sixteenth?: number,
+  tick?: number,
+  barsAsString?: string,
   activeNotes: Array<MIDINote>
 };
 

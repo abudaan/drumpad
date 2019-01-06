@@ -91,7 +91,7 @@ const createSongFromMIDIFile2 = (url: string) => loadArrayBuffer(url)
 
 // parse config file and load all assets that are listed in the config file
 const parseConfig = (config: Config): Promise<null | AssetPack> => {
-  stopAllSongs();
+  // stopAllSongs();
   return new Promise(async (resolve) => {
     let assetPack = null;
     if (config.midiFile) {
@@ -108,7 +108,7 @@ const createSongList = (): Array<HeartbeatSong> => sequencer.getMidiFiles().map(
 
 const addEndListener = (songList: Array<HeartbeatSong>, dispatch: Dispatch) => {
   songList.forEach(song => {
-    if(isNil(song.listeners['end'])) {
+    if (isNil(song.listeners['end'])) {
       song.addEventListener('end', () => {
         dispatch(stop());
       })
@@ -175,14 +175,15 @@ export const selectInstrument = (instrumentIndex: number) => ({
   }
 });
 
-export const selectSong = (songIndex: number) => {
+export const selectSong = (songIndex: number) => (dispatch: Dispatch) => {
   stopAllSongs();
-  return {
+  dispatch(stop());
+  dispatch({
     type: SELECT_SONG,
     payload: {
       songIndex,
     }
-  }
+  });
 }
 
 export const loadSample = (url: string) => async (dispatch: Dispatch) => {
