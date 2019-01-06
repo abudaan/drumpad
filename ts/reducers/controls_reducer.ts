@@ -7,7 +7,7 @@ const controlsInitialState = {
   stopped: true,
   loop: true,
   trackIndex: 0,
-  midiFileIndex: 0,
+  songIndex: 0,
   instrumentIndex: 0,
   tempo: 120,
   tempoTmp: 120,
@@ -46,21 +46,21 @@ const controls = (state: ControlsState = controlsInitialState, action: IAction<a
       ...state,
       tempo: action.payload.tempo
     };
-  } else if (action.type === Actions.SET_TRACK) {
+  } else if (action.type === Actions.SELECT_TRACK) {
     return {
       ...state,
       trackIndex: action.payload.trackIndex,
     };
-  } else if (action.type === Actions.SET_INSTRUMENT) {
+  } else if (action.type === Actions.SELECT_INSTRUMENT) {
     return {
       ...state,
       instrumentIndex: action.payload.instrumentIndex,
     };
-  } else if (action.type === Actions.SET_MIDIFILE) {
+  } else if (action.type === Actions.SELECT_SONG) {
     return {
       ...state,
       trackIndex: 0,
-      midiFileIndex: action.payload.midiFileIndex,
+      songIndex: action.payload.songIndex,
     };
   } else   if (action.type === Actions.SEQUENCER_PLAY) {
     return {

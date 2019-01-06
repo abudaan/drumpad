@@ -1,10 +1,10 @@
 import { Action } from "redux";
 
 export interface SongState {
-  song: null | HeartbeatSong,
+  song: null | HeartbeatSong
   trackList: Array<Track>
   instrumentList: Array<string>
-  midiFileList: Array<string>
+  songList: Array<HeartbeatSong>
   position?: SongPosition,
   bar: number,
   beat: number,
@@ -21,7 +21,7 @@ export interface ControlsState {
   tempo: number,
   bars: number,
   trackIndex: number,
-  midiFileIndex: number,
+  songIndex: number,
   instrumentIndex: number,
   controlsEnabled: boolean,
   tempoTmp: number,
@@ -53,6 +53,9 @@ export interface SongPosition {
   activeNotes: Array<MIDIEvent>,
 };
 
+export type Listener = {
+  [key: string]: any,
+}
 
 export interface HeartbeatSong {
   bar: number,
@@ -62,14 +65,16 @@ export interface HeartbeatSong {
   barsAsString: string,
   activeNotes: Array<MIDIEvent>,
   id: string,
+  name: string,
   loop: boolean;
   playing: boolean,
   bpm: number,
-  durationTicks: number,
+  durationTicks: number
   tracks: Array<Track>
-  play: () => void,
-  pause: () => void,
-  stop: () => void,
+  listeners: Listener
+  play: () => void
+  pause: () => void
+  stop: () => void
   setTempo: (bpm: number, update?: boolean) => void,
   addEventListener: (event: string, typeOrCallback: any, callback?: () => void) => void,
   removeEventListener: (type: string) => void,
@@ -79,34 +84,34 @@ export interface HeartbeatSong {
 };
 
 export interface MIDIEvent {
-  bar: number,
-  type: number,
-  data1: number,
-  data2: number,
-  ticks: number,
-  noteName: string,
-  noteNumber: number,
+  bar: number
+  type: number
+  data1: number
+  data2: number
+  ticks: number
+  noteName: string
+  noteNumber: number
 };
 
 export interface MIDINote extends MIDIEvent {
-  trackId: string,
-  track: Track,
-  number: number,
+  trackId: string
+  track: Track
+  number: number
 }
 
 export interface Track {
-  id: string,
-  name: string,
-  events: Array<MIDIEvent>,
+  id: string
+  name: string
+  events: Array<MIDIEvent>
 };
 
 export interface Instrument {
-  name: string,
+  name: string
 };
 
 export interface AssetPack {
   instruments: Array<Instrument>,
-  midifiles: Array<MIDIFileJSON>,
+  midifiles: Array<string>,
 }
 
 export interface MIDIFileJSON {
@@ -128,7 +133,6 @@ export interface Config {
 
 // result of parsing the config file
 export interface ConfigData {
-  song: null | HeartbeatSong,
   assetPack: null | AssetPack,
 };
 

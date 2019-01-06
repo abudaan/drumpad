@@ -17,7 +17,7 @@ const getStore = () => {
     compose(
       applyMiddleware(
         thunkMiddleware,
-        // createLogger({ collapsed: true }),
+        createLogger({ collapsed: true }),
       ),
     ),
   );

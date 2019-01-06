@@ -7,16 +7,17 @@ import {
   updateTempo,
   updatePosition,
   setLoop,
-  setTrack,
-  setMIDIFile,
-  setInstrument,
+  selectTrack,
+  selectSong,
+  selectInstrument,
   play,
   stop,
 } from '../actions'
 import { State, SongPosition, HeartbeatSong, AssetPack, MIDINote } from '../interfaces';
-import getTrackProps from '../reducers/track_selector';
-import getActiveNotes from '../reducers/notes_selector';
+// import getSong from '../reducers/song_selector';
+import getTrack from '../reducers/track_selector';
 import getInstrument from '../reducers/instrument_selector';
+import getActiveNotes from '../reducers/notes_selector';
 import Grid from '../components/grid';
 import Controls from '../components/controls';
 import Song from '../components/song';
@@ -28,7 +29,7 @@ interface App {
 type PropTypes = {
   // passed
   configUrl: string,
-  
+
   // from controls_reducer
   trackIndex: number,
   controlsEnabled: boolean,
@@ -44,17 +45,17 @@ type PropTypes = {
   song: null | HeartbeatSong
   assetPack: null | AssetPack,
   trackList: Array<string>,
-  midiFileList: Array<string>,
+  songList: Array<HeartbeatSong>,
   instrumentList: Array<string>,
   beat: number,
   sixteenth: number,
-  
+
   // from track_selector
   noteNumbers: Array<number>,
-  
+
   // from notes_selector
   activeNotes: Array<MIDINote>,
-  
+
   // from instrument_selector
   instrumentName: string,
 
@@ -73,15 +74,16 @@ type PropTypes = {
 
 const mapStateToProps = (state: State) => {
   return {
-    ...getTrackProps(state),
-    ...getActiveNotes(state),
+    // ...getSong(state),
+    ...getTrack(state),
     ...getInstrument(state),
+    ...getActiveNotes(state),
 
     // from song_reducer
     song: state.song.song,
     trackList: state.song.trackList,
     instrumentList: state.song.instrumentList,
-    midiFileList: state.song.midiFileList,
+    songList: state.song.songList,
     beat: state.song.beat,
     sixteenth: state.song.sixteenth,
 
@@ -96,7 +98,7 @@ const mapStateToProps = (state: State) => {
     tempoTmp: state.controls.tempoTmp,
     tempoMin: state.controls.tempoMin,
     tempoMax: state.controls.tempoMax,
-    };
+  };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
@@ -108,9 +110,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     play,
     stop,
     setLoop,
-    setTrack,
-    setMIDIFile,
-    setInstrument,
+    setTrack: selectTrack,
+    setMIDIFile: selectSong,
+    setInstrument: selectInstrument,
   }, dispatch);
 }
 
@@ -128,8 +130,8 @@ class App extends React.PureComponent {
         barsAsString,
         activeNotes,
       } = this.props.song;
-      
-      if(sixteenth !== this.props.sixteenth) {
+
+      if (sixteenth !== this.props.sixteenth) {
         this.props.updatePosition({
           bar,
           beat,
@@ -157,7 +159,7 @@ class App extends React.PureComponent {
       <Controls
         enabled={this.props.controlsEnabled}
         trackList={this.props.trackList}
-        midiFileList={this.props.midiFileList}
+        songList={this.props.songList}
         instrumentList={this.props.instrumentList}
         playing={this.props.playing}
         loop={this.props.loop}

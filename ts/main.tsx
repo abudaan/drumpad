@@ -23,7 +23,7 @@ setTimeout(() => {
   // store.dispatch(loadAssetPack('./data/Kit-Jungle.json')).then(() => {
   //   store.dispatch(loadMIDIFile('./data/track9.mid'));
   // })
-  store.dispatch(loadMIDIFile('./data/track9.mid'));
+  // store.dispatch(loadMIDIFile('./data/track9.mid'));
   // store.dispatch(loadMIDIFile('./data/track14.mid'));
   // store.dispatch(loadAssetPack('./data/Kit-Jungle.json'));
 }, 3000)

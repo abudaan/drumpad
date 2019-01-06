@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import { State, ControlsState, SongState, Track, MIDIEvent } from '../interfaces';
-import { uniq } from 'ramda';
+import { uniq, isNil } from 'ramda';
 
 const getSongState = (state: State): SongState => state.song;
 const getControlsState = (state: State): ControlsState => state.controls;
@@ -13,13 +13,14 @@ export default createSelector(
     } = songState;
 
     const {
-      granularity,
       trackIndex,
+      granularity,
     } = controlsState;
 
     let noteNumbers: Array<number> = [];
     let granularityTrack: number = Number.MAX_VALUE;
-    if (song !== null && song.tracks.length > 0) {
+    
+    if (!isNil(song) && song.tracks.length > 0) {
       const track = song.tracks[trackIndex];
       granularityTrack = getGranularity(track);
       noteNumbers = getUniqNotes(track);
