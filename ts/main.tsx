@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import getStore from './reducers/store';
 import App from './containers/app';
-import { loadInstrument, loadMIDIFile, loadAssetPack, loadConfig } from './actions';
+import { loadInstrument, loadMIDIFile, loadAssetPack, loadConfig } from './actions/actions';
 
 const store = getStore();
 

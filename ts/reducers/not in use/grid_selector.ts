@@ -1,5 +1,10 @@
+
+
+// NOT IN USE, KEPT FOR REFERENCE
+
+
 import { createSelector } from 'reselect';
-import { SongState, State, ControlsState, Track, MIDINote } from '../interfaces';
+import { SongState, State, ControlsState, Track, MIDINote } from '../../interfaces';
 import { isNil } from 'ramda';
 
 const getSongState = (state: State): SongState => state.song;

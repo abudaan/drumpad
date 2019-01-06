@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { State, SongState, ControlsState, MIDINote } from '../interfaces';
+import { State, SongState, ControlsState, MIDINote, MIDIEvent } from '../interfaces';
 
 const getSongState = (state: State): SongState => state.song;
 const getControlsState = (state: State): ControlsState => state.controls;
@@ -9,7 +9,6 @@ export default createSelector(
   (songState: SongState, controlsState: ControlsState) => {
     const {
       song,
-      grid,
       activeNotes,
     } = songState;
 
@@ -27,7 +26,6 @@ export default createSelector(
         }
       });
     }
-
     return {
       activeNotes: activeNotesArray,
     };

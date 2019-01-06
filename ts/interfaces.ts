@@ -14,6 +14,7 @@ export interface SongState {
   barsAsString?: string
   activeNotes: Array<MIDINote>
   granularity: number
+  trackIndex: number
 };
 
 export interface ControlsState {
@@ -151,7 +152,10 @@ export interface SongInfo {
 }
 
 export interface GridItem {
-  ticks: number,
-  noteNumber: number,
-  midiEvent: null | MIDIEvent,
+  ticks: number
+  noteNumber: number
+  midiEvent: null | MIDIEvent
+  active: boolean
 }
+
+export type GridType = Array<Array<GridItem>>;

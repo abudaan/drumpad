@@ -1,6 +1,6 @@
-import * as Actions from '../actions';
+import * as Actions from '../actions/actions';
 import { SongState, IAction, Track } from '../interfaces';
-import { createGrid } from '../action_grid_utils';
+import { createGrid, updateGrid } from './grid_utils';
 
 const songInitialState = {
   grid: null,
@@ -11,6 +11,7 @@ const songInitialState = {
   instrumentList: [],
   instrumentName: null,
   granularity: 8,
+  trackIndex: 0,
 };
 
 const song = (state: SongState = songInitialState, action: IAction<any>) => {
@@ -22,13 +23,13 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       granularity,
     } = action.payload;
     const song = songList[0];
-    const data = createGrid(song, 0, granularity);
+    const { grid, granularity: newGranularity } = createGrid(song, 0, granularity);
 
     return {
       ...state,
       song,
-      grid: data.grid,
-      granularity: data.granularity,
+      grid,
+      granularity: newGranularity,
       assetPack,
       songList,
       trackList: song.tracks.map((t: Track) => t.name),
@@ -50,10 +51,19 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       songList: action.payload.songList,
     };
   } else if (action.type === Actions.UPDATE_POSITION) {
+    if (state.song !== null && state.grid !== null) {
+      // const trackId = state.song.tracks[state.trackIndex].id;
+      // const grid = updateGrid(state.grid, trackId, action.payload.position.activeNotes);
+      return {
+        ...state,
+        ...action.payload.position,
+        // grid,
+      };
+    }
     return {
       ...state,
       ...action.payload.position,
-    };
+    }
   } else if (action.type === Actions.ASSETPACK_LOADED) {
     return {
       ...state,
@@ -73,11 +83,17 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       activeNotes: [],
     };
   } else if (action.type === Actions.SELECT_TRACK) {
-    const { grid } = createGrid(state.song, action.payload.trackIndex, state.granularity)
-    return {
-      ...state,
-      grid,
-    };
+    if (state.song !== null) {
+      const { trackIndex } = action.payload;
+      const { grid, granularity: newGranularity } = createGrid(state.song, trackIndex, state.granularity);
+      return {
+        ...state,
+        trackIndex,
+        grid,
+        granularity: newGranularity
+      };
+    }
+    return state;
   }
   return state;
 };

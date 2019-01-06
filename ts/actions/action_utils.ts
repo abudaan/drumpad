@@ -1,5 +1,5 @@
 import sequencer from 'heartbeat-sequencer';
-import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config } from './interfaces';
+import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config } from '../interfaces';
 import { isNil } from 'ramda';
 import { Action } from 'redux';
 
@@ -100,7 +100,7 @@ const createSongList = (): Array<HeartbeatSong> =>
     sequencer.createSong(mf));
 
 
-const addEndListener = (songList: Array<HeartbeatSong>, action: Action) => {
+const addEndListener = (songList: Array<HeartbeatSong>, action: () => void) => {
   songList.forEach(song => {
     if (isNil(song.listeners['end'])) {
       song.addEventListener('end', () => {

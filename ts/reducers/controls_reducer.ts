@@ -1,4 +1,4 @@
-import * as Actions from '../actions';
+import * as Actions from '../actions/actions';
 import { ControlsState, IAction } from '../interfaces'
 
 const controlsInitialState = {
@@ -12,8 +12,7 @@ const controlsInitialState = {
   tempo: 120,
   tempoTmp: 120,
   tempoMin: 20,
-  tempoMax: 300,
-  granularity: 8,
+  tempoMax: 200,
   granularityOptions: [
     4,
     8,
@@ -29,8 +28,18 @@ const controls = (state: ControlsState = controlsInitialState, action: IAction<a
       controlsEnabled: false,
     };
   } else if (action.type === Actions.CONFIG_LOADED) {
+    const {
+      loop,
+      tempoMin,
+      tempoMax,
+      granularityOptions,
+    } = action.payload;
     return {
       ...state,
+      granularityOptions,
+      loop,
+      tempoMin,
+      tempoMax,
       controlsEnabled: true,
     };
   } else if (action.type === Actions.ASSETPACK_LOADED) {

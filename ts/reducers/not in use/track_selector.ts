@@ -4,7 +4,7 @@
 
 
 import { createSelector } from 'reselect';
-import { State, ControlsState, SongState, Track, MIDIEvent, HeartbeatSong, GridItem } from '../interfaces';
+import { State, ControlsState, SongState, Track, MIDIEvent, HeartbeatSong, GridItem } from '../../interfaces';
 import { uniq, isNil } from 'ramda';
 
 const getSongState = (state: State): SongState => state.song;

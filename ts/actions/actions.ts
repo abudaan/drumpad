@@ -1,17 +1,17 @@
 import { Dispatch, Action } from 'redux';
-import { SongPosition, IAction } from './interfaces';
+import { SongPosition, IAction } from '../interfaces';
 import { ChangeEvent } from 'react';
-import { 
-  loadJSON, 
-  parseConfig, 
-  createSongList, 
-  addEndListener, 
-  getLoadedInstruments, 
-  addAssetPack, 
-  addMIDIFile, 
-  loadArrayBuffer, 
+import {
+  loadJSON,
+  parseConfig,
+  createSongList,
+  addEndListener,
+  getLoadedInstruments,
+  addAssetPack,
+  addMIDIFile,
+  loadArrayBuffer,
   stopAllSongs
-} from './action_song_utils';
+} from './action_utils';
 
 export const LOADING = 'LOADING'; // generic load action
 export const LOAD_ERROR = 'LOAD_ERROR';
@@ -34,7 +34,7 @@ export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
   const config = await loadJSON(configUrl);
   const assetPack = await parseConfig(config);
   const songList = createSongList();
-  addEndListener(songList, dispatch(stop()));
+  addEndListener(songList, () => { dispatch(stop()) });
   dispatch({
     type: CONFIG_LOADED,
     payload: {
@@ -66,7 +66,7 @@ export const loadMIDIFile = (url: string) => async (dispatch: Dispatch) => {
   });
   await addMIDIFile(url);
   const songList = createSongList();
-  addEndListener(songList, dispatch(stop()));
+  addEndListener(songList, () => { dispatch(stop()); });
   dispatch({
     type: MIDIFILE_LOADED,
     payload: {
@@ -155,24 +155,3 @@ export const updatePosition = (position: SongPosition): IAction<any> => ({
     position,
   }
 });
-
-
-
-/*
-const loadConfig = async (url: string): Promise<any> => fetch(url)
-  .then(status)
-  .then(response => response.json())
-  .then(data => parseConfig(data))
-  .catch(e => console.error(e));
-
-export const sequencerReady = (configUrl: string) => async (dispatch: Dispatch) => {
-  const data = await loadConfig(configUrl);
-  dispatch({
-    type: CONFIG_LOADED,
-    payload: {
-      data,
-    }
-  });
-};
-*/
-

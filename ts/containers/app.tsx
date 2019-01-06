@@ -12,8 +12,8 @@ import {
   selectInstrument,
   play,
   stop,
-} from '../actions'
-import { State, SongPosition, HeartbeatSong, AssetPack, MIDINote, GridItem } from '../interfaces';
+} from '../actions/actions'
+import { State, SongPosition, HeartbeatSong, AssetPack, MIDINote, GridItem, GridType } from '../interfaces';
 // import getSong from '../reducers/song_selector';
 // import getTrack from '../reducers/track_selector';
 import getInstrument from '../reducers/instrument_selector';
@@ -42,7 +42,7 @@ type PropTypes = {
   tempoMax: number,
 
   // from song_reducer
-  grid: null | Array<Array<GridItem>>,
+  grid: null | GridType,
   song: null | HeartbeatSong
   assetPack: null | AssetPack,
   trackList: Array<string>,
@@ -183,6 +183,9 @@ class App extends React.PureComponent {
       <Grid
         grid={this.props.grid}
         enabled={this.props.controlsEnabled}
+        activeNotes={this.props.activeNotes}
+        onChange={() => {}}
+        playing={this.props.playing}
       ></Grid>
 
       <Song
