@@ -76,21 +76,24 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     };
   } else if (action.type === Actions.SELECT_SONG) {
     const song = state.songList[action.payload.songIndex];
+    const { grid, granularity } = createGrid(song, state.trackIndex, state.granularity);
     return {
       ...state,
       song,
       trackList: song.tracks.map((t: Track) => t.name),
+      grid,
+      granularity,
       activeNotes: [],
     };
   } else if (action.type === Actions.SELECT_TRACK) {
     if (state.song !== null) {
       const { trackIndex } = action.payload;
-      const { grid, granularity: newGranularity } = createGrid(state.song, trackIndex, state.granularity);
+      const { grid, granularity } = createGrid(state.song, trackIndex, state.granularity);
       return {
         ...state,
         trackIndex,
         grid,
-        granularity: newGranularity
+        granularity
       };
     }
     return state;

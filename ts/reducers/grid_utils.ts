@@ -22,7 +22,7 @@ const updateGranularity = (events: Array<MIDIEvent>, ppq: number, currentGranula
 }
 
 const getEvent = (events: Array<MIDIEvent>, ticks: number, noteNumber: number): null | MIDIEvent => {
-  const match = events.filter(event => event.ticks === ticks && event.noteNumber === noteNumber);
+  const match = events.filter(event => event.type === 144 && event.velocity > 0 && event.ticks === ticks && event.noteNumber === noteNumber);
   return match[0] || null;
 }
 
@@ -56,41 +56,6 @@ const createGrid = (song: HeartbeatSong, trackIndex: number, currentGranularity:
   }
 };
 
-const filterTrackNotes = (trackId: string, activeNotes: Array<MIDINote>): Array<MIDINote> => {
-  const activeNotesArray = Object.values(activeNotes).filter((note: MIDINote) => {
-    if (note.trackId === trackId) {
-      return note;
-    }
-  });
-  return activeNotesArray;
-};
-
-const checkActive = (event: MIDIEvent, notes: Array<MIDINote>) => {
-  for(let i = 0; i < notes.length; i++) {
-    const note = notes[i];
-    if (note.ticks === event.ticks && note.number === event.noteNumber) {
-      return true;
-    }
-  }
-  return false;
-}
-
-const updateGrid = (oldGrid: GridType, trackId: string, activeNotes: Array<MIDINote>) => {
-  // const copy = JSON.parse(JSON.stringify(oldGrid));
-  // const copy = clone(oldGrid);
-  const copy = [...oldGrid];
-  const events = filterTrackNotes(trackId, activeNotes);
-  copy.forEach(column => {
-    column.forEach(cell => {
-      if (cell.midiEvent !== null) {
-        checkActive(cell.midiEvent, events);
-      }
-    })
-  });
-  return copy;
-};
-
 export {
   createGrid,
-  updateGrid,
 };

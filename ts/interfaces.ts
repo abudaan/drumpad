@@ -98,6 +98,7 @@ export interface MIDIEvent {
   ticks: number
   noteName: string
   noteNumber: number
+  velocity: number
 };
 
 export interface MIDINote extends MIDIEvent {
