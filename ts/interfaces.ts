@@ -15,8 +15,10 @@ export interface SongState {
   timestamp: number
   activeNotes: Array<MIDINote>
   granularity: number
+  granularityTicks: number
   updateInterval: number
   trackIndex: number
+  activeColumn: number
 };
 
 export interface ControlsState {
@@ -53,9 +55,11 @@ export interface SongPosition {
   bar?: number
   beat?: number
   sixteenth?: number
-  ticks?: number
+  tick?: number
+  ticks: number
+  timestamp: number
   barsAsString: string
-  activeNotes: Array<MIDIEvent>
+  activeColumn: number,
 };
 
 export type Listener = {

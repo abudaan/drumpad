@@ -7,9 +7,9 @@ interface PropTypes {
   onMouseDown?: (event: MouseEvent) => void,
   onMouseUp?: (event: MouseEvent) => void,
   grid: null | GridType,
+  activeColumn: number,
   enabled: boolean,
   playing: boolean,
-  activeNotes: Array<MIDINote>,
 };
 
 interface Grid {
@@ -17,20 +17,6 @@ interface Grid {
 };
 
 class Grid extends React.Component {
-  checkActive(event: MIDIEvent) {
-    if (this.props.playing === false) {
-      return false;
-    }
-    for(let i = 0; i < this.props.activeNotes.length; i++) {
-      const note = this.props.activeNotes[i];
-      // console.log (note.ticks, event.ticks, note.number, event.noteNumber);
-      if (note.ticks === event.ticks && note.number === event.noteNumber) {
-        return true;
-      }
-    }
-    return false;  
-  }
-
   render() {
     if (!this.props.grid) {
       return false;
@@ -44,11 +30,12 @@ class Grid extends React.Component {
     const columns = [];
     for (let c = 0; c < numColumns; c++) {
       const rows = [];
+      const active = c === this.props.activeColumn;
       for (let r = 0; r < numRows; r++) {
         const item = this.props.grid[c][r];
         const classNames = ['cell'];
         if (item.midiEvent !== null) {
-          if (this.checkActive(item.midiEvent) === true) {
+          if (active === true) {
             classNames.push('active');
           } else {
             classNames.push('selected');
@@ -64,8 +51,12 @@ class Grid extends React.Component {
           ></Cell>
         );
       }
+      const classNames = ['column'];
+      if(active) {
+        classNames.push('active');
+      }
       columns.push(
-        <div key={`column${c}`} className="column">{rows}</div>
+        <div key={`column${c}`} className={classNames.join(' ')}>{rows}</div>
       )
     }
     return (

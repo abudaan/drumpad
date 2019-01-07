@@ -26,7 +26,7 @@ const getEvent = (events: Array<MIDIEvent>, ticks: number, noteNumber: number): 
   return match[0] || null;
 }
 
-type cg = { grid: GridType, granularity: number, updateInterval: number };
+type cg = { grid: GridType, granularity: number, updateInterval: number, granularityTicks: number };
 const createGrid = (song: HeartbeatSong, trackIndex: number, currentGranularity: number): cg => {
   const events = filterEvents(song.tracks[trackIndex].events);
   const granularity = updateGranularity(events, song.ppq, currentGranularity);
@@ -55,6 +55,7 @@ const createGrid = (song: HeartbeatSong, trackIndex: number, currentGranularity:
   return {
     grid,
     granularity,
+    granularityTicks,
     updateInterval,
   }
 };

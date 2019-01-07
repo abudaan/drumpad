@@ -7,10 +7,10 @@ const songInitialState = {
   song: null,
   songList: [],
   trackList: [],
-  activeNotes: [],
   instrumentList: [],
   instrumentName: null,
   granularity: 8,
+  granularityTicks: 120,
   trackIndex: 0,
   updateInterval: 0, // in millis
 };
@@ -24,13 +24,14 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       granularity,
     } = action.payload;
     const song = songList[0];
-    const { grid, granularity: newGranularity, updateInterval } = createGrid(song, 0, granularity);
-
+    const { grid, granularity: newGranularity, updateInterval, granularityTicks } = createGrid(song, 0, granularity);
+    
     return {
       ...state,
       song,
       grid,
       granularity: newGranularity,
+      granularityTicks,
       updateInterval,
       assetPack,
       songList,
@@ -78,7 +79,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     };
   } else if (action.type === Actions.SELECT_SONG) {
     const song = state.songList[action.payload.songIndex];
-    const { grid, granularity, updateInterval } = createGrid(song, 0, state.granularity);
+    const { grid, granularity, updateInterval, granularityTicks } = createGrid(song, 0, state.granularity);
     return {
       ...state,
       song,
@@ -86,18 +87,20 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       trackIndex: 0,
       grid,
       granularity,
+      granularityTicks,
       updateInterval,
       activeNotes: [],
     };
   } else if (action.type === Actions.SELECT_TRACK) {
     if (state.song !== null) {
       const { trackIndex } = action.payload;
-      const { grid, granularity, updateInterval } = createGrid(state.song, trackIndex, state.granularity);
+      const { grid, granularity, updateInterval, granularityTicks } = createGrid(state.song, trackIndex, state.granularity);
       return {
         ...state,
         trackIndex,
         grid,
         granularity,
+        granularityTicks,
         updateInterval,
       };
     }

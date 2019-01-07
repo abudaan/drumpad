@@ -37,7 +37,7 @@ class Song extends React.Component {
     this.songAction = PASS;
 
     if (nextProps.song !== null && 
-      (this.props.song === null || this.props.song !== null && nextProps.song.id !== this.props.song.id)
+       (this.props.song === null || (this.props.song !== null && nextProps.song.id !== this.props.song.id))
     ) {
       this.songAction = SONG;
 
@@ -107,26 +107,31 @@ class Song extends React.Component {
   }
 
   setupSong(song: HeartbeatSong) {
+    this.setLocators(song);
+    this.setInstrument(song);
+    this.soloTrack(song);
+  }
+  
+  setInstrument(song: HeartbeatSong) {
+    song.tracks.forEach((track: any, index: number) => {
+      track.setInstrument(this.props.instrumentName);
+    });
+  }
+  
+  soloTrack(song: HeartbeatSong) {
+    song.tracks.forEach((track: any, index: number) => {
+      track.mute = index !== this.props.trackIndex;
+    });
+    this.setLocators(song);
+  }
+
+  setLocators(song: HeartbeatSong) {
     const events = song.tracks[this.props.trackIndex].events.filter((e: MIDIEvent) => e.type === 144);
     const lastBar =  events[events.length - 1].bar;
     // this.song.update();
     song.setLeftLocator('barsbeats', 1, 1, 1, 0);
     song.setRightLocator('barsbeats', lastBar + 1, 1, 1, 0);
     song.setLoop(this.props.loop);
-    this.setInstrument(song);
-    this.soloTrack(song);
-  }
-
-  setInstrument(song: HeartbeatSong) {
-    song.tracks.forEach((track: any, index: number) => {
-      track.setInstrument(this.props.instrumentName);
-    });
-  }
-
-  soloTrack(song: HeartbeatSong) {
-    song.tracks.forEach((track: any, index: number) => {
-      track.mute = index !== this.props.trackIndex;
-    });
   }
 }
 

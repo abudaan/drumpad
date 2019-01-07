@@ -14,10 +14,7 @@ import {
   stop,
 } from '../actions/actions'
 import { State, SongPosition, HeartbeatSong, AssetPack, MIDINote, GridItem, GridType } from '../interfaces';
-// import getSong from '../reducers/song_selector';
-// import getTrack from '../reducers/track_selector';
 import getInstrument from '../reducers/instrument_selector';
-import getActiveNotes from '../reducers/notes_selector';
 import Grid from '../components/grid';
 import Controls from '../components/controls';
 import Song from '../components/song';
@@ -48,14 +45,11 @@ type PropTypes = {
   trackList: Array<string>,
   songList: Array<HeartbeatSong>,
   instrumentList: Array<string>,
+  ticks: number,
+  activeColumn: number,
   timestamp: number,
   updateInterval: number,
-
-  // from track_selector
-  // grid: Array<Array<any>>,
-
-  // from notes_selector
-  activeNotes: Array<MIDINote>,
+  granularityTicks: number,
 
   // from instrument_selector
   instrumentName: string,
@@ -78,7 +72,7 @@ const mapStateToProps = (state: State) => {
     // ...getSong(state),
     // ...getTrack(state),
     ...getInstrument(state),
-    ...getActiveNotes(state),
+    // ...getActiveNotes(state),
 
     // from song_reducer
     song: state.song.song,
@@ -87,7 +81,10 @@ const mapStateToProps = (state: State) => {
     trackList: state.song.trackList,
     instrumentList: state.song.instrumentList,
     songList: state.song.songList,
-    
+    ticks: state.song.ticks,
+    activeColumn: state.song.activeColumn,
+    granularityTicks: state.song.granularityTicks,
+
     // from controls
     trackIndex: state.controls.trackIndex,
     instrumentIndex: state.controls.instrumentIndex,
@@ -126,17 +123,18 @@ class App extends React.PureComponent {
   updateUI() {
     if (this.props.song !== null) {
       const {
+        ticks,
         barsAsString,
-        activeNotes,
       } = this.props.song;
-      
-      const timestamp =  performance.now();
 
-      if (this.props.playing && (timestamp - this.props.timestamp) >= 120) {
+      const timestamp = performance.now();
+
+      if (this.props.playing && (timestamp - this.props.timestamp) >= this.props.updateInterval) {
         this.props.updatePosition({
+          ticks,
           timestamp,
           barsAsString,
-          activeNotes,
+          activeColumn: Math.floor(ticks / this.props.granularityTicks),
         });
       }
     }
@@ -179,9 +177,9 @@ class App extends React.PureComponent {
 
       <Grid
         grid={this.props.grid}
+        activeColumn={this.props.activeColumn}
         enabled={this.props.controlsEnabled}
-        activeNotes={this.props.activeNotes}
-        onChange={() => {}}
+        onChange={() => { }}
         playing={this.props.playing}
       ></Grid>
 
