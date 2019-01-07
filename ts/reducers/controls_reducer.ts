@@ -19,6 +19,7 @@ const controlsInitialState = {
     16,
     32
   ],
+  timestamp: 0,
 };
 
 const controls = (state: ControlsState = controlsInitialState, action: IAction<any>) => {
@@ -83,6 +84,7 @@ const controls = (state: ControlsState = controlsInitialState, action: IAction<a
       ...state,
       playing: !state.playing,
       stopped: false,
+      timestamp: performance.now(),
     };
   } else if (action.type === Actions.SEQUENCER_STOP) {
     return {

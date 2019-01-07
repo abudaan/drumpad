@@ -48,8 +48,8 @@ type PropTypes = {
   trackList: Array<string>,
   songList: Array<HeartbeatSong>,
   instrumentList: Array<string>,
-  beat: number,
-  sixteenth: number,
+  timestamp: number,
+  updateInterval: number,
 
   // from track_selector
   // grid: Array<Array<any>>,
@@ -83,12 +83,11 @@ const mapStateToProps = (state: State) => {
     // from song_reducer
     song: state.song.song,
     grid: state.song.grid,
+    updateInterval: state.song.updateInterval,
     trackList: state.song.trackList,
     instrumentList: state.song.instrumentList,
     songList: state.song.songList,
-    beat: state.song.beat,
-    sixteenth: state.song.sixteenth,
-
+    
     // from controls
     trackIndex: state.controls.trackIndex,
     instrumentIndex: state.controls.instrumentIndex,
@@ -100,6 +99,7 @@ const mapStateToProps = (state: State) => {
     tempoTmp: state.controls.tempoTmp,
     tempoMin: state.controls.tempoMin,
     tempoMax: state.controls.tempoMax,
+    timestamp: state.controls.timestamp,
   };
 };
 
@@ -126,18 +126,15 @@ class App extends React.PureComponent {
   updateUI() {
     if (this.props.song !== null) {
       const {
-        bar,
-        beat,
-        sixteenth,
         barsAsString,
         activeNotes,
       } = this.props.song;
+      
+      const timestamp =  performance.now();
 
-      if (sixteenth !== this.props.sixteenth) {
+      if (this.props.playing && (timestamp - this.props.timestamp) >= 120) {
         this.props.updatePosition({
-          bar,
-          beat,
-          sixteenth,
+          timestamp,
           barsAsString,
           activeNotes,
         });

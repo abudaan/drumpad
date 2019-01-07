@@ -66,7 +66,7 @@ class Song extends React.Component {
   }
 
   render() {
-    console.log('<Song> render', this.songAction, this.props);
+    console.log('<Song> render', this.songAction);
     if (this.props.song === null || this.songAction === PASS) {
       return false;
     }

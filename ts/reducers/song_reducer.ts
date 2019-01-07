@@ -1,6 +1,6 @@
 import * as Actions from '../actions/actions';
 import { SongState, IAction, Track } from '../interfaces';
-import { createGrid, updateGrid } from './grid_utils';
+import { createGrid } from './grid_utils';
 
 const songInitialState = {
   grid: null,
@@ -12,6 +12,7 @@ const songInitialState = {
   instrumentName: null,
   granularity: 8,
   trackIndex: 0,
+  updateInterval: 0, // in millis
 };
 
 const song = (state: SongState = songInitialState, action: IAction<any>) => {
@@ -23,13 +24,14 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       granularity,
     } = action.payload;
     const song = songList[0];
-    const { grid, granularity: newGranularity } = createGrid(song, 0, granularity);
+    const { grid, granularity: newGranularity, updateInterval } = createGrid(song, 0, granularity);
 
     return {
       ...state,
       song,
       grid,
       granularity: newGranularity,
+      updateInterval,
       assetPack,
       songList,
       trackList: song.tracks.map((t: Track) => t.name),
@@ -76,24 +78,27 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     };
   } else if (action.type === Actions.SELECT_SONG) {
     const song = state.songList[action.payload.songIndex];
-    const { grid, granularity } = createGrid(song, state.trackIndex, state.granularity);
+    const { grid, granularity, updateInterval } = createGrid(song, 0, state.granularity);
     return {
       ...state,
       song,
       trackList: song.tracks.map((t: Track) => t.name),
+      trackIndex: 0,
       grid,
       granularity,
+      updateInterval,
       activeNotes: [],
     };
   } else if (action.type === Actions.SELECT_TRACK) {
     if (state.song !== null) {
       const { trackIndex } = action.payload;
-      const { grid, granularity } = createGrid(state.song, trackIndex, state.granularity);
+      const { grid, granularity, updateInterval } = createGrid(state.song, trackIndex, state.granularity);
       return {
         ...state,
         trackIndex,
         grid,
-        granularity
+        granularity,
+        updateInterval,
       };
     }
     return state;

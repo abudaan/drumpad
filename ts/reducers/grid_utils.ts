@@ -26,13 +26,15 @@ const getEvent = (events: Array<MIDIEvent>, ticks: number, noteNumber: number): 
   return match[0] || null;
 }
 
-const createGrid = (song: HeartbeatSong, trackIndex: number, currentGranularity: number): { grid: GridType, granularity: number } => {
+type cg = { grid: GridType, granularity: number, updateInterval: number };
+const createGrid = (song: HeartbeatSong, trackIndex: number, currentGranularity: number): cg => {
   const events = filterEvents(song.tracks[trackIndex].events);
   const granularity = updateGranularity(events, song.ppq, currentGranularity);
   const numBars = events[events.length - 1].bar;
   const notes = getUniqNotes(events);
   const totalTicks = numBars * (song.nominator * (4 / song.denominator) * song.ppq);
   const granularityTicks = (4 / granularity) * song.ppq;
+  const updateInterval = Math.round((granularityTicks / 2) * song.millisPerTick);
 
   const grid: Array<Array<GridItem>> = [];
   for (let i = 0; i < totalTicks; i += granularityTicks) {
@@ -49,10 +51,11 @@ const createGrid = (song: HeartbeatSong, trackIndex: number, currentGranularity:
     }
     grid.push(column);
   }
-  // console.log(grid);
+  // console.log(granularity, granularityTicks, updateInterval);
   return {
     grid,
     granularity,
+    updateInterval,
   }
 };
 

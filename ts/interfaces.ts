@@ -10,10 +10,12 @@ export interface SongState {
   bar?: number
   beat?: number
   sixteenth?: number
-  tick?: number
+  ticks?: number
   barsAsString?: string
+  timestamp: number
   activeNotes: Array<MIDINote>
   granularity: number
+  updateInterval: number
   trackIndex: number
 };
 
@@ -32,8 +34,7 @@ export interface ControlsState {
   tempoMax: number
   granularity: number
   granularityOptions: Array<number>
-  beats: Array<any>
-  notes: Array<any>
+  timestamp: number
 };
 
 export interface State {
@@ -49,9 +50,10 @@ export interface IAction<T> extends Action {
 }
 
 export interface SongPosition {
-  bar: number
-  beat: number
-  sixteenth: number
+  bar?: number
+  beat?: number
+  sixteenth?: number
+  ticks?: number
   barsAsString: string
   activeNotes: Array<MIDIEvent>
 };
@@ -68,6 +70,7 @@ export interface HeartbeatSong {
   beat: number
   sixteenth: number
   tick: number
+  ticks: number
   barsAsString: string
   activeNotes: Array<MIDIEvent>
   id: string
@@ -76,6 +79,7 @@ export interface HeartbeatSong {
   playing: boolean
   bpm: number
   durationTicks: number
+  millisPerTick: number
   tracks: Array<Track>
   listeners: Listener
   loopEndPosition: SongPosition
