@@ -1,6 +1,7 @@
 import * as Actions from '../actions/actions';
 import { SongState, IAction, Track } from '../interfaces';
 import { createGrid } from './grid_utils';
+import * as RenderActions from '../components/song';
 
 const songInitialState = {
   grid: null,
@@ -13,6 +14,7 @@ const songInitialState = {
   granularityTicks: 120,
   trackIndex: 0,
   updateInterval: 0, // in millis
+  renderAction: RenderActions.PASS,
 };
 
 const song = (state: SongState = songInitialState, action: IAction<any>) => {
@@ -37,6 +39,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       songList,
       trackList: song.tracks.map((t: Track) => t.name),
       instrumentList,
+      renderAction: RenderActions.SONG,
     };
   } else if (action.type === Actions.ASSETPACK_LOADED) {
     return {
@@ -54,15 +57,6 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       songList: action.payload.songList,
     };
   } else if (action.type === Actions.UPDATE_POSITION) {
-    if (state.song !== null && state.grid !== null) {
-      // const trackId = state.song.tracks[state.trackIndex].id;
-      // const grid = updateGrid(state.grid, trackId, action.payload.position.activeNotes);
-      return {
-        ...state,
-        ...action.payload.position,
-        // grid,
-      };
-    }
     return {
       ...state,
       ...action.payload.position,
@@ -90,6 +84,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       granularityTicks,
       updateInterval,
       activeNotes: [],
+      renderAction: RenderActions.SONG,
     };
   } else if (action.type === Actions.SELECT_TRACK) {
     if (state.song !== null) {
@@ -102,9 +97,31 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
         granularity,
         granularityTicks,
         updateInterval,
+        renderAction: RenderActions.SOLO_TRACK,
       };
     }
     return state;
+  } else if (action.type === Actions.SEQUENCER_PLAY) {
+    const renderAction = state.renderAction === RenderActions.PASS ? RenderActions.PAUSE : RenderActions.PLAY;
+    return {
+      ...state,
+      renderAction,
+    }
+  } else if (action.type === Actions.SEQUENCER_STOP) {
+    return {
+      ...state,
+      renderAction: RenderActions.STOP,
+    }
+  } else if (action.type === Actions.SELECT_INSTRUMENT) {
+    return {
+      ...state,
+      renderAction: RenderActions.SET_INSTRUMENT,
+    }
+  } else if (action.type === Actions.SET_LOOP) {
+    return {
+      ...state,
+      renderAction: RenderActions.SET_LOOP,
+    }
   }
   return state;
 };

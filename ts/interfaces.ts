@@ -19,6 +19,7 @@ export interface SongState {
   updateInterval: number
   trackIndex: number
   activeColumn: number
+  renderAction: string
 };
 
 export interface ControlsState {

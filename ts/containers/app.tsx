@@ -50,6 +50,7 @@ type PropTypes = {
   timestamp: number,
   updateInterval: number,
   granularityTicks: number,
+  renderAction: string,
 
   // from instrument_selector
   instrumentName: string,
@@ -84,6 +85,7 @@ const mapStateToProps = (state: State) => {
     ticks: state.song.ticks,
     activeColumn: state.song.activeColumn,
     granularityTicks: state.song.granularityTicks,
+    renderAction: state.song.renderAction,
 
     // from controls
     trackIndex: state.controls.trackIndex,
@@ -185,6 +187,7 @@ class App extends React.PureComponent {
 
       <Song
         song={this.props.song}
+        renderAction={this.props.renderAction}
         trackIndex={this.props.trackIndex}
         instrumentName={this.props.instrumentName}
         playing={this.props.playing}
