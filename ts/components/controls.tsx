@@ -1,7 +1,6 @@
 // import * as R from 'ramda';
 import React, { ChangeEvent, MouseEvent } from 'react';
 import Slider from './slider';
-import { MIDIFileJSON, HeartbeatSong } from '../interfaces';
 interface Controls {
   props: PropTypes,
 };
@@ -14,7 +13,7 @@ type PropTypes = {
   maxTempo: number,
   playing: boolean,
   loop: boolean,
-  songList: Array<HeartbeatSong>,
+  songList: Array<string>,
   trackList: Array<string>,
   instrumentList: Array<string>,
 
@@ -38,7 +37,7 @@ class Controls extends React.PureComponent {
     let selectMIDIFile;
     if (this.props.songList.length > 1) {
       const options = this.props.songList.map(s => {
-        return <option key={s.id}>{s.name}</option>;
+        return <option key={s}>{s}</option>;
       });
       selectMIDIFile = <select
         onChange={(e) => {

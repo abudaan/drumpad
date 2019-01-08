@@ -9,8 +9,8 @@ export const PAUSE = 'PAUSE';
 export const STOP = 'STOP';
 export const TEMPO = 'TEMPO';
 export const SET_LOOP = 'SET_LOOP';
-export const SET_INSTRUMENT = 'SET_INSTRUMENT';
-export const SOLO_TRACK = 'SOLO_TRACK';
+export const SELECT_INSTRUMENT = 'SELECT_INSTRUMENT';
+export const UPDATE_EVENTS = 'UPDATE_EVENTS';
 
 interface Song {
   props: SongPropTypes,
@@ -25,6 +25,7 @@ export type SongPropTypes = {
   trackIndex: number,
   instrumentName: string,
   renderAction: string,
+  midiEvents: Array<MIDIEvent>
 };
 
 class Song extends React.PureComponent {
@@ -55,16 +56,16 @@ class Song extends React.PureComponent {
         this.props.song.setTempo(this.props.tempo);
         break;
 
-      case SOLO_TRACK:
-        this.soloTrack(this.props.song);
+      case UPDATE_EVENTS:
+        this.updateEvents(this.props.song);
         break;
 
       case SET_LOOP:
         this.props.song.setLoop(this.props.loop);
         break;
 
-      case SET_INSTRUMENT:
-        this.setInstrument(this.props.song);
+      case SELECT_INSTRUMENT:
+        this.selectInstrument(this.props.song);
         break;
 
     }
@@ -72,29 +73,29 @@ class Song extends React.PureComponent {
   }
 
   setupSong(song: HeartbeatSong) {
-    this.setLocators(song);
-    this.setInstrument(song);
-    this.soloTrack(song);
+    this.updateEvents(song);
+    this.selectInstrument(song);
   }
 
-  setInstrument(song: HeartbeatSong) {
+  selectInstrument(song: HeartbeatSong) {
     song.tracks.forEach((track: any) => {
       track.setInstrument(this.props.instrumentName);
     });
   }
 
-  soloTrack(song: HeartbeatSong) {
-    song.tracks.forEach((track: any, index: number) => {
-      track.mute = index !== this.props.trackIndex;
-    });
+  updateEvents(song: HeartbeatSong) {
+    if (song.tracks[0]) {
+      song.tracks[0].removeAllEvents();
+    }
+    song.addEvents(this.props.midiEvents);
+    song.update();
     this.setLocators(song);
   }
 
   setLocators(song: HeartbeatSong) {
-    const events = song.tracks[this.props.trackIndex].events.filter((e: MIDIEvent) => e.type === 144);
-    const lastBar = events[events.length - 1].bar;
-    // this.song.update();
     song.setLeftLocator('barsbeats', 1, 1, 1, 0);
+    // song.setRightLocator('barsbeats', song.bars + 1, 1, 1, 0);
+    const lastBar = song.events[song.events.length - 1].bar;
     song.setRightLocator('barsbeats', lastBar + 1, 1, 1, 0);
     song.setLoop(this.props.loop);
   }

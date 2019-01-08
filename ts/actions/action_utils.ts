@@ -1,7 +1,6 @@
 import sequencer from 'heartbeat-sequencer';
-import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config } from '../interfaces';
+import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config, MIDIEvent } from '../interfaces';
 import { isNil } from 'ramda';
-import { Action } from 'redux';
 
 const status = (response: Response) => {
   if (response.ok) {
@@ -100,6 +99,14 @@ const createSongList = (): Array<HeartbeatSong> =>
     sequencer.createSong(mf));
 
 
+const createSong = (song: HeartbeatSong): HeartbeatSong => sequencer.createSong({
+  ppq: song.ppq,
+  bpm: song.bpm,
+  nominator: song.nominator,
+  denominator: song.denominator,
+  timeEvents: song.timeEvents,
+})
+
 const addEndListener = (songList: Array<HeartbeatSong>, action: () => void) => {
   songList.forEach(song => {
     if (isNil(song.listeners['end'])) {
@@ -119,5 +126,6 @@ export {
   addEndListener,
   getLoadedInstruments,
   createSongList,
+  createSong,
   stopAllSongs,
 }

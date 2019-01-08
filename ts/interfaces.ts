@@ -5,7 +5,8 @@ export interface SongState {
   grid: null | Array<Array<GridItem>>
   trackList: Array<Track>
   instrumentList: Array<string>
-  songList: Array<HeartbeatSong>
+  songs: Array<HeartbeatSong>
+  songList: Array<string>
   position?: SongPosition
   bar?: number
   beat?: number
@@ -18,8 +19,10 @@ export interface SongState {
   granularityTicks: number
   updateInterval: number
   trackIndex: number
+  songIndex: number
   activeColumn: number
   renderAction: string
+  midiEvents: Array<MIDIEvent>
 };
 
 export interface ControlsState {
@@ -88,15 +91,19 @@ export interface HeartbeatSong {
   tracks: Array<Track>
   listeners: Listener
   loopEndPosition: SongPosition
+  bars: number // number of bars in Song
+  timeEvents: Array<MIDIEvent>
   play: () => void
   pause: () => void
   stop: () => void
+  update: () => void
   setTempo: (bpm: number, update?: boolean) => void
   addEventListener: (event: string, typeOrCallback: any, callback?: () => void) => void
   removeEventListener: (type: string) => void
   setLoop: (loop?: boolean) => void
   setLeftLocator: (type: string, bar: number, beat?: number, sixteenth?: number, tick?: number) => void
   setRightLocator: (type: string, bar: number, beat?: number, sixteenth?: number, tick?: number) => void
+  addEvents: (events: Array<MIDIEvent>) => void
 };
 
 export interface MIDIEvent {
@@ -120,6 +127,7 @@ export interface Track {
   id: string
   name: string
   events: Array<MIDIEvent>
+  removeAllEvents: () => void
 };
 
 export interface Instrument {

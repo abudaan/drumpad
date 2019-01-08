@@ -10,7 +10,8 @@ import {
   addAssetPack,
   addMIDIFile,
   loadArrayBuffer,
-  stopAllSongs
+  stopAllSongs,
+  createSong,
 } from './action_utils';
 
 export const LOADING = 'LOADING'; // generic load action
@@ -33,14 +34,17 @@ export const SELECT_INSTRUMENT = 'SELECT_INSTRUMENT';
 export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
   const config = await loadJSON(configUrl);
   const assetPack = await parseConfig(config);
-  const songList = createSongList();
-  addEndListener(songList, () => { dispatch(stop()) });
+  const songs = createSongList();
+  const song = createSong(songs[0]);
+  
+  addEndListener(songs, () => { dispatch(stop()) });
   dispatch({
     type: CONFIG_LOADED,
     payload: {
       ...config,
       assetPack, // intentionally overwrites assetPack key in config!
-      songList,
+      song,
+      songs,
       instrumentList: getLoadedInstruments(),
     }
   });
@@ -65,12 +69,12 @@ export const loadMIDIFile = (url: string) => async (dispatch: Dispatch) => {
     type: LOADING
   });
   await addMIDIFile(url);
-  const songList = createSongList();
-  addEndListener(songList, () => { dispatch(stop()); });
+  const songs = createSongList();
+  addEndListener(songs, () => { dispatch(stop()); });
   dispatch({
     type: MIDIFILE_LOADED,
     payload: {
-      songList,
+      songs,
     }
   });
 }

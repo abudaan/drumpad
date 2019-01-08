@@ -29,6 +29,7 @@ const getEvent = (events: Array<MIDIEvent>, ticks: number, noteNumber: number): 
 type cg = { grid: GridType, granularity: number, updateInterval: number, granularityTicks: number };
 const createGrid = (song: HeartbeatSong, trackIndex: number, currentGranularity: number): cg => {
   const events = filterEvents(song.tracks[trackIndex].events);
+  console.log(events);
   const granularity = updateGranularity(events, song.ppq, currentGranularity);
   const numBars = events[events.length - 1].bar;
   const notes = getUniqNotes(events);

@@ -13,7 +13,7 @@ import {
   play,
   stop,
 } from '../actions/actions'
-import { State, SongPosition, HeartbeatSong, AssetPack, MIDINote, GridItem, GridType } from '../interfaces';
+import { State, SongPosition, HeartbeatSong, AssetPack, MIDINote, GridItem, GridType, MIDIEvent } from '../interfaces';
 import getInstrument from '../reducers/instrument_selector';
 import Grid from '../components/grid';
 import Controls from '../components/controls';
@@ -43,7 +43,7 @@ type PropTypes = {
   song: null | HeartbeatSong
   assetPack: null | AssetPack,
   trackList: Array<string>,
-  songList: Array<HeartbeatSong>,
+  songList: Array<string>,
   instrumentList: Array<string>,
   ticks: number,
   activeColumn: number,
@@ -51,6 +51,7 @@ type PropTypes = {
   updateInterval: number,
   granularityTicks: number,
   renderAction: string,
+  midiEvents: Array<MIDIEvent>,
 
   // from instrument_selector
   instrumentName: string,
@@ -70,10 +71,7 @@ type PropTypes = {
 
 const mapStateToProps = (state: State) => {
   return {
-    // ...getSong(state),
-    // ...getTrack(state),
     ...getInstrument(state),
-    // ...getActiveNotes(state),
 
     // from song_reducer
     song: state.song.song,
@@ -86,8 +84,9 @@ const mapStateToProps = (state: State) => {
     activeColumn: state.song.activeColumn,
     granularityTicks: state.song.granularityTicks,
     renderAction: state.song.renderAction,
+    midiEvents: state.song.midiEvents,
 
-    // from controls
+    // from controls_reducer
     trackIndex: state.controls.trackIndex,
     instrumentIndex: state.controls.instrumentIndex,
     controlsEnabled: state.controls.controlsEnabled,
@@ -149,11 +148,6 @@ class App extends React.PureComponent {
   }
 
   render() {
-    // let s = '\n';
-    // this.props.activeNotes.forEach(note => {
-    //   s += `${note.number} ${note.ticks}\n`  
-    // });
-    // console.log('<App>', s);
     return <div>
       <Controls
         enabled={this.props.controlsEnabled}
@@ -188,6 +182,7 @@ class App extends React.PureComponent {
       <Song
         song={this.props.song}
         renderAction={this.props.renderAction}
+        midiEvents={this.props.midiEvents}
         trackIndex={this.props.trackIndex}
         instrumentName={this.props.instrumentName}
         playing={this.props.playing}
