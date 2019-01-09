@@ -50,7 +50,7 @@ const stopAllSongs = () => {
 };
 
 
-const addMIDIFile = (url: string): Promise<MIDIFileJSON> => new Promise(resolve => {
+const addMIDIFile = (url: string): Promise<MIDIFileJSON> => new Promise((resolve) => {
   sequencer.addMidiFile({ url }, (json: MIDIFileJSON) => {
     resolve(json);
   });
@@ -59,8 +59,8 @@ const addMIDIFile = (url: string): Promise<MIDIFileJSON> => new Promise(resolve 
 
 const addAssetPack = (url: string): Promise<AssetPack> => new Promise(async (resolve) => {
   const ap = await loadJSON(url);
-  sequencer.addAssetPack(ap, () => {
-    resolve(ap as AssetPack);
+  sequencer.addAssetPack(ap, () => {    
+    resolve(ap);
   });
 })
 
@@ -96,14 +96,10 @@ const parseConfig = (config: Config): Promise<null> => {
 }
 
 
-// const createSongList = (): Array<HeartbeatSong> => 
-//   sequencer.getMidiFiles().map((mf: MIDIFileJSON) =>
-//     sequencer.createSong(mf));
+const createSongList = (): Array<HeartbeatSong> => 
+  sequencer.getMidiFiles().map((mf: MIDIFileJSON) =>
+    sequencer.createSong(mf));
 
-const createSongList = (): Array<HeartbeatSong> => {
-  console.log('AAAAAP', sequencer.getMidiFiles());
-  return sequencer.getMidiFiles().map((mf: MIDIFileJSON) => sequencer.createSong(mf));
-}
 
 
 // const createSong = (song: HeartbeatSong): HeartbeatSong => sequencer.createSong({

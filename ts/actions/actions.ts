@@ -33,25 +33,22 @@ export const SELECT_INSTRUMENT = 'SELECT_INSTRUMENT';
 
 export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
   await initSequencer()
-  // .then(async () => {
-    console.log('BBERER');
-    const config = await loadJSON(configUrl);
-    const assetPack = await parseConfig(config);
-    const songs = createSongList();
-    const song = createSong(songs[0]);
+  const config = await loadJSON(configUrl);
+  const assetPack = await parseConfig(config);
+  const songs = createSongList();
+  const song = createSong(songs[0]);
     
-    addEndListener(songs, () => { dispatch(stop()) });
-    dispatch({
-      type: CONFIG_LOADED,
-      payload: {
-        ...config,
-        assetPack, // intentionally overwrites assetPack key in config!
-        song,
-        songs,
-        instrumentList: getLoadedInstruments(),
-      }
-    });
-  // })
+  addEndListener(songs, () => { dispatch(stop()) });
+  dispatch({
+    type: CONFIG_LOADED,
+    payload: {
+      ...config,
+      assetPack, // intentionally overwrites assetPack key in config!
+      song,
+      songs,
+      instrumentList: getLoadedInstruments(),
+    }
+  });
 };
 
 export const loadAssetPack = (url: string) => async (dispatch: Dispatch) => {
