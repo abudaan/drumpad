@@ -32,10 +32,15 @@ export const SELECT_SONG = 'SELECT_SONG';
 export const SELECT_INSTRUMENT = 'SELECT_INSTRUMENT';
 
 export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
-  await initSequencer()
+  console.log(performance.now());
+  await initSequencer();
+  console.log(performance.now());
   const config = await loadJSON(configUrl);
+  console.log(performance.now());
   const assetPack = await parseConfig(config);
+  console.log(performance.now());
   const songs = createSongList();
+  console.log(performance.now());
   const song = createSong(songs[0]);
     
   addEndListener(songs, () => { dispatch(stop()) });

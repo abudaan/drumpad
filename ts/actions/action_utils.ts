@@ -57,12 +57,18 @@ const addMIDIFile = (url: string): Promise<MIDIFileJSON> => new Promise((resolve
 });
 
 
-const addAssetPack = (url: string): Promise<AssetPack> => new Promise(async (resolve) => {
-  const ap = await loadJSON(url);
+const addAssetPack = (ap: AssetPack): Promise<AssetPack> => new Promise(async (resolve) => {
   sequencer.addAssetPack(ap, () => {    
     resolve(ap);
   });
 })
+
+// const addAssetPack = (url: string): Promise<AssetPack> => new Promise(async (resolve) => {
+//   const ap = await loadJSON(url);
+//   sequencer.addAssetPack(ap, () => {    
+//     resolve(ap);
+//   });
+// })
 
 
 // load binary MIDI file, add it to the assets and create a song from it
@@ -89,7 +95,9 @@ const parseConfig = (config: Config): Promise<null> => {
       await addMIDIFile(config.midiFile);
     }
     if (config.assetPack) {
-      await addAssetPack(config.assetPack);
+      const ap = await loadJSON(config.assetPack);
+      await addAssetPack(ap);
+      // await addAssetPack(config.assetPack);
     }
     resolve();
   });
