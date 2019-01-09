@@ -45,6 +45,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const sourceSong = songs[0];
     const midiEvents = getMIDIEvents(sourceSong, 0);
     const { grid, granularity: newGranularity, updateInterval, granularityTicks } = createGrid(sourceSong, midiEvents, granularity);
+    console.log(songs);
 
     return {
       ...state,

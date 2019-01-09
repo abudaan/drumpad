@@ -24,6 +24,10 @@ const loadArrayBuffer = (url: string) => fetch(url)
   .catch(e => console.error(e));
 
 
+const initSequencer = () => new Promise((resolve) => {
+  sequencer.ready(resolve);
+});
+
 const getLoadedMIDIFiles = () =>
   sequencer.getMidiFiles()
     .map((mf: MIDIFileJSON) => mf.name);
@@ -92,9 +96,14 @@ const parseConfig = (config: Config): Promise<null> => {
 }
 
 
-const createSongList = (): Array<HeartbeatSong> =>
-  sequencer.getMidiFiles().map((mf: MIDIFileJSON) =>
-    sequencer.createSong(mf));
+// const createSongList = (): Array<HeartbeatSong> => 
+//   sequencer.getMidiFiles().map((mf: MIDIFileJSON) =>
+//     sequencer.createSong(mf));
+
+const createSongList = (): Array<HeartbeatSong> => {
+  console.log('AAAAAP', sequencer.getMidiFiles());
+  return sequencer.getMidiFiles().map((mf: MIDIFileJSON) => sequencer.createSong(mf));
+}
 
 
 // const createSong = (song: HeartbeatSong): HeartbeatSong => sequencer.createSong({
@@ -132,6 +141,7 @@ const addEndListener = (songList: Array<HeartbeatSong>, action: () => void) => {
 }
 
 export {
+  initSequencer,
   parseConfig,
   loadJSON,
   loadArrayBuffer,

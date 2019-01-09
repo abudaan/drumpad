@@ -2,7 +2,7 @@ import { Action } from "redux";
 
 export interface SongState {
   song: null | HeartbeatSong
-  grid: null | Array<Array<GridItem>>
+  grid: null | Array<Array<GridCell>>
   trackList: Array<Track>
   instrumentList: Array<string>
   songs: Array<HeartbeatSong>
@@ -165,11 +165,17 @@ export interface SongInfo {
   denominator: number
 }
 
-export interface GridItem {
+// emitted by a grid cell onMouseEnter and onMouseLeave
+export interface GridCellData {
+  ticks: number
+  noteNumber: number
+}
+
+export interface GridCell {
   ticks: number
   noteNumber: number
   midiEvent: null | MIDIEvent
   active: boolean
 }
 
-export type GridType = Array<Array<GridItem>>;
+export type GridType = Array<Array<GridCell>>;

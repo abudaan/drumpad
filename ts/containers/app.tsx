@@ -13,7 +13,7 @@ import {
   play,
   stop,
 } from '../actions/actions'
-import { State, SongPosition, HeartbeatSong, AssetPack, MIDINote, GridItem, GridType, MIDIEvent } from '../interfaces';
+import { State, SongPosition, HeartbeatSong, AssetPack, MIDINote, GridCell, GridType, MIDIEvent } from '../interfaces';
 import getInstrument from '../reducers/instrument_selector';
 import Grid from '../components/grid';
 import Controls from '../components/controls';

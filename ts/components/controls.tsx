@@ -35,7 +35,7 @@ class Controls extends React.PureComponent {
     const labelLoop = this.props.loop ? 'loop off' : 'loop on';
 
     let selectMIDIFile;
-    if (this.props.songList.length > 1) {
+    if (this.props.songList && this.props.songList.length > 1) {
       const options = this.props.songList.map(s => {
         return <option key={s}>{s}</option>;
       });

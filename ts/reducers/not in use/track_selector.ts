@@ -4,7 +4,7 @@
 
 
 import { createSelector } from 'reselect';
-import { State, ControlsState, SongState, Track, MIDIEvent, HeartbeatSong, GridItem } from '../../interfaces';
+import { State, ControlsState, SongState, Track, MIDIEvent, HeartbeatSong, GridCell } from '../../interfaces';
 import { uniq, isNil } from 'ramda';
 
 const getSongState = (state: State): SongState => state.song;
@@ -76,7 +76,7 @@ const getGrid = (events: Array<MIDIEvent>, granularity: number, song: HeartbeatS
     const column = [];
       for (let j = 0; j < notes.length; j++) {
       const noteNumber = notes[j];
-      const item: GridItem = {
+      const item: GridCell = {
         ticks: i,
         noteNumber,
         midiEvent: getEvent(events, i, noteNumber),

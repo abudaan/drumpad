@@ -1,4 +1,4 @@
-import { MIDIEvent, HeartbeatSong, GridItem, GridType, MIDINote, Track } from "../interfaces";
+import { MIDIEvent, HeartbeatSong, GridCell, GridType, MIDINote, Track } from "../interfaces";
 import { uniq, clone } from "ramda";
 
 const getUniqNotes = (events: Array<MIDIEvent>): Array<number> => uniq(events.map(e => e.noteNumber)).sort((a, b) => b - a);
@@ -31,12 +31,12 @@ const createGrid = (song: HeartbeatSong, events: Array<MIDIEvent>, currentGranul
   const granularityTicks = (4 / granularity) * song.ppq;
   const updateInterval = Math.round((granularityTicks / 2) * song.millisPerTick);
 
-  const grid: Array<Array<GridItem>> = [];
+  const grid: Array<Array<GridCell>> = [];
   for (let i = 0; i < totalTicks; i += granularityTicks) {
     const column = [];
     for (let j = 0; j < notes.length; j++) {
       const noteNumber = notes[j];
-      const item: GridItem = {
+      const item: GridCell = {
         ticks: i,
         noteNumber,
         midiEvent: getEvent(events, i, noteNumber),

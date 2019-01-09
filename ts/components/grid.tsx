@@ -1,6 +1,6 @@
 import React, { ChangeEvent, MouseEvent } from 'react';
-import Cell from './cell';
-import { GridItem, GridType, MIDIEvent, MIDINote } from '../interfaces';
+import GridItem from './cell';
+import { GridCell, GridType, MIDIEvent, MIDINote } from '../interfaces';
 
 interface PropTypes {
   onChange: (event: ChangeEvent) => void,
@@ -42,13 +42,13 @@ class Grid extends React.Component {
           }
         }
         rows.push(
-          <Cell
+          <GridItem
             key={`cell-${c}-${r}`}
             style={cellStyle}
             className={classNames.join(' ')}
             item={item}
             onChange={() => { }}
-          ></Cell>
+          ></GridItem>
         );
       }
       const classNames = ['column'];
