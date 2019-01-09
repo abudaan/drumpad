@@ -157,11 +157,6 @@ export interface Config {
   granularityOptions: Array<number>
 };
 
-// result of parsing the config file
-export interface ConfigData {
-  assetPack: null | AssetPack
-};
-
 export interface SongInfo {
   tracks: Array<any>
   bars: number

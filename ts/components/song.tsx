@@ -1,5 +1,6 @@
 import React from 'react';
 import { HeartbeatSong, SongState, MIDIEvent } from '../interfaces';
+import { songInitialState } from '../reducers/song_reducer';
 
 // render actions
 export const PASS = 'PASS';
@@ -84,10 +85,18 @@ class Song extends React.PureComponent {
   }
   
   updateEvents(song: HeartbeatSong) {
-    song.tracks[0].removeAllEvents();
-    song.addEvents(this.props.midiEvents);
+    song.pause();
+    // console.log(song.tracks[0].removeAllEvents());
+    // song.tracks[0].update();
+    // console.log(song.tracks[0].events.length);
+    song.tracks[0].parts[0].addEvents(this.props.midiEvents);
+    // song.addEvents(this.props.midiEvents);
     song.update();
+    console.log(song.tracks[0].parts[0].events);
+    setTimeout(() => {
+    }, 100);
     this.selectInstrument(song);
+    song.play();
   }
 
   setLocators(song: HeartbeatSong) {

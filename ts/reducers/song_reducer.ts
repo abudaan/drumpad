@@ -3,8 +3,19 @@ import { SongState, IAction, Track, HeartbeatSong, MIDIEvent } from '../interfac
 import { createGrid } from './grid_utils';
 import * as RenderActions from '../components/song';
 
-const getMIDIEvents = (song: HeartbeatSong, trackIndex: number): Array<MIDIEvent> =>
-  song.tracks[trackIndex].events.filter((e: MIDIEvent) => e.type === 144 || e.type === 128);
+const getMIDIEvents = (song: HeartbeatSong, trackIndex: number): Array<MIDIEvent> => {
+  const track = song.tracks[trackIndex];
+  const events = track.events.filter((e: MIDIEvent) => e.type === 144 || e.type === 128);
+  const stripped = [];
+  events.forEach(e => {
+    e.song = null;
+    e.track = null;
+    e.part = null;
+    stripped.push(e)
+  })
+  console.log(stripped);
+  return stripped;
+}
 
 const songInitialState = {
   grid: null,
@@ -26,7 +37,6 @@ const songInitialState = {
 const song = (state: SongState = songInitialState, action: IAction<any>) => {
   if (action.type === Actions.CONFIG_LOADED) {
     const {
-      assetPack,
       song,
       songs,
       instrumentList,
@@ -46,7 +56,6 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       granularity: newGranularity,
       granularityTicks,
       updateInterval,
-      assetPack,
       songList: songs.map((s:HeartbeatSong) => s.name),
       trackList: songs[0].tracks.map((t: Track) => t.name),
       instrumentList,
@@ -124,6 +133,8 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       const sourceSong = state.songs[state.songIndex];
       const midiEvents = getMIDIEvents(sourceSong, trackIndex);
       const { grid, granularity, updateInterval, granularityTicks } = createGrid(sourceSong, midiEvents, state.granularity);
+      state.song.tracks[0].removeEvents(state.song.tracks[0].parts[0].events);
+
       return {
         ...state,
         trackIndex,
@@ -152,6 +163,11 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       ...state,
       renderAction: RenderActions.SELECT_INSTRUMENT,
     }
+  } else if (action.type === Actions.UPDATE_TEMPO) {
+    return {
+      ...state,
+      renderAction: RenderActions.TEMPO,
+    };
   } else if (action.type === Actions.SET_LOOP) {
     return {
       ...state,

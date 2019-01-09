@@ -22,9 +22,9 @@ type PropTypes = {
   play: (event: MouseEvent) => void,
   stop: (event: MouseEvent) => void,
   setLoop: (loop: boolean) => void,
-  setTrack: (value: number) => void,
-  setMIDIFile: (value: number) => void,
-  setInstrument: (value: number) => void,
+  selectTrack: (value: number) => void,
+  selectSong: (value: number) => void,
+  selectInstrument: (value: number) => void,
 };
 
 class Controls extends React.PureComponent {
@@ -42,7 +42,7 @@ class Controls extends React.PureComponent {
       selectMIDIFile = <select
         onChange={(e) => {
           if (e.nativeEvent.target !== null) {
-            this.props.setMIDIFile(e.nativeEvent.target.selectedIndex)
+            this.props.selectSong(e.nativeEvent.target.selectedIndex)
           }
         }}
       >
@@ -58,7 +58,7 @@ class Controls extends React.PureComponent {
       selectTrack = <select
         onChange={(e) => {
           if (e.nativeEvent.target !== null) {
-            this.props.setTrack(e.nativeEvent.target.selectedIndex)
+            this.props.selectTrack(e.nativeEvent.target.selectedIndex)
           }
         }}
       >
@@ -74,7 +74,7 @@ class Controls extends React.PureComponent {
       selectInstrument = <select
         onChange={(e) => {
           if (e.nativeEvent.target !== null) {
-            this.props.setInstrument(e.nativeEvent.target.selectedIndex)
+            this.props.selectInstrument(e.nativeEvent.target.selectedIndex)
           }
         }}
       >

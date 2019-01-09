@@ -41,7 +41,6 @@ type PropTypes = {
   // from song_reducer
   grid: null | GridType,
   song: null | HeartbeatSong
-  assetPack: null | AssetPack,
   trackList: Array<string>,
   songList: Array<string>,
   instrumentList: Array<string>,
@@ -58,9 +57,9 @@ type PropTypes = {
 
   // actions
   loadConfig: (url: string) => (dispatch: Dispatch<AnyAction>) => void,
-  setTrack: () => void,
-  setMIDIFile: () => void,
-  setInstrument: () => void,
+  selectSong: () => void,
+  selectTrack: () => void,
+  selectInstrument: () => void,
   setLoop: () => void,
   play: () => void,
   stop: () => void,
@@ -110,9 +109,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     play,
     stop,
     setLoop,
-    setTrack: selectTrack,
-    setMIDIFile: selectSong,
-    setInstrument: selectInstrument,
+    selectTrack,
+    selectSong,
+    selectInstrument,
   }, dispatch);
 }
 
@@ -162,9 +161,9 @@ class App extends React.PureComponent {
         maxTempo={this.props.tempoMax}
         play={this.props.play}
         stop={this.props.stop}
-        setTrack={this.props.setTrack}
-        setInstrument={this.props.setInstrument}
-        setMIDIFile={this.props.setMIDIFile}
+        selectSong={this.props.selectSong}
+        selectTrack={this.props.selectTrack}
+        selectInstrument={this.props.selectInstrument}
         choosingTempo={this.props.choosingTempo}
         updateTempo={this.props.updateTempo}
         setLoop={this.props.setLoop}

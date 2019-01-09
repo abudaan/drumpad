@@ -93,7 +93,6 @@ export const selectInstrument = (instrumentIndex: number) => ({
 });
 
 export const selectSong = (songIndex: number) => (dispatch: Dispatch) => {
-  // dispatch(stop());
   dispatch({
     type: SELECT_SONG,
     payload: {

@@ -15,6 +15,9 @@ interface Cell {
 };
 
 class Cell extends React.PureComponent {
+  componentDidMount() {
+    
+  }
   render() {
     return <div
       style={this.props.style}

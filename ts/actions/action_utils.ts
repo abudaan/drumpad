@@ -1,5 +1,5 @@
 import sequencer from 'heartbeat-sequencer';
-import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config, MIDIEvent } from '../interfaces';
+import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config } from '../interfaces';
 import { isNil } from 'ramda';
 
 const status = (response: Response) => {
@@ -79,17 +79,15 @@ const createSongFromMIDIFile2 = (url: string) => loadArrayBuffer(url)
 
 
 // parse config file and load all assets that are listed in the config file
-const parseConfig = (config: Config): Promise<null | AssetPack> => {
-  // stopAllSongs();
+const parseConfig = (config: Config): Promise<null> => {
   return new Promise(async (resolve) => {
-    let assetPack = null;
     if (config.midiFile) {
       await addMIDIFile(config.midiFile);
     }
     if (config.assetPack) {
-      assetPack = await addAssetPack(config.assetPack);
+      await addAssetPack(config.assetPack);
     }
-    resolve(assetPack);
+    resolve();
   });
 }
 
@@ -99,14 +97,29 @@ const createSongList = (): Array<HeartbeatSong> =>
     sequencer.createSong(mf));
 
 
-const createSong = (song: HeartbeatSong): HeartbeatSong => sequencer.createSong({
-  ppq: song.ppq,
-  bpm: song.bpm,
-  nominator: song.nominator,
-  denominator: song.denominator,
-  timeEvents: song.timeEvents,
-  tracks: [sequencer.createTrack()],
-})
+// const createSong = (song: HeartbeatSong): HeartbeatSong => sequencer.createSong({
+//   ppq: song.ppq,
+//   bpm: song.bpm,
+//   nominator: song.nominator,
+//   denominator: song.denominator,
+//   timeEvents: song.timeEvents,
+//   tracks: [sequencer.createTrack()],
+// })
+
+const createSong = (song: HeartbeatSong): HeartbeatSong => {
+  const t = sequencer.createTrack();
+  const p = sequencer.createPart();
+  t.addPart(p);
+  return sequencer.createSong({
+    ppq: song.ppq,
+    bpm: song.bpm,
+    nominator: song.nominator,
+    denominator: song.denominator,
+    timeEvents: song.timeEvents,
+    tracks: [t],
+  })
+}
+
 
 const addEndListener = (songList: Array<HeartbeatSong>, action: () => void) => {
   songList.forEach(song => {
