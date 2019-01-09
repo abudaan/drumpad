@@ -10,7 +10,6 @@ import {
   addAssetPack,
   addMIDIFile,
   loadArrayBuffer,
-  stopAllSongs,
   createSong,
 } from './action_utils';
 
@@ -94,8 +93,7 @@ export const selectInstrument = (instrumentIndex: number) => ({
 });
 
 export const selectSong = (songIndex: number) => (dispatch: Dispatch) => {
-  stopAllSongs();
-  dispatch(stop());
+  // dispatch(stop());
   dispatch({
     type: SELECT_SONG,
     payload: {

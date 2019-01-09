@@ -34,15 +34,13 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     } = action.payload;
     const sourceSong = songs[0];
     const midiEvents = getMIDIEvents(sourceSong, 0);
-    // song.addEvents(midiEvents);
-    // song.update();
-    // console.log(song.bars, sourceSong.bars);
-    const { grid, granularity: newGranularity, updateInterval, granularityTicks } = createGrid(sourceSong, 0, granularity);
+    const { grid, granularity: newGranularity, updateInterval, granularityTicks } = createGrid(sourceSong, midiEvents, granularity);
 
     return {
       ...state,
       song,
       grid,
+      songs,
       songIndex: 0,
       midiEvents,
       granularity: newGranularity,
@@ -100,7 +98,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       song.nominator = nominator;
       song.denominator = denominator;
       const midiEvents = getMIDIEvents(sourceSong, 0);
-      const { grid, granularity, updateInterval, granularityTicks } = createGrid(sourceSong, 0, state.granularity);
+      const { grid, granularity, updateInterval, granularityTicks } = createGrid(sourceSong, midiEvents, state.granularity);
       return {
         ...state,
         song,
@@ -123,8 +121,9 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
   } else if (action.type === Actions.SELECT_TRACK) {
     if (state.song !== null) {
       const { trackIndex } = action.payload;
-      const midiEvents = getMIDIEvents(state.songs[state.songIndex], trackIndex);
-      const { grid, granularity, updateInterval, granularityTicks } = createGrid(state.song, trackIndex, state.granularity);
+      const sourceSong = state.songs[state.songIndex];
+      const midiEvents = getMIDIEvents(sourceSong, trackIndex);
+      const { grid, granularity, updateInterval, granularityTicks } = createGrid(sourceSong, midiEvents, state.granularity);
       return {
         ...state,
         trackIndex,

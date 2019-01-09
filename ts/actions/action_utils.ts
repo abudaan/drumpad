@@ -105,6 +105,7 @@ const createSong = (song: HeartbeatSong): HeartbeatSong => sequencer.createSong(
   nominator: song.nominator,
   denominator: song.denominator,
   timeEvents: song.timeEvents,
+  tracks: [sequencer.createTrack()],
 })
 
 const addEndListener = (songList: Array<HeartbeatSong>, action: () => void) => {

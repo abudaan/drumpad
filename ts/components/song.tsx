@@ -74,22 +74,20 @@ class Song extends React.PureComponent {
 
   setupSong(song: HeartbeatSong) {
     this.updateEvents(song);
-    this.selectInstrument(song);
+    this.setLocators(song);
   }
-
+  
   selectInstrument(song: HeartbeatSong) {
     song.tracks.forEach((track: any) => {
       track.setInstrument(this.props.instrumentName);
     });
   }
-
+  
   updateEvents(song: HeartbeatSong) {
-    if (song.tracks[0]) {
-      song.tracks[0].removeAllEvents();
-    }
+    song.tracks[0].removeAllEvents();
     song.addEvents(this.props.midiEvents);
     song.update();
-    this.setLocators(song);
+    this.selectInstrument(song);
   }
 
   setLocators(song: HeartbeatSong) {

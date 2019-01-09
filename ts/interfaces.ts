@@ -92,6 +92,7 @@ export interface HeartbeatSong {
   listeners: Listener
   loopEndPosition: SongPosition
   bars: number // number of bars in Song
+  events: Array<MIDIEvent>
   timeEvents: Array<MIDIEvent>
   play: () => void
   pause: () => void

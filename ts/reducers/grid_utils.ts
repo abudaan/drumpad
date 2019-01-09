@@ -1,21 +1,17 @@
 import { MIDIEvent, HeartbeatSong, GridItem, GridType, MIDINote, Track } from "../interfaces";
 import { uniq, clone } from "ramda";
 
-const filterEvents = (events: Array<MIDIEvent>) => events.filter((e: MIDIEvent) => typeof e.noteName !== 'undefined');
-
 const getUniqNotes = (events: Array<MIDIEvent>): Array<number> => uniq(events.map(e => e.noteNumber)).sort((a, b) => b - a);
 
 const updateGranularity = (events: Array<MIDIEvent>, ppq: number, currentGranularity: number) => {
   let ticks = 0;
   let newGranularity = Number.MAX_VALUE;
-  events.forEach(event => {
-    if (event.type === 144 && event.data2 !== 0) {
-      var diff = event.ticks - ticks;
-      ticks = event.ticks;
-      // console.log(ticks, event.ticks);
-      if (diff !== 0 && diff < newGranularity) {
-        newGranularity = diff;
-      }
+  events.filter(e => e.type === 144).forEach(event => {
+    var diff = event.ticks - ticks;
+    ticks = event.ticks;
+    // console.log(ticks, event.ticks);
+    if (diff !== 0 && diff < newGranularity) {
+      newGranularity = diff;
     }
   });
   return Math.max((ppq / newGranularity), currentGranularity);
@@ -27,9 +23,7 @@ const getEvent = (events: Array<MIDIEvent>, ticks: number, noteNumber: number): 
 }
 
 type cg = { grid: GridType, granularity: number, updateInterval: number, granularityTicks: number };
-const createGrid = (song: HeartbeatSong, trackIndex: number, currentGranularity: number): cg => {
-  const events = filterEvents(song.tracks[trackIndex].events);
-  console.log(events);
+const createGrid = (song: HeartbeatSong, events: Array<MIDIEvent>, currentGranularity: number): cg => {
   const granularity = updateGranularity(events, song.ppq, currentGranularity);
   const numBars = events[events.length - 1].bar;
   const notes = getUniqNotes(events);
