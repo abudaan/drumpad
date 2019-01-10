@@ -17,7 +17,7 @@ import { State, SongPosition, HeartbeatSong, AssetPack, MIDINote, GridCell, Grid
 import getInstrument from '../reducers/instrument_selector';
 import Grid from '../components/grid';
 import Controls from '../components/controls';
-import Song from '../components/song';
+import Song, { INIT } from '../components/song';
 
 interface App {
   props: PropTypes,
@@ -39,8 +39,12 @@ type PropTypes = {
   tempoMax: number,
 
   // from song_reducer
+  ppq: number,
+  bpm: number,
+  nominator: number,
+  denominator: number,
+  sequencerReady: boolean,
   grid: null | GridType,
-  song: null | HeartbeatSong
   trackList: Array<string>,
   songList: Array<string>,
   instrumentList: Array<string>,
@@ -50,6 +54,7 @@ type PropTypes = {
   updateInterval: number,
   granularityTicks: number,
   renderAction: string,
+  timeEvents: Array<MIDIEvent>,
   midiEvents: Array<MIDIEvent>,
 
   // from instrument_selector
@@ -73,7 +78,11 @@ const mapStateToProps = (state: State) => {
     ...getInstrument(state),
 
     // from song_reducer
-    song: state.song.song,
+    ppq: state.song.ppq,
+    bpm: state.song.bpm,
+    nominator: state.song.nominator,
+    denominator: state.song.denominator,
+    sequencerReady: state.song.sequencerReady,
     grid: state.song.grid,
     updateInterval: state.song.updateInterval,
     trackList: state.song.trackList,
@@ -83,6 +92,7 @@ const mapStateToProps = (state: State) => {
     activeColumn: state.song.activeColumn,
     granularityTicks: state.song.granularityTicks,
     renderAction: state.song.renderAction,
+    timeEvents: state.song.timeEvents,
     midiEvents: state.song.midiEvents,
 
     // from controls_reducer
@@ -120,30 +130,8 @@ class App extends React.PureComponent {
     super(props);
   }
 
-  updateUI() {
-    if (this.props.song !== null) {
-      const {
-        ticks,
-        barsAsString,
-      } = this.props.song;
-
-      const timestamp = performance.now();
-
-      if (this.props.playing && (timestamp - this.props.timestamp) >= this.props.updateInterval) {
-        this.props.updatePosition({
-          ticks,
-          timestamp,
-          barsAsString,
-          activeColumn: Math.floor(ticks / this.props.granularityTicks),
-        });
-      }
-    }
-    requestAnimationFrame(this.updateUI.bind(this));
-  }
-
   componentDidMount() {
     this.props.loadConfig(this.props.configUrl);
-    requestAnimationFrame(this.updateUI.bind(this));
   }
 
   render() {
@@ -178,10 +166,19 @@ class App extends React.PureComponent {
         playing={this.props.playing}
       ></Grid>
 
+      { this.props.sequencerReady === true && 
       <Song
-        song={this.props.song}
+        updateInterval={this.props.updateInterval}
+        granularityTicks={this.props.granularityTicks}
+        updatePosition={this.props.updatePosition}
+        timestamp={this.props.timestamp}
+        ppq={this.props.ppq}
+        bpm={this.props.bpm}
+        nominator={this.props.nominator}
+        denominator={this.props.denominator}
         renderAction={this.props.renderAction}
         midiEvents={this.props.midiEvents}
+        timeEvents={this.props.timeEvents}
         trackIndex={this.props.trackIndex}
         instrumentName={this.props.instrumentName}
         playing={this.props.playing}
@@ -189,7 +186,7 @@ class App extends React.PureComponent {
         tempo={this.props.tempo}
         loop={this.props.loop}
       >
-      </Song>
+      </Song>}
     </div>
   }
 }

@@ -1,7 +1,10 @@
 import { Action } from "redux";
 
 export interface SongState {
-  song: null | HeartbeatSong
+  ppq: number
+  bpm: number
+  nominator: number
+  denominator: number
   grid: null | Array<Array<GridCell>>
   trackList: Array<Track>
   instrumentList: Array<string>
@@ -22,6 +25,7 @@ export interface SongState {
   songIndex: number
   activeColumn: number
   renderAction: string
+  timeEvents: Array<MIDIEvent>
   midiEvents: Array<MIDIEvent>
 };
 
@@ -105,6 +109,8 @@ export interface HeartbeatSong {
   setLeftLocator: (type: string, bar: number, beat?: number, sixteenth?: number, tick?: number) => void
   setRightLocator: (type: string, bar: number, beat?: number, sixteenth?: number, tick?: number) => void
   addEvents: (events: Array<MIDIEvent>) => void
+  addTimeEvents: (events: Array<MIDIEvent>) => void
+  removeTimeEvents: () => void
 };
 
 export interface MIDIEvent {
@@ -124,10 +130,21 @@ export interface MIDINote extends MIDIEvent {
   number: number
 }
 
-export interface Track {
+export interface Part {
   id: string
   name: string
   events: Array<MIDIEvent>
+  addEvents: (events: Array<MIDIEvent>) => void
+  removeEvents: (events: Array<MIDIEvent>) => void
+}
+
+export interface Track {
+  id: string
+  name: string
+  parts: Array<Part>
+  events: Array<MIDIEvent>
+  addPart: (part: Part) => void
+  removeEvents: (events: Array<MIDIEvent>) => void
   removeAllEvents: () => void
 };
 

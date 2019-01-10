@@ -24,9 +24,11 @@ const loadArrayBuffer = (url: string) => fetch(url)
   .catch(e => console.error(e));
 
 
-const initSequencer = () => new Promise((resolve) => {
-  sequencer.ready(resolve);
-});
+// const initSequencer = () => new Promise((resolve) => {
+//   sequencer.ready(resolve);
+// });
+
+const initSequencer = () => sequencer.ready();
 
 const getLoadedMIDIFiles = () =>
   sequencer.getMidiFiles()
@@ -109,31 +111,6 @@ const createSongList = (): Array<HeartbeatSong> =>
     sequencer.createSong(mf));
 
 
-
-// const createSong = (song: HeartbeatSong): HeartbeatSong => sequencer.createSong({
-//   ppq: song.ppq,
-//   bpm: song.bpm,
-//   nominator: song.nominator,
-//   denominator: song.denominator,
-//   timeEvents: song.timeEvents,
-//   tracks: [sequencer.createTrack()],
-// })
-
-const createSong = (song: HeartbeatSong): HeartbeatSong => {
-  const t = sequencer.createTrack();
-  const p = sequencer.createPart();
-  t.addPart(p);
-  return sequencer.createSong({
-    ppq: song.ppq,
-    bpm: song.bpm,
-    nominator: song.nominator,
-    denominator: song.denominator,
-    timeEvents: song.timeEvents,
-    tracks: [t],
-  })
-}
-
-
 const addEndListener = (songList: Array<HeartbeatSong>, action: () => void) => {
   songList.forEach(song => {
     if (isNil(song.listeners['end'])) {
@@ -154,6 +131,5 @@ export {
   addEndListener,
   getLoadedInstruments,
   createSongList,
-  createSong,
   stopAllSongs,
 }

@@ -18,9 +18,9 @@ class GridItem extends React.PureComponent {
   componentDidMount() {
     
   }
+  // onMouseEnter={() => { console.log(this.props.item.ticks, this.props.item.noteNumber) }}
   render() {
     return <div
-      onMouseEnter={() => { console.log(this.props.item.ticks, this.props.item.noteNumber) }}
       style={this.props.style}
       className={this.props.className}>
       <span>{`${this.props.item.ticks} ${this.props.item.noteNumber}`}</span>
