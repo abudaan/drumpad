@@ -44,7 +44,7 @@ type PropTypes = {
   nominator: number,
   denominator: number,
   sequencerReady: boolean,
-  grid: null | GridType,
+  grid: GridType,
   trackList: Array<string>,
   songList: Array<string>,
   instrumentList: Array<string>,
@@ -162,7 +162,7 @@ class App extends React.PureComponent {
         grid={this.props.grid}
         activeColumn={this.props.activeColumn}
         enabled={this.props.controlsEnabled}
-        onChange={() => { }}
+        updateCells={() => { }}
         playing={this.props.playing}
       ></Grid>
 
