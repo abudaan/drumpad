@@ -1,8 +1,9 @@
-import React, { MouseEvent, RefObject } from 'react'
+import React, { MouseEvent, RefObject, SyntheticEvent } from 'react'
 import { GridCellData } from '../interfaces';
 
 interface PropTypes {
   onChange: (selectedCells: Array<{ ticks: number, noteNumber: number, selected: boolean }>) => void,
+  onMouseOver: (Event: SyntheticEvent) => void
   item: GridCellData,
   style: Object,
   className: string,
@@ -60,15 +61,16 @@ class GridCell extends React.PureComponent {
     console.log('render cell')
     return <div
       ref={this.divRef}
-      onMouseEnter={() => {
-        this.updateCells(this.props.item.ticks, this.props.item.noteNumber);
-      }}
-      onClick={(e) => {
-        this.updateCell(this.props.item.ticks, this.props.item.noteNumber)
-      }}
+      // onMouseEnter={() => {
+      //   this.updateCells(this.props.item.ticks, this.props.item.noteNumber);
+      // }}
+      // onClick={(e) => {
+      //   this.updateCell(this.props.item.ticks, this.props.item.noteNumber)
+      // }}
+      onMouseOver={this.props.onMouseOver}
       style={this.props.style}
       className={this.props.className}
-      id={`${this.props.item.ticks} ${this.props.item.noteNumber}`}
+      id={`${this.props.item.ticks}-${this.props.item.noteNumber}`}
     >
       <span>{`${this.props.item.ticks} ${this.props.item.noteNumber}`}</span>
     </div>;

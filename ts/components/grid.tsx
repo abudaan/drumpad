@@ -1,6 +1,7 @@
-import React, { ChangeEvent, MouseEvent, RefObject } from 'react';
+import React, { ChangeEvent, MouseEvent, RefObject, SyntheticEvent } from 'react';
 import GridCell from './cell';
-import { GridType } from '../interfaces';
+import { GridType, GridCellData } from '../interfaces';
+import { string } from 'prop-types';
 
 interface PropTypes {
   onChange: (selectedCells: Array<{ ticks: number, noteNumber: number, selected: boolean }>) => void,
@@ -16,6 +17,9 @@ interface Grid {
 
 class Grid extends React.Component {
   divRef: RefObject<HTMLDivElement>
+  dragActive: boolean
+  dirtyCells: Array<{ id: string, selected: boolean }>
+  firstClickedCell: null | HTMLDivElement
   state: {
     dragActive: boolean,
   }
@@ -26,26 +30,76 @@ class Grid extends React.Component {
     this.state = {
       dragActive: false,
     };
+    this.dragActive = false;
+    this.dirtyCells = [];
+    this.firstClickedCell = null;
     this.divRef = React.createRef();
     this.timeout = null;
   }
 
+  addDirtyCell(div: HTMLDivElement) {
+    const selected = this.isSelected(div);
+    this.dirtyCells.push({
+      id: div.id,
+      selected,
+    });
+    div.className = selected ? 'cell selected' : 'cell';
+  }
+
+  isSelected(div: HTMLDivElement): boolean {
+    return div.className.indexOf('selected') !== -1
+  }
+
+  dispatchUpdate() {
+    const cells = this.dirtyCells.filter(data => data.id !== '');
+    const o: { [id: string]: {id: string, selected: boolean}} = {};
+    cells.forEach(c => {
+      o[c.id] = c;
+    });
+    console.log('DISPATCH', Object.values(o));
+  }
+
+  onMouseOver(e: SyntheticEvent) {
+    if (e.nativeEvent.target && this.dragActive) {
+      const div = e.nativeEvent.target as HTMLDivElement;
+      this.addDirtyCell(div)
+    }
+  }
+
   componentDidMount() {
     if (this.divRef.current !== null) {
-      this.divRef.current.addEventListener('mousedown', () => {
-        this.timeout = setTimeout(() => {
-          this.setState({dragActive: true});
-        }, 100);
+      this.divRef.current.addEventListener('mousedown', (e) => {
+        this.dragActive = true;
+        this.dirtyCells = [];
+        if (e.target) {
+          const div = e.target as HTMLDivElement;
+          this.addDirtyCell(div);
+        }
       });
-      this.divRef.current.addEventListener('mouseup', () => {
-        if(this.timeout !== null) {
-          clearTimeout(this.timeout)
-        }
-        if (this.state.dragActive === true) {
-          this.setState({dragActive: false});
-        }
+      this.divRef.current.addEventListener('mouseup', (e) => {
+        this.dragActive = false;
+        this.dispatchUpdate();
+        // if (e.target) {
+        //   const div = e.target as HTMLDivElement;
+        //   div.className = this.updateClassname(div.className);
+        // }
       });
     }
+    // if (this.divRef.current !== null) {
+    //   this.divRef.current.addEventListener('mousedown', () => {
+    //     this.timeout = setTimeout(() => {
+    //       this.setState({dragActive: true});
+    //     }, 100);
+    //   });
+    //   this.divRef.current.addEventListener('mouseup', () => {
+    //     if(this.timeout !== null) {
+    //       clearTimeout(this.timeout)
+    //     }
+    //     if (this.state.dragActive === true) {
+    //       this.setState({dragActive: false});
+    //     }
+    //   });
+    // }
   }
 
   render() {
@@ -72,12 +126,13 @@ class Grid extends React.Component {
         }
         rows.push(
           <GridCell
-            dragActive={this.state.dragActive}
+            // dragActive={this.state.dragActive}
             key={`cell-${i}-${r}`}
             style={cellStyle}
             className={classNames.join(' ')}
             item={item}
             onChange={this.props.onChange}
+            onMouseOver={this.onMouseOver.bind(this)}
           ></GridCell>
         );
       }
