@@ -31,6 +31,9 @@ export const SELECT_SONG = 'SELECT_SONG';
 export const SELECT_INSTRUMENT = 'SELECT_INSTRUMENT';
 
 export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
+  dispatch({
+    type: LOADING,
+  });
   await initSequencer();
   const config = await loadJSON(configUrl);
   await parseConfig(config);

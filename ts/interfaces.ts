@@ -25,6 +25,7 @@ export interface SongState {
   songIndex: number
   activeColumn: number
   renderAction: string
+  sequencerReady: boolean
   timeEvents: Array<MIDIEvent>
   midiEvents: Array<MIDIEvent>
 };
@@ -182,17 +183,15 @@ export interface SongInfo {
   denominator: number
 }
 
-// emitted by a grid cell onMouseEnter and onMouseLeave
 export interface GridCellData {
-  ticks: number
-  noteNumber: number
-}
-
-export interface GridCell {
   ticks: number
   noteNumber: number
   midiEvent: null | MIDIEvent
   active: boolean
 }
 
-export type GridType = Array<Array<GridCell>>;
+export type GridType = {
+  cells: Array<GridCellData>
+  rows: number
+  cols: number
+}

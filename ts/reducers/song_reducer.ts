@@ -18,7 +18,11 @@ const getMIDIEvents = (song: HeartbeatSong, trackIndex: number): Array<MIDIEvent
 }
 
 const songInitialState = {
-  grid: null,
+  grid: {
+    rows: 0,
+    cols: 0,
+    cells: [],
+  },
   songs: [],
   songList: [],
   songIndex: 0,
