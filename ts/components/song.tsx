@@ -47,25 +47,28 @@ class Song extends React.PureComponent {
   }
 
   render() {
-    console.log('<Song> render', this.props.renderAction, this.props);
+    console.log('<Song> render', this.props.renderAction);
     switch (this.props.renderAction) {
       case INIT:
         this.initSong();
         this.updateSong();
         this.updateEvents();
-        console.log(this.song);
+        this.selectInstrument();
+        this.setLocators();
         break;
 
       case SONG:
         this.song.pause();
         this.updateSong();
         this.updateEvents();
+        this.setLocators();
         this.song.play();
         break;
 
       case UPDATE_EVENTS:
         this.song.pause();
         this.updateEvents();
+        this.setLocators();
         this.song.play();
         break;
 
@@ -147,7 +150,7 @@ class Song extends React.PureComponent {
       const timestamp = performance.now();
 
       if (this.props.playing && (timestamp - this.props.timestamp) >= this.props.updateInterval) {
-        console.log(timestamp, ticks, barsAsString);
+        // console.log(timestamp, ticks, barsAsString);
         this.props.updatePosition({
           ticks,
           timestamp,
