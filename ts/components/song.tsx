@@ -38,7 +38,7 @@ export type SongPropTypes = {
   renderAction: string,
   timeEvents: Array<MIDIEvent>,
   staleMidiEvents: Array<MIDIEvent>,
-  newMidiEvents: Array<MIDIEvent>,
+  freshMidiEvents: Array<MIDIEvent>,
   updatePosition: (pos: SongPosition) => void,
 };
 
@@ -59,17 +59,19 @@ class Song extends React.PureComponent {
         break;
 
       case SONG:
-        this.song.pause();
+        // this.song.pause();
         this.updateSong();
         this.updateEvents();
         this.setLocators();
-        this.song.play();
+        this.selectInstrument();
+        // this.song.play();
         break;
 
       case UPDATE_EVENTS:
         // this.song.pause();
         this.updateEvents();
         this.setLocators();
+        this.selectInstrument();
         // this.song.play();
         break;
 
@@ -122,9 +124,18 @@ class Song extends React.PureComponent {
   }
 
   updateEvents() {
-    this.part.removeEvents(this.part.staleMidiEvents);
-    this.part.addEvents(this.props.newMidiEvents);
+    if (this.props.staleMidiEvents.length > 0) {
+      console.log('stale', this.props.staleMidiEvents.length);
+      this.part.removeEvents(this.props.staleMidiEvents, this.part);
+      // this.part.needsUpdate = true;
+      // this.track.needsUpdate = true;
+    }
+    if (this.props.freshMidiEvents.length > 0) {
+      console.log('fresh', this.props.freshMidiEvents.length);
+      this.part.addEvents(this.props.freshMidiEvents);
+    }
     this.song.update();
+    console.log('total', this.song.events.length, this.track.events.length, this.part.events.length);
   }
 
   selectInstrument() {
@@ -136,7 +147,7 @@ class Song extends React.PureComponent {
   setLocators() {
     this.song.setLeftLocator('barsbeats', 1, 1, 1, 0);
     // song.setRightLocator('barsbeats', song.bars + 1, 1, 1, 0);
-    const lastBar = this.part.events[this.part.events.length - 1].bar;
+    // const lastBar = this.part.events[this.part.events.length - 1].bar;
     // this.song.setRightLocator('barsbeats', lastBar + 1, 1, 1, 0);
     this.song.setRightLocator('barsbeats', 2, 1, 1, 0);
     this.song.setLoop(this.props.loop);

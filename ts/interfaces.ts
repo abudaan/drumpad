@@ -27,7 +27,9 @@ export interface SongState {
   renderAction: string
   sequencerReady: boolean
   timeEvents: Array<MIDIEvent>
-  midiEvents: Array<MIDIEvent>
+  freshMidiEvents: Array<MIDIEvent>
+  staleMidiEvents: Array<MIDIEvent>
+  currentMidiEvents: Array<MIDIEvent>
 };
 
 export interface ControlsState {
@@ -124,12 +126,18 @@ export interface MIDIEvent {
   noteName: string
   noteNumber: number
   velocity: number
+  midiNote: MIDINote,
+  song: null | HeartbeatSong,
+  track: null | Track,
+  part: null | Part,
 };
 
 export interface MIDINote extends MIDIEvent {
   trackId: string
   track: Track
   number: number
+  noteOn: MIDIEvent,
+  noteOff: MIDIEvent,
 }
 
 export interface Part {
@@ -137,7 +145,7 @@ export interface Part {
   name: string
   events: Array<MIDIEvent>
   addEvents: (events: Array<MIDIEvent>) => void
-  removeEvents: (events: Array<MIDIEvent>) => void
+  removeEvents: (events: Array<MIDIEvent>, part?: Part) => void
 }
 
 export interface Track {

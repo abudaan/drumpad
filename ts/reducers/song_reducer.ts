@@ -6,16 +6,9 @@ import * as RenderActions from '../components/song';
 
 const getMIDIEvents = (song: HeartbeatSong, trackIndex: number): Array<MIDIEvent> => {
   const track = song.tracks[trackIndex];
-  const events = track.events.filter((e: MIDIEvent) => e.type === 144 || e.type === 128);
-  const stripped = [];
-  events.forEach(e => {
-    e.song = null;
-    e.track = null;
-    e.part = null;
-    stripped.push(e)
-  })
-  // console.log(stripped);
-  return stripped;
+  return track.events
+    .filter((e: MIDIEvent) => e.type === 144 || e.type === 128)
+    .map((e: MIDIEvent) => sequencer.createMidiEvent(e.ticks, e.type, e.data1, e.data2));
 }
 
 const songInitialState = {
@@ -35,7 +28,9 @@ const songInitialState = {
   trackIndex: 0,
   updateInterval: 0, // in millis
   renderAction: RenderActions.PASS,
-  midiEvents: [],
+  currentMidiEvents: [],
+  freshMidiEvents: [],
+  staleMidiEvents: [],
   timeEvents: [],
   sequencerReady: false,
 };
@@ -63,7 +58,9 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       grid,
       songs,
       songIndex: 0,
-      midiEvents,
+      staleMidiEvents: [],
+      freshMidiEvents: midiEvents,
+      currentMidiEvents: midiEvents,
       timeEvents,
       granularity: newGranularity,
       granularityTicks,
@@ -117,7 +114,9 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       denominator: sourceSong.denominator,
       songIndex,
       timeEvents,
-      midiEvents,
+      staleMidiEvents: state.currentMidiEvents,
+      freshMidiEvents: midiEvents,
+      currentMidiEvents: midiEvents,
       trackList: sourceSong.tracks.map((t: Track) => t.name),
       trackIndex: 0,
       grid,
@@ -135,7 +134,9 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     return {
       ...state,
       trackIndex,
-      midiEvents,
+      staleMidiEvents: state.currentMidiEvents,
+      freshMidiEvents: midiEvents,
+      currentMidiEvents: midiEvents,
       grid,
       granularity,
       granularityTicks,
@@ -168,30 +169,56 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const remove = data
       .filter((d: GridCellData) => (d.selected === false))
       .map((d: GridCellData) => d.midiEventId);
-    
+
+    const staleEvents: Array<MIDIEvent> = [];
+    // const staleEvents: Array<string> = [];
+    remove.forEach((id: string) => {
+      const e: undefined | MIDIEvent = state.currentMidiEvents.find((e: MIDIEvent) => {
+        return e.id === id;
+      });
+      if (typeof e !== 'undefined') {
+        // staleEvents.push(e.id);
+        // staleEvents.push(e.midiNote.noteOff.id);
+        staleEvents.push(e);
+        staleEvents.push(e.midiNote.noteOff);
+      }
+    })
     const add = data
       .filter((d: GridCellData) => (d.selected === true))
-    const newEvents: Array<MIDIEvent> = [];
+    const freshEvents: Array<MIDIEvent> = [];
     add.forEach((d: GridCellData) => {
       const {
         ticks,
         noteNumber,
       } = d;
-      newEvents.push(sequencer.createMidiEvent(ticks, 144, noteNumber, 100));
-      newEvents.push(sequencer.createMidiEvent(ticks + state.granularityTicks, 128, noteNumber, 0));
+      freshEvents.push(sequencer.createMidiEvent(ticks, 144, noteNumber, 100));
+      freshEvents.push(sequencer.createMidiEvent(ticks + state.granularityTicks, 128, noteNumber, 0));
     });
 
-    const filtered = state.midiEvents.filter((e: MIDIEvent) => remove.indexOf(e.id) === -1);
-    filtered.push(...newEvents);
+    const filtered = state.currentMidiEvents
+      // .filter((e: MIDIEvent) => staleEvents.indexOf(e.id) === -1);
+      .filter((e: MIDIEvent) => {
+        // console.log(e.id, staleEvents.map(e => e.id));
+        const stale = staleEvents.find((s) => {
+          return s.id === e.id
+        });
+        // console.log(stale);
+        return typeof stale === 'undefined';
+      });
+
+
+    filtered.push(...freshEvents);
     // filtered.sort((a, b) => a.ticks - b.ticks).sort((a, b) => a.type - b.type);
-    
+
     const sourceSong = state.songs[state.songIndex];
     const { grid } = createGrid(sourceSong, filtered, state.granularity);
 
     return {
       ...state,
       grid,
-      midiEvents: [...filtered],
+      staleMidiEvents: staleEvents,
+      freshMidiEvents: freshEvents,
+      currentMidiEvents: filtered,
       renderAction: RenderActions.UPDATE_EVENTS,
     };
   } else if (action.type === Actions.SET_LOOP) {
