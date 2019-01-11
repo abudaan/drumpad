@@ -17,15 +17,9 @@ interface Grid {
 class Grid extends React.Component {
   divRef: RefObject<HTMLDivElement>
   dirtyCells: Array<GridCellData>
-  state: {
-    dragActive: boolean,
-  }
 
   constructor(props: PropTypes) {
     super(props);
-    this.state = {
-      dragActive: false,
-    };
     this.divRef = React.createRef();
     this.dirtyCells = [];
   }
@@ -47,19 +41,10 @@ class Grid extends React.Component {
 
   componentDidMount() {
     if (this.divRef.current !== null) {
-      this.divRef.current.addEventListener('mousedown', () => {
-        if (this.state.dragActive === false) {
-          // this.setState({ dragActive: true });
-        }
-      });
       this.divRef.current.addEventListener('mouseup', () => {
-        if (this.state.dragActive === true) {
-          // this.setState({ dragActive: false });
-        }
         this.dispatchUpdate();
       });
       this.divRef.current.addEventListener('touchend', (e) => {
-        // console.log(e);
         this.dispatchUpdate();
       });
     }
@@ -89,7 +74,6 @@ class Grid extends React.Component {
         }
         rows.push(
           <GridCell
-            dragActive={this.state.dragActive}
             key={`cell-${i}-${r}`}
             style={cellStyle}
             className={classNames.join(' ')}

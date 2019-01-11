@@ -63,7 +63,7 @@ class Song extends React.PureComponent {
         this.updateSong();
         this.updateEvents();
         this.setLocators();
-        this.selectInstrument();
+        // this.selectInstrument();
         // this.song.play();
         break;
 
@@ -71,7 +71,7 @@ class Song extends React.PureComponent {
         // this.song.pause();
         this.updateEvents();
         this.setLocators();
-        this.selectInstrument();
+        // this.selectInstrument();
         // this.song.play();
         break;
 
@@ -124,18 +124,20 @@ class Song extends React.PureComponent {
   }
 
   updateEvents() {
-    if (this.props.staleMidiEvents.length > 0) {
-      console.log('stale', this.props.staleMidiEvents.length);
-      this.part.removeEvents(this.props.staleMidiEvents, this.part);
-      // this.part.needsUpdate = true;
-      // this.track.needsUpdate = true;
+    const fresh = this.props.freshMidiEvents;
+    const stale = this.props.staleMidiEvents;
+    if (stale.length > 0) {
+      // console.log('stale', this.props.staleMidiEvents.length);
+      this.part.removeEvents(stale, this.part);
     }
-    if (this.props.freshMidiEvents.length > 0) {
-      console.log('fresh', this.props.freshMidiEvents.length);
+    if (fresh.length > 0) {
+      // console.log('fresh', this.props.freshMidiEvents.length);
       this.part.addEvents(this.props.freshMidiEvents);
     }
-    this.song.update();
-    console.log('total', this.song.events.length, this.track.events.length, this.part.events.length);
+    if (fresh.length > 0 || stale.length > 0) {
+      this.song.update();
+      // console.log('total', this.song.events.length, this.track.events.length, this.part.events.length);
+    }
   }
 
   selectInstrument() {

@@ -6,7 +6,6 @@ interface PropTypes {
   item: GridCellData,
   style: Object,
   className: string,
-  dragActive: boolean,
 };
 
 interface GridCell {
@@ -14,40 +13,24 @@ interface GridCell {
 };
 
 class GridCell extends React.PureComponent {
-  divRef: RefObject<HTMLDivElement>
-
   constructor(props: PropTypes) {
     super(props);
-    this.divRef = React.createRef();
+  }
+
+  dispatchUpdate() {
+    const {
+      selected,
+    } = this.props.item;
+    this.props.addDirtyCell({
+      ...this.props.item,
+      selected: !selected,
+    });
   }
 
   render() {
     return <div
-      ref={this.divRef}
-      // onMouseOver={this.updateCell.bind(this)}
-      // onMouseDown={this.updateCell.bind(this)}
-      onMouseDown={() => {
-          const {
-            selected,
-          } = this.props.item;
-          this.props.addDirtyCell({
-            ...this.props.item,
-            selected: !selected,
-          });
-      }}
-      onTouchStartCapture={(e: SyntheticEvent) => {
-        // e.preventDefault()
-        if (this.divRef.current !== null) {
-          // this.props.addDirtyCell(div);
-          if (this.divRef.current.className.indexOf('selected') !== -1) {
-            this.divRef.current.className = 'cell';
-          } else {
-            this.divRef.current.className = 'cell selected';
-          }
-        }
-        return false;
-      }}
-      // onTouchEnd={e => {e.preventDefault();}}
+      onMouseDown={this.dispatchUpdate.bind(this)}
+      onTouchEnd={this.dispatchUpdate.bind(this)}
       style={this.props.style}
       className={this.props.className}
       id={`${this.props.item.ticks}-${this.props.item.noteNumber}`}
