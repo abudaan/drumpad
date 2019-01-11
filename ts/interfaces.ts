@@ -115,6 +115,7 @@ export interface HeartbeatSong {
 };
 
 export interface MIDIEvent {
+  id: string
   bar: number
   type: number
   data1: number
@@ -186,8 +187,9 @@ export interface SongInfo {
 export interface GridCellData {
   ticks: number
   noteNumber: number
-  midiEvent: null | MIDIEvent
+  midiEventId: null | string
   active: boolean
+  selected: boolean
 }
 
 export type GridType = {

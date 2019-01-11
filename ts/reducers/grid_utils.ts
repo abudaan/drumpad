@@ -1,12 +1,12 @@
 import { MIDIEvent, HeartbeatSong, GridCellData, GridType } from "../interfaces";
-import { uniq } from "ramda";
+import { uniq, isNil } from "ramda";
 
 const getUniqNotes = (events: Array<MIDIEvent>): Array<number> => uniq(events.map(e => e.noteNumber)).sort((a, b) => b - a);
 
 const updateGranularity = (events: Array<MIDIEvent>, ppq: number, currentGranularity: number) => {
   let ticks = 0;
   let newGranularity = Number.MAX_VALUE;
-  events.filter(e => e.type === 144).forEach(event => {
+  events.filter(e => e.type === 144).sort((a, b) => a.ticks - b.ticks).forEach(event => {
     var diff = event.ticks - ticks;
     ticks = event.ticks;
     // console.log(ticks, event.ticks);
@@ -25,7 +25,7 @@ const getEvent = (events: Array<MIDIEvent>, ticks: number, noteNumber: number): 
 type cg = { grid: GridType, granularity: number, updateInterval: number, granularityTicks: number };
 const createGrid = (song: HeartbeatSong, events: Array<MIDIEvent>, currentGranularity: number): cg => {
   const granularity = updateGranularity(events, song.ppq, currentGranularity);
-  const numBars = events[events.length - 1].bar;
+  const numBars = 1; // events[events.length - 1].ticks -> do something here!
   const notes = getUniqNotes(events);
   const totalTicks = numBars * (song.nominator * (4 / song.denominator) * song.ppq);
   const granularityTicks = (4 / granularity) * song.ppq;
@@ -40,10 +40,12 @@ const createGrid = (song: HeartbeatSong, events: Array<MIDIEvent>, currentGranul
   for (let i = 0; i < totalTicks; i += granularityTicks) {
     for (let j = 0; j < notes.length; j++) {
       const noteNumber = notes[j];
+      const event = getEvent(events, i, noteNumber)
       const item: GridCellData = {
         ticks: i,
         noteNumber,
-        midiEvent: getEvent(events, i, noteNumber),
+        midiEventId: event === null ? null : event.id,
+        selected: event !== null,
         active: false,
       }
       grid.cells.push(item);

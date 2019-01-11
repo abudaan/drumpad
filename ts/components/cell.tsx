@@ -2,7 +2,7 @@ import React, { MouseEvent, RefObject, SyntheticEvent } from 'react'
 import { GridCellData } from '../interfaces';
 
 interface PropTypes {
-  addDirtyCell: (div: HTMLDivElement) => void
+  addDirtyCell: (cell: GridCellData) => void
   item: GridCellData,
   style: Object,
   className: string,
@@ -21,32 +21,19 @@ class GridCell extends React.PureComponent {
     this.divRef = React.createRef();
   }
 
-  updateCell() {
-    if (this.props.dragActive !== true) {
-      return;
-    }
-    const div = this.divRef.current;
-    if (div !== null) {
-      if (div.className.indexOf('selected') !== -1) {
-        div.className = 'cell';
-      } else {
-        div.className = 'cell selected';
-      }
-      this.props.addDirtyCell(div);
-    }
-  }
-
   render() {
-    // console.log('render cell')
-    const div = this.divRef.current ? this.divRef.current : null;
     return <div
       ref={this.divRef}
       // onMouseOver={this.updateCell.bind(this)}
       // onMouseDown={this.updateCell.bind(this)}
       onMouseDown={() => {
-        if (div !== null) {
-          this.props.addDirtyCell(div);
-        }
+          const {
+            selected,
+          } = this.props.item;
+          this.props.addDirtyCell({
+            ...this.props.item,
+            selected: !selected,
+          });
       }}
       onTouchStartCapture={(e: SyntheticEvent) => {
         // e.preventDefault()

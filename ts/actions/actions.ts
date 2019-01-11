@@ -1,5 +1,5 @@
 import { Dispatch, Action } from 'redux';
-import { SongPosition, IAction } from '../interfaces';
+import { SongPosition, IAction, GridCellData } from '../interfaces';
 import { ChangeEvent } from 'react';
 import {
   initSequencer,
@@ -21,6 +21,7 @@ export const SEQUENCER_STOP = 'SEQUENCER STOP';
 export const CHOOSING_TEMPO = 'CHOOSING TEMPO'; // while dragging the thumb of the range input
 export const UPDATE_TEMPO = 'UPDATE TEMPO'; // while releasing the thumb
 export const UPDATE_POSITION = 'UPDATE POSITION';
+export const UPDATE_EVENTS = 'UPDATE EVENTS';
 export const ASSETPACK_LOADED = 'ASSETPACK LOADED';
 export const INSTRUMENT_LOADED = 'INSTRUMENT LOADED';
 export const SAMPLE_LOADED = 'SAMPLE LOADED';
@@ -38,7 +39,7 @@ export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
   const config = await loadJSON(configUrl);
   await parseConfig(config);
   const songs = createSongList();
-    
+
   addEndListener(songs, () => { dispatch(stop()) });
   dispatch({
     type: CONFIG_LOADED,
@@ -139,10 +140,18 @@ export const updateTempo = (e: { target: HTMLInputElement; }): IAction<any> => (
   }
 
 });
+
 export const updatePostion = (position: SongPosition): IAction<any> => ({
   type: UPDATE_POSITION,
   payload: {
     ...position,
+  }
+});
+
+export const updateEvents = (data: Array<GridCellData>): IAction<any> => ({
+  type: UPDATE_EVENTS,
+  payload: {
+    data,
   }
 });
 

@@ -1,5 +1,6 @@
+import sequencer from 'heartbeat-sequencer';
 import * as Actions from '../actions/actions';
-import { SongState, IAction, Track, HeartbeatSong, MIDIEvent } from '../interfaces';
+import { SongState, IAction, Track, HeartbeatSong, MIDIEvent, GridCellData } from '../interfaces';
 import { createGrid } from './grid_utils';
 import * as RenderActions from '../components/song';
 
@@ -67,7 +68,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       granularity: newGranularity,
       granularityTicks,
       updateInterval,
-      songList: songs.map((s:HeartbeatSong) => s.name),
+      songList: songs.map((s: HeartbeatSong) => s.name),
       trackList: songs[0].tracks.map((t: Track) => t.name),
       instrumentList,
       renderAction: RenderActions.INIT,
@@ -161,6 +162,37 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     return {
       ...state,
       renderAction: RenderActions.TEMPO,
+    };
+  } else if (action.type === Actions.UPDATE_EVENTS) {
+    const data = action.payload.data;
+    const remove = data
+      .filter((d: GridCellData) => (d.selected === false))
+      .map((d: GridCellData) => d.midiEventId);
+    
+    const add = data
+      .filter((d: GridCellData) => (d.selected === true))
+    const newEvents: Array<MIDIEvent> = [];
+    add.forEach((d: GridCellData) => {
+      const {
+        ticks,
+        noteNumber,
+      } = d;
+      newEvents.push(sequencer.createMidiEvent(ticks, 144, noteNumber, 100));
+      newEvents.push(sequencer.createMidiEvent(ticks + state.granularityTicks, 128, noteNumber, 0));
+    });
+
+    const filtered = state.midiEvents.filter((e: MIDIEvent) => remove.indexOf(e.id) === -1);
+    filtered.push(...newEvents);
+    // filtered.sort((a, b) => a.ticks - b.ticks).sort((a, b) => a.type - b.type);
+    
+    const sourceSong = state.songs[state.songIndex];
+    const { grid } = createGrid(sourceSong, filtered, state.granularity);
+
+    return {
+      ...state,
+      grid,
+      midiEvents: [...filtered],
+      renderAction: RenderActions.UPDATE_EVENTS,
     };
   } else if (action.type === Actions.SET_LOOP) {
     return {

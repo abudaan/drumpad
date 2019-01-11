@@ -1,9 +1,9 @@
 import React, { RefObject } from 'react';
 import GridCell from './cell';
-import { GridType } from '../interfaces';
+import { GridType, GridCellData } from '../interfaces';
 
 interface PropTypes {
-  updateCells: (selectedCells: Array<{ ticks: number, noteNumber: number, selected: boolean }>) => void,
+  updateCells: (cells: Array<GridCellData>) => void,
   grid: GridType,
   activeColumn: number,
   enabled: boolean,
@@ -16,7 +16,7 @@ interface Grid {
 
 class Grid extends React.Component {
   divRef: RefObject<HTMLDivElement>
-  dirtyCells: Array<{ id: string, selected: boolean }>
+  dirtyCells: Array<GridCellData>
   state: {
     dragActive: boolean,
   }
@@ -30,47 +30,36 @@ class Grid extends React.Component {
     this.dirtyCells = [];
   }
 
-  addDirtyCell(div: HTMLDivElement) {
-    const selected = div.className.indexOf('selected') !== -1;
-    this.dirtyCells.push({
-      id: div.id,
-      selected,
-    });
-    div.className = selected ? 'cell selected' : 'cell';
+  addDirtyCell(data: GridCellData) {
+    this.dirtyCells.push(data);
   }
 
   dispatchUpdate() {
-    const cells = this.dirtyCells.filter(data => data.id !== '');
-    const o: { [id: string]: { id: string, selected: boolean } } = {};
-    cells.forEach(c => {
-      o[c.id] = c;
+    const o: { [id: string]: GridCellData } = {};
+    this.dirtyCells.forEach((c: GridCellData) => {
+      const id = `${c.ticks}-${c.noteNumber}`
+      o[id] = c;
     });
-    const result = Object.values(o).map(data => {
-      const [
-        ticks,
-        noteNumber,
-      ] = data.id.split('-');
-      return {
-        ticks,
-        noteNumber,
-        selected: data.selected,
-      };
-    })
-    // this.props.updateCells(Object.values(o));
-    console.log('DISPATCH', result);
+    const result = Object.values(o).map(data => data);
+    this.props.updateCells(result);
+    this.dirtyCells = [];
   }
 
   componentDidMount() {
     if (this.divRef.current !== null) {
       this.divRef.current.addEventListener('mousedown', () => {
         if (this.state.dragActive === false) {
-          this.setState({ dragActive: true });
+          // this.setState({ dragActive: true });
         }
       });
       this.divRef.current.addEventListener('mouseup', () => {
         if (this.state.dragActive === true) {
-          this.setState({ dragActive: false });
+          // this.setState({ dragActive: false });
         }
+        this.dispatchUpdate();
+      });
+      this.divRef.current.addEventListener('touchend', (e) => {
+        // console.log(e);
         this.dispatchUpdate();
       });
     }
@@ -91,7 +80,7 @@ class Grid extends React.Component {
       for (let r = 0; r < numRows; r++) {
         const item = this.props.grid.cells[i++];
         const classNames = ['cell'];
-        if (item.midiEvent !== null) {
+        if (item.midiEventId !== null) {
           if (active === true) {
             classNames.push('active');
           } else {

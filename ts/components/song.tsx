@@ -37,7 +37,8 @@ export type SongPropTypes = {
   instrumentName: string,
   renderAction: string,
   timeEvents: Array<MIDIEvent>,
-  midiEvents: Array<MIDIEvent>,
+  staleMidiEvents: Array<MIDIEvent>,
+  newMidiEvents: Array<MIDIEvent>,
   updatePosition: (pos: SongPosition) => void,
 };
 
@@ -66,10 +67,10 @@ class Song extends React.PureComponent {
         break;
 
       case UPDATE_EVENTS:
-        this.song.pause();
+        // this.song.pause();
         this.updateEvents();
         this.setLocators();
-        this.song.play();
+        // this.song.play();
         break;
 
       case PLAY:
@@ -121,8 +122,8 @@ class Song extends React.PureComponent {
   }
 
   updateEvents() {
-    this.part.removeEvents(this.part.events);
-    this.part.addEvents(this.props.midiEvents);
+    this.part.removeEvents(this.part.staleMidiEvents);
+    this.part.addEvents(this.props.newMidiEvents);
     this.song.update();
   }
 
@@ -136,7 +137,8 @@ class Song extends React.PureComponent {
     this.song.setLeftLocator('barsbeats', 1, 1, 1, 0);
     // song.setRightLocator('barsbeats', song.bars + 1, 1, 1, 0);
     const lastBar = this.part.events[this.part.events.length - 1].bar;
-    this.song.setRightLocator('barsbeats', lastBar + 1, 1, 1, 0);
+    // this.song.setRightLocator('barsbeats', lastBar + 1, 1, 1, 0);
+    this.song.setRightLocator('barsbeats', 2, 1, 1, 0);
     this.song.setLoop(this.props.loop);
   }
 

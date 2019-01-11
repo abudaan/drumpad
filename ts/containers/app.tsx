@@ -12,8 +12,9 @@ import {
   selectInstrument,
   play,
   stop,
+  updateEvents,
 } from '../actions/actions'
-import { State, SongPosition, HeartbeatSong, AssetPack, MIDINote, GridCell, GridType, MIDIEvent } from '../interfaces';
+import { State, SongPosition, GridType, MIDIEvent } from '../interfaces';
 import getInstrument from '../reducers/instrument_selector';
 import Grid from '../components/grid';
 import Controls from '../components/controls';
@@ -70,6 +71,7 @@ type PropTypes = {
   stop: () => void,
   choosingTempo: (e: ChangeEvent) => void,
   updateTempo: (e: Event<HTMLElement, Event>) => void,
+  updateEvents: (events: Array<{ticks: number, noteNumber: number, selected: boolean}>) => void,
   updatePosition: (pos: SongPosition) => void,
 };
 
@@ -122,6 +124,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     selectTrack,
     selectSong,
     selectInstrument,
+    updateEvents,
   }, dispatch);
 }
 
@@ -162,7 +165,7 @@ class App extends React.PureComponent {
         grid={this.props.grid}
         activeColumn={this.props.activeColumn}
         enabled={this.props.controlsEnabled}
-        updateCells={() => { }}
+        updateCells={this.props.updateEvents}
         playing={this.props.playing}
       ></Grid>
 
