@@ -14,3 +14,5 @@ render(
   </Provider>,
   document.getElementById('container')
 );
+
+document.oncontextmenu = () => {};
