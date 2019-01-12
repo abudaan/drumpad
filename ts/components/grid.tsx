@@ -1,9 +1,9 @@
 import React, { RefObject } from 'react';
 import GridCell from './cell';
-import { GridType, GridCellData } from '../interfaces';
+import { GridType, GridCellData, GridCellDataDirty } from '../interfaces';
 
 interface PropTypes {
-  updateCells: (cells: Array<GridCellData>) => void,
+  updateCells: (cells: Array<GridCellDataDirty>) => void,
   grid: GridType,
   activeColumn: number,
   enabled: boolean,
@@ -16,7 +16,7 @@ interface Grid {
 
 class Grid extends React.Component {
   divRef: RefObject<HTMLDivElement>
-  dirtyCells: Array<GridCellData>
+  dirtyCells: Array<GridCellDataDirty>
 
   constructor(props: PropTypes) {
     super(props);
@@ -24,15 +24,14 @@ class Grid extends React.Component {
     this.dirtyCells = [];
   }
 
-  addDirtyCell(data: GridCellData) {
+  addDirtyCell(data: GridCellDataDirty) {
     this.dirtyCells.push(data);
   }
 
   dispatchUpdate() {
-    const o: { [id: string]: GridCellData } = {};
-    this.dirtyCells.forEach((c: GridCellData) => {
-      const id = `${c.ticks}-${c.noteNumber}`
-      o[id] = c;
+    const o: { [id: string]: GridCellDataDirty } = {};
+    this.dirtyCells.forEach((c: GridCellDataDirty) => {
+      o[c.id] = c;
     });
     const result = Object.values(o).map(data => data);
     this.props.updateCells(result);

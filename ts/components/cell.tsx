@@ -1,8 +1,8 @@
 import React, { MouseEvent, RefObject, SyntheticEvent } from 'react'
-import { GridCellData } from '../interfaces';
+import { GridCellData, GridCellDataDirty } from '../interfaces';
 
 interface PropTypes {
-  addDirtyCell: (cell: GridCellData) => void
+  addDirtyCell: (cell: GridCellDataDirty) => void
   item: GridCellData,
   style: Object,
   className: string,
@@ -19,10 +19,12 @@ class GridCell extends React.PureComponent {
 
   dispatchUpdate() {
     const {
+      ticks,
+      noteNumber,
       selected,
     } = this.props.item;
     this.props.addDirtyCell({
-      ...this.props.item,
+      id: `${ticks}-${noteNumber}`,
       selected: !selected,
     });
   }

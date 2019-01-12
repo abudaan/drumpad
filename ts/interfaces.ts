@@ -224,6 +224,11 @@ export interface GridCellData {
   selected: boolean
 }
 
+export interface GridCellDataDirty {
+  id: string
+  selected: boolean
+}
+
 export type GridType = {
   cells: Array<GridCellData>
   rows: number

@@ -162,57 +162,12 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     };
   } else if (action.type === Actions.UPDATE_EVENTS) {
     const data = action.payload.data;
-    const remove = data
-      .filter((d: GridCellData) => (d.selected === false))
-      .map((d: GridCellData) => d.midiEventId);
-
-    const staleEvents: Array<MIDIEvent> = [];
-    // const staleEvents: Array<string> = [];
-    remove.forEach((id: string) => {
-      const e: undefined | MIDIEvent = state.currentMidiEvents.find((e: MIDIEvent) => {
-        return e.id === id;
-      });
-      if (typeof e !== 'undefined') {
-        // staleEvents.push(e.id);
-        // staleEvents.push(e.midiNote.noteOff.id);
-        staleEvents.push(e);
-        staleEvents.push(e.midiNote.noteOff);
-      }
-    })
-    const add = data
-      .filter((d: GridCellData) => (d.selected === true))
-    const freshEvents: Array<MIDIEvent> = [];
-    add.forEach((d: GridCellData) => {
-      const {
-        ticks,
-        noteNumber,
-      } = d;
-      freshEvents.push(sequencer.createMidiEvent(ticks, 144, noteNumber, 100));
-      freshEvents.push(sequencer.createMidiEvent(ticks + state.granularityTicks, 128, noteNumber, 0));
-    });
-
-    const filtered = state.currentMidiEvents
-      // .filter((e: MIDIEvent) => staleEvents.indexOf(e.id) === -1);
-      .filter((e: MIDIEvent) => {
-        // console.log(e.id, staleEvents.map(e => e.id));
-        const stale = staleEvents.find((s) => {
-          return s.id === e.id
-        });
-        // console.log(stale);
-        return typeof stale === 'undefined';
-      });
-
-
-    filtered.push(...freshEvents);
-    // filtered.sort((a, b) => a.ticks - b.ticks).sort((a, b) => a.type - b.type);
-
-    const sourceSong = state.songs[state.songIndex];
+    const unmuted = []; //midiEvents.map((e: MIDIEvent) => `${e.ticks}-${e.noteNumber}`);
+    const activeMIDIEventIds = state.allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
 
     return {
       ...state,
-      staleMidiEvents: staleEvents,
-      freshMidiEvents: freshEvents,
-      currentMidiEvents: filtered,
+      activeMIDIEventIds,
       renderAction: RenderActions.UPDATE_EVENTS,
     };
   } else if (action.type === Actions.SET_LOOP) {
