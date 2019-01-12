@@ -7,7 +7,7 @@ const getUniqNotes = (events: Array<MIDIEvent>): Array<number> => uniq(events.ma
 const updateGranularity = (events: Array<MIDIEvent>, ppq: number, currentGranularity: number) => {
   let ticks = 0;
   let newGranularity = Number.MAX_VALUE;
-  events.filter(e => e.type === 144).sort((a, b) => a.ticks - b.ticks).forEach(event => {
+  events.sort((a, b) => a.ticks - b.ticks).forEach(event => {
     var diff = event.ticks - ticks;
     ticks = event.ticks;
     // console.log(ticks, event.ticks);

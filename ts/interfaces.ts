@@ -6,9 +6,9 @@ export interface SongState {
   nominator: number
   denominator: number
   grid: GridType
+  midiFiles: Array<MIDIFileJSON>
   trackList: Array<Track>
   instrumentList: Array<string>
-  songs: Array<HeartbeatSong>
   songList: Array<string>
   position?: SongPosition
   bar?: number

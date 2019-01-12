@@ -6,6 +6,7 @@ import { HeartbeatSong, MIDIEvent, SongPosition, Track, Part } from '../interfac
 export const PASS = 'PASS';
 export const INIT = 'INIT';
 export const SONG = 'SONG';
+export const TRACK = 'TRACK';
 export const PLAY = 'PLAY';
 export const PAUSE = 'PAUSE';
 export const STOP = 'STOP';
@@ -52,6 +53,8 @@ class Song extends React.PureComponent {
     switch (this.props.renderAction) {
       case INIT:
         this.initSong();
+        this.updateTrack();
+        this.song.update();
         this.unmuteEvents();
         this.selectInstrument();
         this.setLocators();
@@ -59,13 +62,22 @@ class Song extends React.PureComponent {
 
       case SONG:
         this.updateSong();
+        this.updateTrack();
+        this.song.update();
+        this.unmuteEvents();
+        this.setLocators();
+        break;
+
+      case TRACK:
+        this.muteAllEvents();
+        this.updateTrack();
+        this.song.update();
         this.unmuteEvents();
         this.setLocators();
         break;
 
       case UPDATE_EVENTS:
         this.unmuteEvents();
-        this.setLocators();
         break;
 
       case PLAY:
@@ -106,7 +118,6 @@ class Song extends React.PureComponent {
       timeEvents: this.props.timeEvents,
       useMetronome: false,
     });
-    this.song.update();
   }
 
   updateSong() {
@@ -116,16 +127,25 @@ class Song extends React.PureComponent {
       nominator: this.song.nominator,
       denominator: this.song.denominator,
     } = this.props);
+  }
+
+  updateTrack() {
     this.song.removeTimeEvents();
     this.part.removeEvents(this.part.events, this.part);
     this.song.addTimeEvents(this.props.timeEvents);
     this.part.addEvents(this.props.allMIDIEvents);
     this.part.needsUpdate = true;
     this.track.needsUpdate = true;
-    this.song.update();
+  }
+
+  muteAllEvents() {
+    this.part.events.forEach((e) => {
+      e.muted = true;
+    });
   }
 
   unmuteEvents() {
+    // console.log(this.props.activeMIDIEventIds);
     this.props.activeMIDIEventIds.forEach((id) => {
       const noteOn = this.part.eventsById[id];
       if (noteOn) {

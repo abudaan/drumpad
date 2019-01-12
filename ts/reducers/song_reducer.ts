@@ -4,13 +4,6 @@ import { SongState, IAction, Track, HeartbeatSong, MIDIEvent, GridCellData, MIDI
 import { createGrid } from './grid_utils';
 import * as RenderActions from '../components/song';
 
-const getMIDIEvents = (song: HeartbeatSong, trackIndex: number): Array<MIDIEvent> => {
-  const track = song.tracks[trackIndex];
-  return track.events
-    .filter((e: MIDIEvent) => e.type === 144 || e.type === 128)
-    .map((e: MIDIEvent) => sequencer.createMidiEvent(e.ticks, e.type, e.data1, e.data2));
-}
-
 const songInitialState = {
   grid: {
     rows: 0,
@@ -21,6 +14,7 @@ const songInitialState = {
   songList: [],
   songIndex: 0,
   trackList: [],
+  midiFiles: [],
   instrumentList: [],
   instrumentName: null,
   granularity: 8,
@@ -102,46 +96,48 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     };
   } else if (action.type === Actions.SELECT_SONG) {
     const songIndex = action.payload.songIndex;
-    const sourceSong = state.songs[songIndex];
-    const timeEvents = sourceSong.timeEvents;
-    const midiEvents = getMIDIEvents(sourceSong, 0);
-    const unmutedMIDIEvents = midiEvents.map((e) => ({ticks: e.ticks, noteNumber: e.noteNumber}));
-    const { grid, granularity, updateInterval, granularityTicks, allMIDIEvents } = createGrid(sourceSong, midiEvents, state.granularity);
+    const source = state.midiFiles[songIndex] as MIDIFileData;
+    const timeEvents = source.timeEvents;
+    const midiEvents = source.tracks[0].events.filter((e: MIDIEvent) => e.type === 144);
+    const unmuted = midiEvents.map((e: MIDIEvent) => `${e.ticks}-${e.noteNumber}`);
+    const { grid, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents } = createGrid(source, midiEvents, state.granularity);
+    const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
+
     return {
       ...state,
-      ppq: sourceSong.ppq,
-      bpm: sourceSong.bpm,
-      nominator: sourceSong.nominator,
-      denominator: sourceSong.denominator,
+      ppq: source.ppq,
+      bpm: source.bpm,
+      nominator: source.nominator,
+      denominator: source.denominator,
       songIndex,
       timeEvents,
-      unmutedMIDIEvents,
       allMIDIEvents,
-      trackList: sourceSong.tracks.map((t: Track) => t.name),
+      activeMIDIEventIds,
+      trackList: state.midiFiles[songIndex].tracks.map((t: Track) => t.name),
       trackIndex: 0,
       grid,
-      granularity,
+      granularity: newGranularity,
       granularityTicks,
       updateInterval,
-      activeNotes: [],
       renderAction: RenderActions.SONG,
     };
   } else if (action.type === Actions.SELECT_TRACK) {
     const { trackIndex } = action.payload;
-    const sourceSong = state.songs[state.songIndex];
-    const midiEvents = getMIDIEvents(sourceSong, trackIndex);
-    const { grid, granularity, updateInterval, granularityTicks } = createGrid(sourceSong, midiEvents, state.granularity);
+    const source = state.midiFiles[state.songIndex];
+    const midiEvents = source.tracks[trackIndex].events.filter((e: MIDIEvent) => e.type === 144);
+    const unmuted = midiEvents.map((e: MIDIEvent) => `${e.ticks}-${e.noteNumber}`);
+    const { grid, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents } = createGrid(source, midiEvents, state.granularity);
+    const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
     return {
       ...state,
       trackIndex,
-      staleMidiEvents: state.currentMidiEvents,
-      freshMidiEvents: midiEvents,
-      currentMidiEvents: midiEvents,
       grid,
-      granularity,
+      granularity: newGranularity,
       granularityTicks,
       updateInterval,
-      renderAction: RenderActions.UPDATE_EVENTS,
+      allMIDIEvents,
+      activeMIDIEventIds,
+      renderAction: RenderActions.TRACK,
     };
   } else if (action.type === Actions.SEQUENCER_PLAY) {
     const renderAction = state.renderAction === RenderActions.PLAY ? RenderActions.PAUSE : RenderActions.PLAY;
