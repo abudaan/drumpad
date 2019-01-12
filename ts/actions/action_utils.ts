@@ -1,5 +1,5 @@
 import sequencer from 'heartbeat-sequencer';
-import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config, GridCellData } from '../interfaces';
+import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config, GridCellData, Track, MIDIEvent, MIDIFileData } from '../interfaces';
 import { isNil } from 'ramda';
 
 const status = (response: Response) => {
@@ -60,7 +60,7 @@ const addMIDIFile = (url: string): Promise<MIDIFileJSON> => new Promise((resolve
 
 
 const addAssetPack = (ap: AssetPack): Promise<AssetPack> => new Promise(async (resolve) => {
-  sequencer.addAssetPack(ap, () => {    
+  sequencer.addAssetPack(ap, () => {
     resolve(ap);
   });
 })
@@ -105,10 +105,29 @@ const parseConfig = (config: Config): Promise<null> => {
   });
 }
 
+const createMIDIFileList = (): Array<MIDIFileData> =>
+  sequencer.getMidiFiles().map((mf: MIDIFileJSON) => {
+    const result: MIDIFileData = {
+      name: mf.url.substring(mf.url.lastIndexOf('/') + 1),
+      tracks: [],
+      timeEvents: [...mf.timeEvents],
+      ppq: mf.ppq,
+      bpm: mf.bpm,
+      nominator: mf.nominator,
+      denominator: mf.denominator,
+    };
 
-const createSongList = (): Array<HeartbeatSong> => 
-  sequencer.getMidiFiles().map((mf: MIDIFileJSON) =>
-    sequencer.createSong(mf));
+    mf.tracks.forEach((t: Track) => {
+      const key = Object.keys(t.partsById)[0];
+      const events = Object.values(t.partsById[key].eventsById);
+      result.tracks.push({
+        name: t.name,
+        events,
+      });
+    })
+
+    return result;
+  });
 
 
 const addEndListener = (songList: Array<HeartbeatSong>, action: () => void) => {
@@ -130,6 +149,6 @@ export {
   addMIDIFile,
   addEndListener,
   getLoadedInstruments,
-  createSongList,
+  createMIDIFileList,
   stopAllSongs,
 }

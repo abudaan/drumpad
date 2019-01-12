@@ -1,5 +1,6 @@
-import { MIDIEvent, HeartbeatSong, GridCellData, GridType } from "../interfaces";
-import { uniq, isNil } from "ramda";
+import sequencer from 'heartbeat-sequencer';
+import { MIDIEvent, MIDIFileData, GridCellData, GridType } from "../interfaces";
+import { uniq } from "ramda";
 
 const getUniqNotes = (events: Array<MIDIEvent>): Array<number> => uniq(events.map(e => e.noteNumber)).sort((a, b) => b - a);
 
@@ -22,14 +23,15 @@ const getEvent = (events: Array<MIDIEvent>, ticks: number, noteNumber: number): 
   return match[0] || null;
 }
 
-type cg = { grid: GridType, granularity: number, updateInterval: number, granularityTicks: number };
-const createGrid = (song: HeartbeatSong, events: Array<MIDIEvent>, currentGranularity: number): cg => {
+type cg = { grid: GridType, granularity: number, updateInterval: number, granularityTicks: number, allMIDIEvents: Array<MIDIEvent> };
+const createGrid = (song: MIDIFileData, events: Array<MIDIEvent>, currentGranularity: number): cg => {
   const granularity = updateGranularity(events, song.ppq, currentGranularity);
   const numBars = 1; // events[events.length - 1].ticks -> do something here!
   const notes = getUniqNotes(events);
   const totalTicks = numBars * (song.nominator * (4 / song.denominator) * song.ppq);
   const granularityTicks = (4 / granularity) * song.ppq;
-  const updateInterval = Math.round((granularityTicks / 2) * song.millisPerTick);
+  const updateInterval = Math.round((granularityTicks / 2) *  (60000 / song.bpm / song.ppq));
+  const allMIDIEvents: Array<MIDIEvent> = [];
 
   const grid: GridType = {
     rows: notes.length,
@@ -37,17 +39,24 @@ const createGrid = (song: HeartbeatSong, events: Array<MIDIEvent>, currentGranul
     cells: [],
   };
 
-  for (let i = 0; i < totalTicks; i += granularityTicks) {
+  for (let ticks = 0; ticks < totalTicks; ticks += granularityTicks) {
     for (let j = 0; j < notes.length; j++) {
       const noteNumber = notes[j];
-      const event = getEvent(events, i, noteNumber)
+      const event = getEvent(events, ticks, noteNumber)
       const item: GridCellData = {
-        ticks: i,
+        ticks,
         noteNumber,
         midiEventId: event === null ? null : event.id,
         selected: event !== null,
         active: false,
       }
+      const noteOn = sequencer.createMidiEvent(ticks, 144, noteNumber, 100);
+      const noteOff = sequencer.createMidiEvent(ticks + granularityTicks, 128, noteNumber, 0);
+      noteOn.muted = true;
+      noteOff.muted = true;
+      // const noteOn = [ticks, 144, noteNumber, 100];
+      // const noteOff = [ticks + granularityTicks, 128, noteNumber, 0];
+      allMIDIEvents.push(noteOn, noteOff);
       grid.cells.push(item);
     }
   }
@@ -57,9 +66,15 @@ const createGrid = (song: HeartbeatSong, events: Array<MIDIEvent>, currentGranul
     granularity,
     granularityTicks,
     updateInterval,
+    allMIDIEvents,
   }
+};
+
+const updateGrid = (unmutedMIDIEvents: Array<MIDIEvent>) => {
+
 };
 
 export {
   createGrid,
+  updateGrid,
 };

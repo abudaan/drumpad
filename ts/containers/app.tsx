@@ -57,8 +57,8 @@ type PropTypes = {
   granularityTicks: number,
   renderAction: string,
   timeEvents: Array<MIDIEvent>,
-  freshMidiEvents: Array<MIDIEvent>,
-  staleMidiEvents: Array<MIDIEvent>,
+  allMIDIEvents: Array<MIDIEvent>,
+  activeMIDIEventIds: Array<string>,
 
   // from instrument_selector
   instrumentName: string,
@@ -98,8 +98,8 @@ const mapStateToProps = (state: State) => {
     granularityTicks: state.song.granularityTicks,
     renderAction: state.song.renderAction,
     timeEvents: state.song.timeEvents,
-    freshMidiEvents: state.song.freshMidiEvents,
-    staleMidiEvents: state.song.staleMidiEvents,
+    allMIDIEvents: state.song.allMIDIEvents,
+    activeMIDIEventIds: state.song.activeMIDIEventIds,
 
     // from controls_reducer
     trackIndex: state.controls.trackIndex,
@@ -185,8 +185,8 @@ class App extends React.PureComponent {
         nominator={this.props.nominator}
         denominator={this.props.denominator}
         renderAction={this.props.renderAction}
-        freshMidiEvents={this.props.freshMidiEvents}
-        staleMidiEvents={this.props.staleMidiEvents}
+        allMIDIEvents={this.props.allMIDIEvents}
+        activeMIDIEventIds={this.props.activeMIDIEventIds}
         timeEvents={this.props.timeEvents}
         trackIndex={this.props.trackIndex}
         instrumentName={this.props.instrumentName}

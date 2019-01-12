@@ -5,7 +5,7 @@ export interface SongState {
   bpm: number
   nominator: number
   denominator: number
-  grid: null | Array<Array<GridCell>>
+  grid: GridType
   trackList: Array<Track>
   instrumentList: Array<string>
   songs: Array<HeartbeatSong>
@@ -27,9 +27,8 @@ export interface SongState {
   renderAction: string
   sequencerReady: boolean
   timeEvents: Array<MIDIEvent>
-  freshMidiEvents: Array<MIDIEvent>
-  staleMidiEvents: Array<MIDIEvent>
-  currentMidiEvents: Array<MIDIEvent>
+  allMIDIEvents: Array<MIDIEvent>
+  activeMIDIEventIds: Array<string>
 };
 
 export interface ControlsState {
@@ -101,6 +100,8 @@ export interface HeartbeatSong {
   bars: number // number of bars in Song
   events: Array<MIDIEvent>
   timeEvents: Array<MIDIEvent>
+  notes: Array<MIDINote>
+  useMetronome: boolean
   play: () => void
   pause: () => void
   stop: () => void
@@ -126,18 +127,20 @@ export interface MIDIEvent {
   noteName: string
   noteNumber: number
   velocity: number
-  midiNote: MIDINote,
-  song: null | HeartbeatSong,
-  track: null | Track,
-  part: null | Part,
+  midiNote: MIDINote
+  muted: boolean
+  song: null | HeartbeatSong
+  track: null | Track
+  part: null | Part
 };
 
 export interface MIDINote extends MIDIEvent {
   trackId: string
   track: Track
   number: number
-  noteOn: MIDIEvent,
-  noteOff: MIDIEvent,
+  noteOn: MIDIEvent
+  noteOff: MIDIEvent
+  mute: (flag: boolean) => void
 }
 
 export interface Part {
@@ -145,6 +148,7 @@ export interface Part {
   name: string
   events: Array<MIDIEvent>
   needsUpdate: boolean
+  eventsById: {[id: string]: MIDIEvent}
   addEvents: (events: Array<MIDIEvent>) => void
   removeEvents: (events: Array<MIDIEvent>, part?: Part) => void
 }
@@ -155,6 +159,7 @@ export interface Track {
   parts: Array<Part>
   events: Array<MIDIEvent>
   needsUpdate: boolean
+  partsById: {[id: string]: Part}
   addPart: (part: Part) => void
   removeEvents: (events: Array<MIDIEvent>) => void
   removeAllEvents: () => void
@@ -173,7 +178,24 @@ export interface MIDIFileJSON {
   id: string,
   url: string,
   name: string,
+  ppq: number,
+  bpm: number,
+  nominator: number,
+  denominator: number,
+  tracks: Array<Track>
+  timeEvents: Array<MIDIEvent>
 }
+
+export type MIDIFileData = {
+  ppq: number,
+  bpm: number,
+  nominator: number,
+  denominator: number,
+  name: string,
+  timeEvents: Array<MIDIEvent>,
+  tracks: Array<{name: string, events: Array<MIDIEvent>}>,
+};
+
 
 // config file that gets loaded when the app starts
 export interface Config {

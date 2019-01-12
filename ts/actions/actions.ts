@@ -5,7 +5,7 @@ import {
   initSequencer,
   loadJSON,
   parseConfig,
-  createSongList,
+  createMIDIFileList,
   addEndListener,
   getLoadedInstruments,
   addAssetPack,
@@ -38,15 +38,13 @@ export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
   await initSequencer();
   const config = await loadJSON(configUrl);
   await parseConfig(config);
-  const songs = createSongList();
+  const midiFiles = createMIDIFileList();
 
-  addEndListener(songs, () => { dispatch(stop()) });
   dispatch({
     type: CONFIG_LOADED,
     payload: {
       ...config,
-      // assetPack, // intentionally overwrites assetPack key in config!
-      songs,
+      midiFiles,
       instrumentList: getLoadedInstruments(),
     }
   });
@@ -72,12 +70,11 @@ export const loadMIDIFile = (url: string) => async (dispatch: Dispatch) => {
     type: LOADING
   });
   await addMIDIFile(url);
-  const songs = createSongList();
-  addEndListener(songs, () => { dispatch(stop()); });
+  const midiFiles = createMIDIFileList();
   dispatch({
     type: MIDIFILE_LOADED,
     payload: {
-      songs,
+      midiFiles,
     }
   });
 }

@@ -37,8 +37,8 @@ export type SongPropTypes = {
   instrumentName: string,
   renderAction: string,
   timeEvents: Array<MIDIEvent>,
-  staleMidiEvents: Array<MIDIEvent>,
-  freshMidiEvents: Array<MIDIEvent>,
+  allMIDIEvents: Array<MIDIEvent>,
+  activeMIDIEventIds: Array<string>,
   updatePosition: (pos: SongPosition) => void,
 };
 
@@ -48,31 +48,24 @@ class Song extends React.PureComponent {
   }
 
   render() {
-    // console.log('<Song> render', this.props.renderAction);
+    console.log('<Song> render', this.props.renderAction);
     switch (this.props.renderAction) {
       case INIT:
         this.initSong();
-        this.updateSong();
-        this.updateEvents();
+        this.unmuteEvents();
         this.selectInstrument();
         this.setLocators();
         break;
 
       case SONG:
-        // this.song.pause();
         this.updateSong();
-        this.updateEvents();
+        this.unmuteEvents();
         this.setLocators();
-        // this.selectInstrument();
-        // this.song.play();
         break;
 
       case UPDATE_EVENTS:
-        // this.song.pause();
-        this.updateEvents();
+        this.unmuteEvents();
         this.setLocators();
-        // this.selectInstrument();
-        // this.song.play();
         break;
 
       case PLAY:
@@ -106,10 +99,14 @@ class Song extends React.PureComponent {
   initSong() {
     this.track = sequencer.createTrack();
     this.part = sequencer.createPart();
+    this.part.addEvents(this.props.allMIDIEvents);
     this.track.addPart(this.part);
     this.song = sequencer.createSong({
       tracks: [this.track],
+      timeEvents: this.props.timeEvents,
+      useMetronome: false,
     });
+    this.song.update();
   }
 
   updateSong() {
@@ -120,26 +117,23 @@ class Song extends React.PureComponent {
       denominator: this.song.denominator,
     } = this.props);
     this.song.removeTimeEvents();
+    this.part.removeEvents(this.part.events, this.part);
     this.song.addTimeEvents(this.props.timeEvents);
+    this.part.addEvents(this.props.allMIDIEvents);
+    this.part.needsUpdate = true;
+    this.track.needsUpdate = true;
+    this.song.update();
   }
 
-  updateEvents() {
-    const fresh = this.props.freshMidiEvents;
-    const stale = this.props.staleMidiEvents;
-    if (stale.length > 0) {
-      // console.log('stale', this.props.staleMidiEvents.length);
-      this.part.removeEvents(stale, this.part);
-    }
-    if (fresh.length > 0) {
-      // console.log('fresh', this.props.freshMidiEvents.length);
-      this.part.addEvents(this.props.freshMidiEvents);
-    }
-    if (fresh.length > 0 || stale.length > 0) {
-      this.part.needsUpdate = true;
-      this.track.needsUpdate = true;
-      this.song.update(false);
-      // console.log('total', this.song.events.length, this.track.events.length, this.part.events.length);
-    }
+  unmuteEvents() {
+    this.props.activeMIDIEventIds.forEach((id) => {
+      const noteOn = this.part.eventsById[id];
+      if (noteOn) {
+        const noteOff = noteOn.midiNote.noteOff;
+        noteOn.muted = false;
+        noteOff.muted = false;
+      }
+    })
   }
 
   selectInstrument() {
@@ -151,9 +145,9 @@ class Song extends React.PureComponent {
   setLocators() {
     this.song.setLeftLocator('barsbeats', 1, 1, 1, 0);
     // song.setRightLocator('barsbeats', song.bars + 1, 1, 1, 0);
-    // const lastBar = this.part.events[this.part.events.length - 1].bar;
-    // this.song.setRightLocator('barsbeats', lastBar + 1, 1, 1, 0);
-    this.song.setRightLocator('barsbeats', 2, 1, 1, 0);
+    const lastBar = this.part.events[this.part.events.length - 1].bar;
+    this.song.setRightLocator('barsbeats', lastBar, 1, 1, 0);
+    // this.song.setRightLocator('barsbeats', 2, 1, 1, 0);
     this.song.setLoop(this.props.loop);
   }
 
