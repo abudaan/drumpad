@@ -44,6 +44,7 @@ type PropTypes = {
   bpm: number,
   nominator: number,
   denominator: number,
+  position: string,
   sequencerReady: boolean,
   grid: GridType,
   trackList: Array<string>,
@@ -85,6 +86,7 @@ const mapStateToProps = (state: State) => {
     bpm: state.song.bpm,
     nominator: state.song.nominator,
     denominator: state.song.denominator,
+    position: state.song.barsAsString,
     sequencerReady: state.song.sequencerReady,
     grid: state.song.grid,
     updateInterval: state.song.updateInterval,
@@ -154,6 +156,7 @@ class App extends React.PureComponent {
         maxTempo={this.props.tempoMax}
         play={this.props.play}
         stop={this.props.stop}
+        position={this.props.position}
         selectSong={this.props.selectSong}
         selectTrack={this.props.selectTrack}
         selectInstrument={this.props.selectInstrument}

@@ -16,6 +16,7 @@ type PropTypes = {
   songList: Array<string>,
   trackList: Array<string>,
   instrumentList: Array<string>,
+  position: string,
 
   choosingTempo: (event: ChangeEvent) => void,
   updateTempo: (event: MouseEvent) => void,
@@ -110,6 +111,7 @@ class Controls extends React.PureComponent {
       {selectMIDIFile}
       {selectTrack}
       {selectInstrument}
+      <div className="position">{this.props.position}</div>
 
       {/* <button
         type="button"

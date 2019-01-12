@@ -104,7 +104,7 @@ export interface HeartbeatSong {
   play: () => void
   pause: () => void
   stop: () => void
-  update: () => void
+  update: (updateTimeEvents?: boolean) => void
   setTempo: (bpm: number, update?: boolean) => void
   addEventListener: (event: string, typeOrCallback: any, callback?: () => void) => void
   removeEventListener: (type: string) => void
@@ -144,6 +144,7 @@ export interface Part {
   id: string
   name: string
   events: Array<MIDIEvent>
+  needsUpdate: boolean
   addEvents: (events: Array<MIDIEvent>) => void
   removeEvents: (events: Array<MIDIEvent>, part?: Part) => void
 }
@@ -153,6 +154,7 @@ export interface Track {
   name: string
   parts: Array<Part>
   events: Array<MIDIEvent>
+  needsUpdate: boolean
   addPart: (part: Part) => void
   removeEvents: (events: Array<MIDIEvent>) => void
   removeAllEvents: () => void

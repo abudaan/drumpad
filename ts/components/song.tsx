@@ -48,7 +48,7 @@ class Song extends React.PureComponent {
   }
 
   render() {
-    console.log('<Song> render', this.props.renderAction);
+    // console.log('<Song> render', this.props.renderAction);
     switch (this.props.renderAction) {
       case INIT:
         this.initSong();
@@ -135,7 +135,9 @@ class Song extends React.PureComponent {
       this.part.addEvents(this.props.freshMidiEvents);
     }
     if (fresh.length > 0 || stale.length > 0) {
-      this.song.update();
+      this.part.needsUpdate = true;
+      this.track.needsUpdate = true;
+      this.song.update(false);
       // console.log('total', this.song.events.length, this.track.events.length, this.part.events.length);
     }
   }
