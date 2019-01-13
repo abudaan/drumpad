@@ -3,7 +3,6 @@ import { GridType, GridSelectedCells } from '../interfaces';
 
 interface PropTypes {
   updateCells: (cells: GridSelectedCells) => void,
-  os: string,
   grid: GridType,
   activeColumn: number,
   enabled: boolean,

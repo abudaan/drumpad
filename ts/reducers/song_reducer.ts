@@ -2,7 +2,6 @@ import * as Actions from '../actions/actions';
 import { SongState, IAction, Track, MIDIEvent, MIDIFileJSON, MIDIFileData, GridSelectedCells, GridCellData } from '../interfaces';
 import { createGrid } from './grid_utils';
 import * as RenderActions from '../components/song';
-import { Reduced } from 'ramda';
 
 const songInitialState = {
   grid: {
@@ -11,6 +10,11 @@ const songInitialState = {
     cells: [],
   },
   os: 'unknown',
+  ppq: 960,
+  bpm: 120,
+  nominator: 4,
+  denominator: 4,
+  timestamp: 0,
   songs: [],
   songList: [],
   songIndex: 0,
@@ -27,6 +31,7 @@ const songInitialState = {
   allMIDIEvents: [],
   activeMIDIEventIds: [],
   sequencerReady: false,
+  activeColumn: 0,
 };
 
 const song = (state: SongState = songInitialState, action: IAction<any>) => {

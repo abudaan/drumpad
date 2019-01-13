@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { State, SongState, ControlsState, MIDINote, MIDIEvent } from '../interfaces';
+import { State, SongState, ControlsState, MIDINote, MIDIEvent } from '../../interfaces';
 
 const getSongState = (state: State): SongState => state.song;
 const getControlsState = (state: State): ControlsState => state.controls;

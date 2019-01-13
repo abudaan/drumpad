@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import { Dispatch, AnyAction, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {
@@ -14,11 +14,11 @@ import {
   stop,
   updateEvents,
 } from '../actions/actions'
-import { State, SongPosition, GridType, MIDIEvent } from '../interfaces';
+import { State, SongPosition, GridType, MIDIEvent, GridSelectedCells } from '../interfaces';
 import getInstrument from '../reducers/instrument_selector';
 import Grid from '../components/grid';
 import Controls from '../components/controls';
-import Song, { INIT } from '../components/song';
+import Song from '../components/song';
 
 interface App {
   props: PropTypes,
@@ -40,7 +40,6 @@ type PropTypes = {
   tempoMax: number,
 
   // from song_reducer
-  os: string,
   ppq: number,
   bpm: number,
   nominator: number,
@@ -69,12 +68,12 @@ type PropTypes = {
   selectSong: () => void,
   selectTrack: () => void,
   selectInstrument: () => void,
-  setLoop: () => void,
-  play: () => void,
-  stop: () => void,
-  choosingTempo: (e: ChangeEvent) => void,
-  updateTempo: (e: Event<HTMLElement, Event>) => void,
-  updateEvents: (events: Array<{ticks: number, noteNumber: number, selected: boolean}>) => void,
+  setLoop: (b: boolean) => void,
+  play: (e: React.MouseEvent) => void,
+  stop: (e: React.MouseEvent) => void,
+  choosingTempo: (e: React.ChangeEvent) => void,
+  updateTempo: (e: React.MouseEvent) => void,
+  updateEvents: (cells: GridSelectedCells) => void,
   updatePosition: (pos: SongPosition) => void,
 };
 
@@ -83,7 +82,6 @@ const mapStateToProps = (state: State) => {
     ...getInstrument(state),
 
     // from song_reducer
-    os: state.song.os,
     ppq: state.song.ppq,
     bpm: state.song.bpm,
     nominator: state.song.nominator,
@@ -146,7 +144,6 @@ class App extends React.PureComponent {
   render() {
     return <div>
       <Controls
-        os={this.props.os}
         enabled={this.props.controlsEnabled}
         trackList={this.props.trackList}
         songList={this.props.songList}

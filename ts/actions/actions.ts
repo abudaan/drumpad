@@ -1,6 +1,6 @@
 import { Dispatch, Action } from 'redux';
 import { SongPosition, IAction, GridCellData } from '../interfaces';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, MouseEvent } from 'react';
 import {
   initSequencer,
   loadJSON,
@@ -131,13 +131,15 @@ export const choosingTempo = (e: ChangeEvent<HTMLInputElement>): IAction<any> =>
   }
 });
 
-export const updateTempo = (e: { target: HTMLInputElement; }): IAction<any> => ({
-  type: UPDATE_TEMPO,
-  payload: {
-    tempo: parseInt(e.target.value, 10),
+export const updateTempo = (e: MouseEvent<HTMLInputElement>): IAction<any> => {
+  const t = e.target as HTMLInputElement;
+  return {
+    type: UPDATE_TEMPO,
+    payload: {
+      tempo: parseInt(t.value, 10),
+    }
   }
-
-});
+};
 
 export const updatePostion = (position: SongPosition): IAction<any> => ({
   type: UPDATE_POSITION,

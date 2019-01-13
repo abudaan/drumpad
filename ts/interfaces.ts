@@ -18,7 +18,6 @@ export interface SongState {
   ticks?: number
   barsAsString?: string
   timestamp: number
-  activeNotes: Array<MIDINote>
   granularity: number
   granularityTicks: number
   updateInterval: number

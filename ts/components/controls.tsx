@@ -1,12 +1,11 @@
 // import * as R from 'ramda';
-import React, { ChangeEvent, MouseEvent } from 'react';
+import React from 'react';
 import Slider from './slider';
 interface Controls {
   props: PropTypes,
 };
 
 type PropTypes = {
-  os: string,
   enabled: boolean,
   tempo: number,
   tempoTmp: number,
@@ -19,10 +18,10 @@ type PropTypes = {
   instrumentList: Array<string>,
   position: string,
 
-  choosingTempo: (event: ChangeEvent) => void,
-  updateTempo: (event: MouseEvent) => void,
-  play: (event: MouseEvent) => void,
-  stop: (event: MouseEvent) => void,
+  choosingTempo: (event: React.ChangeEvent) => void,
+  updateTempo: (event: React.MouseEvent) => void,
+  play: (event: React.MouseEvent) => void,
+  stop: (event:React.MouseEvent) => void,
   setLoop: (loop: boolean) => void,
   selectTrack: (value: number) => void,
   selectSong: (value: number) => void,
@@ -122,7 +121,7 @@ class Controls extends React.PureComponent {
         <button
           type="button"
           disabled={!this.props.enabled}
-          onClickCapture={(e) => { this.props.setLoop(!this.props.loop); e.preventDefault() }}
+          onClick={() => { this.props.setLoop(!this.props.loop); }}
         >{labelLoop}</button>
 
         {selectMIDIFile}
