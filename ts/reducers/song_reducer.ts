@@ -10,6 +10,7 @@ const songInitialState = {
     cols: 0,
     cells: [],
   },
+  os: 'unknown',
   songs: [],
   songList: [],
   songIndex: 0,
@@ -34,6 +35,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       midiFiles,
       instrumentList,
       granularity,
+      os
     } = action.payload;
     const source = midiFiles[0] as MIDIFileData;
     const timeEvents = source.timeEvents;
@@ -44,6 +46,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
 
     return {
       ...state,
+      os,
       sequencerReady: true,
       ppq: source.ppq,
       bpm: source.bpm,

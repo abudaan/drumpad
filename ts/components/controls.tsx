@@ -6,6 +6,7 @@ interface Controls {
 };
 
 type PropTypes = {
+  os: string,
   enabled: boolean,
   tempo: number,
   tempoTmp: number,
@@ -95,7 +96,7 @@ class Controls extends React.PureComponent {
       <button
         type="button"
         disabled={!this.props.enabled}
-        onTouchStart={this.props.play}
+        onClick={this.props.play}
         >{labelPlay}</button>
       <button
         type="button"

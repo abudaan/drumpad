@@ -1,9 +1,9 @@
-import React, { SyntheticEvent } from 'react';
+import React, { RefObject, createRef } from 'react';
 import { GridType, GridSelectedCells } from '../interfaces';
-import { isNil } from 'ramda';
 
 interface PropTypes {
   updateCells: (cells: GridSelectedCells) => void,
+  os: string,
   grid: GridType,
   activeColumn: number,
   enabled: boolean,
@@ -15,41 +15,82 @@ interface Grid {
 };
 
 class Grid extends React.PureComponent {
+  divRef: RefObject<HTMLDivElement>
   dirtyCells: GridSelectedCells
   lastCellIds: Array<null | string>
+  hasTouchMoved: boolean
 
   constructor(props: PropTypes) {
     super(props);
     this.dirtyCells = {};
-    this.lastCellIds = []];
+    this.lastCellIds = [];
+    this.divRef = createRef();
+    this.hasTouchMoved = false;
   }
 
   componentDidMount() {
     requestAnimationFrame(this.dispatchUpdateWhilePlaying.bind(this));
+    if (this.divRef.current !== null) {
+      this.divRef.current.addEventListener('touchstart', (e) => {
+        this.onCellClick(e);
+        e.preventDefault();
+      }, false);
+      this.divRef.current.addEventListener('touchmove', (e) => {
+        this.onCellClick(e);
+        e.preventDefault();
+      }, false);
+      this.divRef.current.addEventListener('touchend', (e) => {
+        this.onCellClick(e);
+        e.preventDefault();
+      }, false);
+      this.divRef.current.addEventListener('click', (e) => {
+        this.onCellClick(e);
+        e.preventDefault();
+      }, false);
+    }
   }
 
-  onCellClick(e:SyntheticEvent) {
-    const event = e.nativeEvent as TouchEvent;
-    if (event.touches) {
-      for(let i = 0; i < event.touches.length; i++) {
+  getCellId(event: MouseEvent | Touch) {
+    const target = document.elementFromPoint(event.clientX, event.clientY);
+    let id = null;
+    if (target) {
+      id = target.id;
+      if (id === '' && target.parentNode !== null) {
+        const p = target.parentNode as HTMLDivElement;
+        id = p.id;
+      }
+    }
+    return id;
+  }
+
+  onCellClick(e: Event) {
+    console.log(e.type);
+    if (e.type === 'touchstart') {
+      this.hasTouchMoved = false;
+    } else if (e.type === 'touchmove') {
+      this.hasTouchMoved = true;
+      const event = e as TouchEvent;
+      for (let i = 0; i < event.touches.length; i++) {
         const touch = event.touches[i];
-        const target = document.elementFromPoint(touch.clientX, touch.clientY);
-        if(target) {
-          console.log(target);
-          let id = target.id;
-          if (id === '' && target.parentNode !== null) {
-            const p = target.parentNode as HTMLDivElement;
-            id = p.id;
+        const id = this.getCellId(touch);
+        if (id !== null) {
+          if (this.lastCellIds[i] !== id) {
+            this.lastCellIds[i] = id;
+            this.dirtyCells[id] = !this.dirtyCells[id];
           }
-          if (isNil(id) === false) {
-            if (this.lastCellIds[i] !== id) {
-              this.lastCellIds[i] = id;
-              this.dirtyCells[id] = !this.dirtyCells[id];
-              // console.log(id, this.dirtyCells[id]);
-            }
-          }
-          // console.log(touch, id, this.dirtyCells[id]);
-          
+        }
+      }
+    } else if (e.type === 'touchend') {
+      if (this.hasTouchMoved) {
+        // console.log('cancel');
+        return;
+      }
+      const event = e as TouchEvent;
+      for (let i = 0; i < event.changedTouches.length; i++) {
+        const touch = event.changedTouches[i];
+        const id = this.getCellId(touch);
+        if (id !== null) {
+          this.dirtyCells[id] = !this.dirtyCells[id];
           // if(this.props.playing === false) {
           //   const midiEventId = this.props.grid.cells[id].midiEventId;
           //   if (midiEventId !== null) {
@@ -58,6 +99,15 @@ class Grid extends React.PureComponent {
           // }
         }
       }
+    } else if (e.type === 'click') {
+      const event = e as MouseEvent
+      const id = this.getCellId(event);
+      if (id !== null) {
+        this.dirtyCells[id] = !this.dirtyCells[id];
+      }
+    }
+    if (this.props.playing === false) {
+      this.props.updateCells(this.dirtyCells);
     }
   }
 
@@ -121,11 +171,7 @@ class Grid extends React.PureComponent {
     return (
       <div
         id="grid"
-        // onMouseDown={this.onCellClick.bind(this)}
-        onTouchStart={this.onCellClick.bind(this)}
-        onTouchMove={this.onCellClick.bind(this)}
-        // onMouseUp={this.dispatchUpdate.bind(this)}
-        onTouchEnd={this.dispatchUpdate.bind(this)}
+        ref={this.divRef}
       >
         {columns}
       </div>

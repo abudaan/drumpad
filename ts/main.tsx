@@ -16,5 +16,5 @@ render(
 );
 
 // document.oncontextmenu = () => {};
-document.addEventListener('touchstart', function (e) { e.preventDefault() }, false);
-document.addEventListener('touchmove', function (e) { e.preventDefault() }, false);
+// document.addEventListener('touchstart', function (e) { e.preventDefault() }, false);
+// document.addEventListener('touchmove', function (e) { e.preventDefault() }, false);

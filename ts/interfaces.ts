@@ -1,6 +1,7 @@
 import { Action } from "redux";
 
 export interface SongState {
+  os: string
   ppq: number
   bpm: number
   nominator: number

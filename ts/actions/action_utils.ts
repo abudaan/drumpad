@@ -91,7 +91,7 @@ const createSongFromMIDIFile2 = (url: string) => loadArrayBuffer(url)
 
 
 // parse config file and load all assets that are listed in the config file
-const parseConfig = (config: Config): Promise<null> => {
+const parseConfig = (config: Config): Promise<string> => {
   return new Promise(async (resolve) => {
     if (config.midiFile) {
       await addMIDIFile(config.midiFile);
@@ -101,7 +101,7 @@ const parseConfig = (config: Config): Promise<null> => {
       await addAssetPack(ap);
       // await addAssetPack(config.assetPack);
     }
-    resolve();
+    resolve(sequencer.os);
   });
 }
 

@@ -40,6 +40,7 @@ type PropTypes = {
   tempoMax: number,
 
   // from song_reducer
+  os: string,
   ppq: number,
   bpm: number,
   nominator: number,
@@ -82,6 +83,7 @@ const mapStateToProps = (state: State) => {
     ...getInstrument(state),
 
     // from song_reducer
+    os: state.song.os,
     ppq: state.song.ppq,
     bpm: state.song.bpm,
     nominator: state.song.nominator,
@@ -144,6 +146,7 @@ class App extends React.PureComponent {
   render() {
     return <div>
       <Controls
+        os={this.props.os}
         enabled={this.props.controlsEnabled}
         trackList={this.props.trackList}
         songList={this.props.songList}

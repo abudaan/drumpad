@@ -37,13 +37,14 @@ export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
   });
   await initSequencer();
   const config = await loadJSON(configUrl);
-  await parseConfig(config);
+  const os = await parseConfig(config);
   const midiFiles = createMIDIFileList();
 
   dispatch({
     type: CONFIG_LOADED,
     payload: {
       ...config,
+      os,
       midiFiles,
       instrumentList: getLoadedInstruments(),
     }
