@@ -229,7 +229,7 @@ export interface GridSelectedCells {
 }
 
 export type GridType = {
-  cells: { [id: string]: GridCellData }
+  cells: Array<GridCellData>
   rows: number
   cols: number
 }

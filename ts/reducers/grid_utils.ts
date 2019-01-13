@@ -36,7 +36,7 @@ const createGrid = (song: MIDIFileData, events: Array<MIDIEvent>, currentGranula
   const grid: GridType = {
     rows: notes.length,
     cols: totalTicks / granularityTicks,
-    cells: {},
+    cells: [],
   };
 
   const cells: Array<GridCellData> = [];
@@ -58,19 +58,20 @@ const createGrid = (song: MIDIFileData, events: Array<MIDIEvent>, currentGranula
       // const noteOn = [ticks, 144, noteNumber, 100];
       // const noteOff = [ticks + granularityTicks, 128, noteNumber, 0];
       allMIDIEvents.push(noteOn, noteOff);
-      cells.push(item);
+      grid.cells.push(item);
     }
+/*    
+    type CellType = {
+      [id: string]: GridCellData
+    };
+    type AccType = CellType | Reduced<CellType>
+    const reducer = (accumulator: CellType, cell: GridCellData): AccType => {
+      accumulator[`${cell.ticks}-${cell.noteNumber}`] = cell;
+      return accumulator;
+    }
+    grid.cells = reduce(reducer, {}, cells);    
+*/
   }
-
-  type CellType = {
-    [id: string]: GridCellData
-  };
-  type AccType = CellType | Reduced<CellType>
-  const reducer = (accumulator: CellType, cell: GridCellData): AccType => {
-    accumulator[`${cell.ticks}-${cell.noteNumber}`] = cell;
-    return accumulator;
-  }
-  grid.cells = reduce(reducer, {}, cells);
 
   return {
     grid,
@@ -81,11 +82,6 @@ const createGrid = (song: MIDIFileData, events: Array<MIDIEvent>, currentGranula
   }
 };
 
-const updateGrid = (unmutedMIDIEvents: Array<MIDIEvent>) => {
-
-};
-
 export {
   createGrid,
-  updateGrid,
 };

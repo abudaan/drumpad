@@ -95,7 +95,7 @@ class Controls extends React.PureComponent {
       <button
         type="button"
         disabled={!this.props.enabled}
-        onClick={this.props.play}
+        onTouchStart={this.props.play}
         >{labelPlay}</button>
       <button
         type="button"

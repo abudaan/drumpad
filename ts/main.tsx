@@ -15,4 +15,6 @@ render(
   document.getElementById('container')
 );
 
-document.oncontextmenu = () => {};
+// document.oncontextmenu = () => {};
+document.addEventListener('touchstart', function (e) { e.preventDefault() }, false);
+document.addEventListener('touchmove', function (e) { e.preventDefault() }, false);

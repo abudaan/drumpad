@@ -1,8 +1,8 @@
-import sequencer from 'heartbeat-sequencer';
 import * as Actions from '../actions/actions';
-import { SongState, IAction, Track, HeartbeatSong, MIDIEvent, GridCellData, MIDIFileJSON, MIDIFileData, GridSelectedCells } from '../interfaces';
+import { SongState, IAction, Track, MIDIEvent, MIDIFileJSON, MIDIFileData, GridSelectedCells, GridCellData } from '../interfaces';
 import { createGrid } from './grid_utils';
 import * as RenderActions from '../components/song';
+import { Reduced } from 'ramda';
 
 const songInitialState = {
   grid: {
@@ -164,15 +164,17 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const data = action.payload.data as GridSelectedCells;
     const unmuted = Object.entries(data).filter(([key, value]) => value === true).map(([key, value]) => key);
     const activeMIDIEventIds = state.allMIDIEvents.filter((e: MIDIEvent) => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
-
+    const cells: Array<GridCellData> = state.grid.cells.map((cell: GridCellData) => ({
+      ...cell,
+      selected: data[`${cell.ticks}-${cell.noteNumber}`],
+    }));
+    
     return {
       ...state,
-      // grid: {
-      //   ...state.grid,
-      //   cells: {
-      //     ... data
-      //   }
-      // },
+      grid: {
+        ...state.grid,
+        cells,
+      },
       activeMIDIEventIds,
       renderAction: RenderActions.UPDATE_EVENTS,
     };

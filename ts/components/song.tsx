@@ -77,6 +77,7 @@ class Song extends React.PureComponent {
         break;
 
       case UPDATE_EVENTS:
+        this.muteAllEvents();
         this.unmuteEvents();
         break;
 
