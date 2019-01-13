@@ -148,7 +148,7 @@ export interface Part {
   name: string
   events: Array<MIDIEvent>
   needsUpdate: boolean
-  eventsById: {[id: string]: MIDIEvent}
+  eventsById: { [id: string]: MIDIEvent }
   addEvents: (events: Array<MIDIEvent>) => void
   removeEvents: (events: Array<MIDIEvent>, part?: Part) => void
 }
@@ -159,7 +159,7 @@ export interface Track {
   parts: Array<Part>
   events: Array<MIDIEvent>
   needsUpdate: boolean
-  partsById: {[id: string]: Part}
+  partsById: { [id: string]: Part }
   addPart: (part: Part) => void
   removeEvents: (events: Array<MIDIEvent>) => void
   removeAllEvents: () => void
@@ -193,7 +193,7 @@ export type MIDIFileData = {
   denominator: number,
   name: string,
   timeEvents: Array<MIDIEvent>,
-  tracks: Array<{name: string, events: Array<MIDIEvent>}>,
+  tracks: Array<{ name: string, events: Array<MIDIEvent> }>,
 };
 
 
@@ -224,13 +224,12 @@ export interface GridCellData {
   selected: boolean
 }
 
-export interface GridCellDataDirty {
-  id: string
-  selected: boolean
+export interface GridSelectedCells {
+  [id: string]: boolean
 }
 
 export type GridType = {
-  cells: Array<GridCellData>
+  cells: { [id: string]: GridCellData }
   rows: number
   cols: number
 }

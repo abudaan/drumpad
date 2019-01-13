@@ -1,9 +1,8 @@
-import React, { RefObject } from 'react';
-import GridCell from './cell';
-import { GridType, GridCellData, GridCellDataDirty } from '../interfaces';
+import React, { SyntheticEvent } from 'react';
+import { GridType, GridSelectedCells } from '../interfaces';
 
 interface PropTypes {
-  updateCells: (cells: Array<GridCellDataDirty>) => void,
+  updateCells: (cells: GridSelectedCells) => void,
   grid: GridType,
   activeColumn: number,
   enabled: boolean,
@@ -15,41 +14,41 @@ interface Grid {
 };
 
 class Grid extends React.Component {
-  divRef: RefObject<HTMLDivElement>
-  dirtyCells: Array<GridCellDataDirty>
+  dirtyCells: GridSelectedCells
 
   constructor(props: PropTypes) {
     super(props);
-    this.divRef = React.createRef();
-    this.dirtyCells = [];
+    this.dirtyCells = {};
   }
 
-  addDirtyCell(data: GridCellDataDirty) {
-    this.dirtyCells.push(data);
-  }
-
-  dispatchUpdate() {
-    const o: { [id: string]: GridCellDataDirty } = {};
-    this.dirtyCells.forEach((c: GridCellDataDirty) => {
-      o[c.id] = c;
-    });
-    const result = Object.values(o).map(data => data);
-    this.props.updateCells(result);
-    this.dirtyCells = [];
-  }
-
-  componentDidMount() {
-    if (this.divRef.current !== null) {
-      this.divRef.current.addEventListener('mouseup', () => {
-        this.dispatchUpdate();
-      });
-      this.divRef.current.addEventListener('touchend', (e) => {
-        this.dispatchUpdate();
-      });
+  onCellClick(e:SyntheticEvent) {
+    if(e.nativeEvent.target) {
+      const t = e.nativeEvent.target as HTMLElement;
+      let id = t.id;
+      if (id === '' && t.parentNode !== null) {
+        const p = t.parentNode as HTMLDivElement;
+        id = p.id;
+      }
+      const s = this.props.grid.cells[id].selected;
+      this.dirtyCells[id] = !s
+      
+      if(this.props.playing === false) {
+        const midiEventId = this.props.grid.cells[id].midiEventId;
+        if (midiEventId !== null) {
+          console.log(midiEventId);
+        }
+      }
     }
   }
 
+  dispatchUpdate() {
+    // perform some caching here in case of dragging / mousmove
+    this.props.updateCells(this.dirtyCells);
+    this.dirtyCells = {};
+  }
+
   render() {
+    const cells = Object.values(this.props.grid.cells);
     const numCols = this.props.grid.cols;
     const numRows = this.props.grid.rows;
     const cellStyle = {
@@ -62,8 +61,9 @@ class Grid extends React.Component {
       const rows = [];
       const active = c === this.props.activeColumn;
       for (let r = 0; r < numRows; r++) {
-        const item = this.props.grid.cells[i++];
+        const item = cells[i++];
         const classNames = ['cell'];
+        const id = `${item.ticks}-${item.noteNumber}`
         if (item.midiEventId !== null) {
           if (active === true) {
             classNames.push('active');
@@ -72,13 +72,14 @@ class Grid extends React.Component {
           }
         }
         rows.push(
-          <GridCell
-            key={`cell-${i}-${r}`}
+          <div
+            id={id}
+            key={id}
             style={cellStyle}
             className={classNames.join(' ')}
-            item={item}
-            addDirtyCell={this.addDirtyCell.bind(this)}
-          ></GridCell>
+          >
+            <span>{id}</span>
+          </div>
         );
       }
       const classNames = ['column'];
@@ -92,7 +93,10 @@ class Grid extends React.Component {
     return (
       <div
         id="grid"
-        ref={this.divRef}
+        onMouseDown={this.onCellClick.bind(this)}
+        onTouchStart={this.onCellClick.bind(this)}
+        onMouseUp={this.dispatchUpdate.bind(this)}
+        onTouchEnd={this.dispatchUpdate.bind(this)}
       >
         {columns}
       </div>
