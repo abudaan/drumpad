@@ -44,7 +44,8 @@ class Controls extends React.PureComponent {
       selectMIDIFile = <select
         onChange={(e) => {
           if (e.nativeEvent.target !== null) {
-            this.props.selectSong(e.nativeEvent.target.selectedIndex)
+            const t = e.nativeEvent.target as HTMLSelectElement;
+            this.props.selectSong(t.selectedIndex)
           }
         }}
       >
@@ -60,7 +61,8 @@ class Controls extends React.PureComponent {
       selectTrack = <select
         onChange={(e) => {
           if (e.nativeEvent.target !== null) {
-            this.props.selectTrack(e.nativeEvent.target.selectedIndex)
+            const t = e.nativeEvent.target as HTMLSelectElement;
+            this.props.selectTrack(t.selectedIndex)
           }
         }}
       >
@@ -76,45 +78,59 @@ class Controls extends React.PureComponent {
       selectInstrument = <select
         onChange={(e) => {
           if (e.nativeEvent.target !== null) {
-            this.props.selectInstrument(e.nativeEvent.target.selectedIndex)
+            const t = e.nativeEvent.target as HTMLSelectElement;
+            this.props.selectInstrument(t.selectedIndex)
           }
         }}
       >
         {options}
       </select>
     }
-    return (<div id="controls">
-      <Slider
-        min={this.props.minTempo}
-        max={this.props.maxTempo}
-        label="tempo"
-        value={this.props.tempoTmp}
-        onMouseUp={this.props.updateTempo}
-        onChange={this.props.choosingTempo}
-        disabled={!this.props.enabled}
+    return (
+      <div
+        id="controls"
+        // trying to disable default scrolling behaviour of touch events on mobile devices as much as possible
+        onTouchMoveCapture={e => {
+          if (
+            e.nativeEvent.target === document.getElementById('controls') ||
+            e.nativeEvent.target === document.getElementById('container') ||
+            e.nativeEvent.target === document.getElementById('grid')
+          ) {
+            e.preventDefault();
+          }
+        }}
+      >
+        <Slider
+          min={this.props.minTempo}
+          max={this.props.maxTempo}
+          label="tempo"
+          value={this.props.tempoTmp}
+          onMouseUp={this.props.updateTempo}
+          onChange={this.props.choosingTempo}
+          disabled={!this.props.enabled}
         />
-      <button
-        type="button"
-        disabled={!this.props.enabled}
-        onClick={this.props.play}
+        <button
+          type="button"
+          disabled={!this.props.enabled}
+          onClick={this.props.play}
         >{labelPlay}</button>
-      <button
-        type="button"
-        disabled={!this.props.enabled}
-        onClick={this.props.stop}
+        <button
+          type="button"
+          disabled={!this.props.enabled}
+          onClick={this.props.stop}
         >stop</button>
-      <button
-        type="button"
-        disabled={!this.props.enabled}
-        onClick={(e) => { this.props.setLoop(!this.props.loop); }}
-      >{labelLoop}</button>
+        <button
+          type="button"
+          disabled={!this.props.enabled}
+          onClickCapture={(e) => { this.props.setLoop(!this.props.loop); e.preventDefault() }}
+        >{labelLoop}</button>
 
-      {selectMIDIFile}
-      {selectTrack}
-      {selectInstrument}
-      <div className="position">{this.props.position}</div>
+        {selectMIDIFile}
+        {selectTrack}
+        {selectInstrument}
+        <div className="position">{this.props.position}</div>
 
-      {/* <button
+        {/* <button
         type="button"
         onClick={this.props.stop}
       >add beat</button>
@@ -122,7 +138,7 @@ class Controls extends React.PureComponent {
         type="button"
         onClick={this.props.stop}
       >remove beat</button> */}
-    </div>
+      </div>
     );
   }
 }
