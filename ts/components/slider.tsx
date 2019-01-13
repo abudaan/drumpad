@@ -20,7 +20,7 @@ interface Slider {
 
 
 /* React wrapper for input type Range */
-class Slider extends React.Component{
+class Slider extends React.PureComponent{
   static defaultProps = {
     step: 1,
   }

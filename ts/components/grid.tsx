@@ -13,7 +13,7 @@ interface Grid {
   props: PropTypes,
 };
 
-class Grid extends React.Component {
+class Grid extends React.PureComponent {
   dirtyCells: GridSelectedCells
 
   constructor(props: PropTypes) {
