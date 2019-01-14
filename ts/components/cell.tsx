@@ -1,4 +1,4 @@
-import React, { MouseEvent, RefObject, SyntheticEvent } from 'react'
+import React, { RefObject, SyntheticEvent } from 'react'
 import { GridCellData } from '../interfaces';
 
 interface PropTypes {
