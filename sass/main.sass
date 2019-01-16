@@ -2,6 +2,7 @@
     
 html
     -webkit-tap-highlight-color: rgba(0,0,0,0)
+    font-family: monospace
 
 body
     overflow: hidden
@@ -20,6 +21,7 @@ body
     flex-wrap: row nowrap
     
     button
+        font-family: monospace
         height: 25px
         width: auto
         text-align: center
@@ -31,23 +33,27 @@ body
             margin: 0
         
         &.position
-            font-size: 20px
+            margin-left: 3px
+            margin-top: 5px
+            font-size: 16px
             font-family: monospace
         
     select
         margin-right: 4px
         height: 25px
+        font-family: monospace
 
     .react-slider
         white-space: nowrap
         height: 25px
+        margin-top: 4px
         margin-right: 4px
         display: block
         input[type='range']
             vertical-align: middle
         label 
             display: inline-block
-            min-width: 90px
+            min-width: 78px
 
 
 #grid

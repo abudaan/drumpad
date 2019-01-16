@@ -6,7 +6,7 @@
   "dependencies": {
     "@types/ramda": "^0.25.46",
     "@types/redux-thunk": "^2.1.0",
-    "heartbeat-sequencer": "^0.0.10",
+    "heartbeat-sequencer": "^0.0.11",
     "ramda": "^0.26.1",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
@@ -32,6 +32,7 @@
     "babel-preset-stage-0": "^6.24.1",
     "json5": "^2.1.0",
     "parcel": "^1.11.0",
+    "parcel-bundler": "^1.11.0",
     "sass": "^1.15.2",
     "tslint": "^5.12.0",
     "typescript": "^3.2.2"
@@ -41,6 +42,7 @@
     "clean": "rm -rf .cache && rm -rf dist",
     "start": "parcel index.html",
     "start-secure": "parcel index.html --https",
-    "all": "npm run clean && npm run copy && npm run start"
+    "all": "npm run clean && npm run copy && npm run start",
+    "build": "parcel build index.html --public-url='/drummachine'"
   }
 }

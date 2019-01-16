@@ -99,15 +99,6 @@ class Controls extends React.PureComponent {
           }
         }}
       >
-        <Slider
-          min={this.props.minTempo}
-          max={this.props.maxTempo}
-          label="tempo"
-          value={this.props.tempoTmp}
-          onMouseUp={this.props.updateTempo}
-          onChange={this.props.choosingTempo}
-          disabled={!this.props.enabled}
-        />
         <button
           type="button"
           disabled={!this.props.enabled}
@@ -120,17 +111,29 @@ class Controls extends React.PureComponent {
         >stop</button>
         <button
           type="button"
+          disabled={!this.props.enabled}
+          onClick={() => { this.props.setLoop(!this.props.loop); }}
+        >{labelLoop}</button>
+
+        <Slider
+          min={this.props.minTempo}
+          max={this.props.maxTempo}
+          label="tempo"
+          value={this.props.tempoTmp}
+          onMouseUp={this.props.updateTempo}
+          onChange={this.props.choosingTempo}
+          disabled={!this.props.enabled}
+        />
+
+        {/* <button
+          type="button"
           onClick={this.props.stop}
         >add bar</button>
         <button
           type="button"
           onClick={this.props.stop}
         >remove bar</button>
-        <button
-          type="button"
-          disabled={!this.props.enabled}
-          onClick={() => { this.props.setLoop(!this.props.loop); }}
-        >{labelLoop}</button>
+        */}
 
         {selectMIDIFile}
         {selectTrack}

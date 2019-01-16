@@ -131,9 +131,9 @@ class Song extends React.PureComponent {
   }
 
   updateTrack() {
-    this.song.removeTimeEvents();
+    // this.song.removeTimeEvents();
     this.part.removeEvents(this.part.events, this.part);
-    this.song.addTimeEvents(this.props.timeEvents);
+    // this.song.addTimeEvents(this.props.timeEvents);
     this.part.addEvents(this.props.allMIDIEvents);
     this.part.needsUpdate = true;
     this.track.needsUpdate = true;

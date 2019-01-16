@@ -3129,10 +3129,10 @@ hash.js@^1.0.0, hash.js@^1.0.3:
     inherits "^2.0.3"
     minimalistic-assert "^1.0.1"
 
-heartbeat-sequencer@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/heartbeat-sequencer/-/heartbeat-sequencer-0.0.10.tgz#dbe8be55d6e4c1a2a3cd9b62a710164c42eb6cef"
-  integrity sha512-k38dqq36FzVS7WTsfcuD4s3eyOrYyCXk0IZ2fg1eEuet8c7n/KHZOCzLVcpzH+bFHJJyrg+MG5jDcbZn52maJg==
+heartbeat-sequencer@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/heartbeat-sequencer/-/heartbeat-sequencer-0.0.11.tgz#c5464e094218924c5c81d8f9b64fe4ec2c3a7afe"
+  integrity sha512-QS4zw7OaIiVp/R42mOYBBTFGrljWF/E07OBaAr2ZkD3G3XlqniTIOVA6zZuxr+l6BSuYziZ/iiXj5pN6gtTobQ==
 
 hex-color-regex@^1.1.0:
   version "1.1.0"
@@ -4170,6 +4170,68 @@ pako@~1.0.5:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.7.tgz#2473439021b57f1516c82f58be7275ad8ef1bb27"
   integrity sha512-3HNK5tW4x8o5mO8RuHZp3Ydw9icZXx0RANAOMzlMzx7LVXhMJ4mo3MOBpzyd7r/+RUu8BmndP47LXT+vzjtWcQ==
+
+parcel-bundler@^1.11.0:
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/parcel-bundler/-/parcel-bundler-1.11.0.tgz#7e821a5246d7503aebf3c1bc279b59cbb8a3d4e3"
+  integrity sha512-H0w/Obx76vWiG+UtofznfcHZJBmd6JA5iCn7zrGBINyVAh+Nt/JLD6QDROghHLXfJkO4XyczsB+fO+nPbXlFfA==
+  dependencies:
+    "@babel/code-frame" "^7.0.0"
+    "@babel/core" "^7.0.0"
+    "@babel/generator" "^7.0.0"
+    "@babel/parser" "^7.0.0"
+    "@babel/plugin-transform-flow-strip-types" "^7.0.0"
+    "@babel/plugin-transform-modules-commonjs" "^7.0.0"
+    "@babel/plugin-transform-react-jsx" "^7.0.0"
+    "@babel/preset-env" "^7.0.0"
+    "@babel/runtime" "^7.0.0"
+    "@babel/template" "^7.0.0"
+    "@babel/traverse" "^7.0.0"
+    "@babel/types" "^7.0.0"
+    "@iarna/toml" "^2.2.0"
+    "@parcel/fs" "^1.11.0"
+    "@parcel/logger" "^1.11.0"
+    "@parcel/utils" "^1.11.0"
+    "@parcel/watcher" "^1.11.0"
+    "@parcel/workers" "^1.11.0"
+    ansi-to-html "^0.6.4"
+    babylon-walk "^1.0.2"
+    browserslist "^4.1.0"
+    chalk "^2.1.0"
+    clone "^2.1.1"
+    command-exists "^1.2.6"
+    commander "^2.11.0"
+    cross-spawn "^6.0.4"
+    cssnano "^4.0.0"
+    deasync "^0.1.14"
+    dotenv "^5.0.0"
+    dotenv-expand "^4.2.0"
+    fast-glob "^2.2.2"
+    filesize "^3.6.0"
+    get-port "^3.2.0"
+    htmlnano "^0.1.9"
+    is-glob "^4.0.0"
+    is-url "^1.2.2"
+    js-yaml "^3.10.0"
+    json5 "^1.0.1"
+    micromatch "^3.0.4"
+    mkdirp "^0.5.1"
+    node-forge "^0.7.1"
+    node-libs-browser "^2.0.0"
+    opn "^5.1.0"
+    postcss "^7.0.5"
+    postcss-value-parser "^3.3.1"
+    posthtml "^0.11.2"
+    posthtml-parser "^0.4.0"
+    posthtml-render "^1.1.3"
+    resolve "^1.4.0"
+    semver "^5.4.1"
+    serialize-to-js "^1.1.1"
+    serve-static "^1.12.4"
+    source-map "0.6.1"
+    terser "^3.7.3"
+    v8-compile-cache "^2.0.0"
+    ws "^5.1.1"
 
 parcel@^1.11.0:
   version "1.11.0"
