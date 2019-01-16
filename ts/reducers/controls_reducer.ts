@@ -13,6 +13,8 @@ const controlsInitialState = {
   tempoTmp: 120,
   tempoMin: 20,
   tempoMax: 200,
+  bars: 1,
+  granularity: 960 / 4,
   granularityOptions: [
     4,
     8,
@@ -79,7 +81,7 @@ const controls = (state: ControlsState = controlsInitialState, action: IAction<a
       trackIndex: 0,
       songIndex: action.payload.songIndex,
     };
-  } else   if (action.type === Actions.SEQUENCER_PLAY) {
+  } else if (action.type === Actions.SEQUENCER_PLAY) {
     return {
       ...state,
       playing: !state.playing,

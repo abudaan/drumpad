@@ -1,5 +1,6 @@
 import React, { SyntheticEvent } from 'react';
 import { GridType, GridSelectedCells } from '../interfaces';
+import GridCell from './gridcell';
 
 interface PropTypes {
   updateCells: (cells: GridSelectedCells) => void,
@@ -17,12 +18,14 @@ class Grid extends React.PureComponent {
   dirtyCells: GridSelectedCells
   lastCellIds: Array<null | string>
   hasTouchMoved: boolean
+  changed: number
 
   constructor(props: PropTypes) {
     super(props);
     this.dirtyCells = {};
     this.lastCellIds = [];
     this.hasTouchMoved = false;
+    this.changed = 0;
   }
 
   componentDidMount() {
@@ -55,6 +58,7 @@ class Grid extends React.PureComponent {
         const id = this.getCellId(touch);
         if (id !== null) {
           if (this.lastCellIds[i] !== id) {
+            this.changed++;
             this.lastCellIds[i] = id;
             this.dirtyCells[id] = !this.dirtyCells[id];
           }
@@ -70,6 +74,7 @@ class Grid extends React.PureComponent {
         const touch = event.changedTouches[i];
         const id = this.getCellId(touch);
         if (id !== null) {
+          this.changed++;
           this.dirtyCells[id] = !this.dirtyCells[id];
         }
       }
@@ -77,11 +82,13 @@ class Grid extends React.PureComponent {
       const event = e as MouseEvent
       const id = this.getCellId(event);
       if (id !== null) {
+        this.changed++;
         this.dirtyCells[id] = !this.dirtyCells[id];
       }
     }
     if (this.props.playing === false) {
       this.props.updateCells(this.dirtyCells);
+      this.changed = 0;
       // play MIDI note is song not is playing
       // if(this.props.playing === false) {
       //   const midiEventId = this.props.grid.cells[id].midiEventId;
@@ -95,8 +102,11 @@ class Grid extends React.PureComponent {
 
   dispatchUpdateWhilePlaying() {
     // perform some caching here in case of dragging / mousmove
-    if (this.props.playing) {
+    const threshold = 0;// this.hasTouchMoved ? 15 : 0;
+    if (this.props.playing && this.changed > threshold) {
       this.props.updateCells(this.dirtyCells);
+      this.changed = 0;
+      // this.hasTouchMoved = false;
     }
     requestAnimationFrame(this.dispatchUpdateWhilePlaying.bind(this));
   }
@@ -111,8 +121,8 @@ class Grid extends React.PureComponent {
     const numCols = this.props.grid.cols;
     const numRows = this.props.grid.rows;
     const cellStyle = {
-      width: `calc((100vw - 30px) / ${numCols})`,
-      height: `calc((100vh - 150px) / ${numRows})`,
+      width: `calc((100vw - 0px) / ${numCols})`,
+      height: `calc((100vh - 50px) / ${numRows})`,
     };
     const columns = [];
     let i = 0;
@@ -137,10 +147,9 @@ class Grid extends React.PureComponent {
             id={id}
             key={id}
             style={cellStyle}
+            // label={id}
             className={classNames.join(' ')}
-          >
-            {/* <span>{id}</span> */}
-          </div>
+          />
         );
       }
       const classNames = ['column'];

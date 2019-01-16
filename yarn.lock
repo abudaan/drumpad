@@ -3129,10 +3129,10 @@ hash.js@^1.0.0, hash.js@^1.0.3:
     inherits "^2.0.3"
     minimalistic-assert "^1.0.1"
 
-heartbeat-sequencer@^0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/heartbeat-sequencer/-/heartbeat-sequencer-0.0.9.tgz#0b1242d3e912353bba6a35106901b2bb76183c0d"
-  integrity sha512-V1G5/cq34EvIpzH58gWcqeTgo6JOEL/dn+bFugDEbdTWQ1hmhAAN9NZjeJHmIe0P+yhg6MPaVx7768jYnQD9yQ==
+heartbeat-sequencer@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/heartbeat-sequencer/-/heartbeat-sequencer-0.0.10.tgz#dbe8be55d6e4c1a2a3cd9b62a710164c42eb6cef"
+  integrity sha512-k38dqq36FzVS7WTsfcuD4s3eyOrYyCXk0IZ2fg1eEuet8c7n/KHZOCzLVcpzH+bFHJJyrg+MG5jDcbZn52maJg==
 
 hex-color-regex@^1.1.0:
   version "1.1.0"
@@ -5216,6 +5216,11 @@ reselect@*:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/reselect/-/reselect-4.0.0.tgz#f2529830e5d3d0e021408b246a206ef4ea4437f7"
   integrity sha512-qUgANli03jjAyGlnbYVAV5vvnOmJnODyABz51RdBN7M4WaVu8mecZWgyQNkG8Yqe3KRGRt0l4K4B3XVEULC4CA==
+
+reset.css@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/reset.css/-/reset.css-2.0.2.tgz#9c01309c820b72e8f219ebcc8e1411949604f7d7"
+  integrity sha1-nAEwnIILcujyGevMjhQRlJYE99c=
 
 resolve-from@^3.0.0:
   version "3.0.0"

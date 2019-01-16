@@ -21,7 +21,7 @@ type PropTypes = {
   choosingTempo: (event: React.ChangeEvent) => void,
   updateTempo: (event: React.MouseEvent) => void,
   play: (event: React.MouseEvent) => void,
-  stop: (event:React.MouseEvent) => void,
+  stop: (event: React.MouseEvent) => void,
   setLoop: (loop: boolean) => void,
   selectTrack: (value: number) => void,
   selectSong: (value: number) => void,
@@ -120,6 +120,14 @@ class Controls extends React.PureComponent {
         >stop</button>
         <button
           type="button"
+          onClick={this.props.stop}
+        >add bar</button>
+        <button
+          type="button"
+          onClick={this.props.stop}
+        >remove bar</button>
+        <button
+          type="button"
           disabled={!this.props.enabled}
           onClick={() => { this.props.setLoop(!this.props.loop); }}
         >{labelLoop}</button>
@@ -128,15 +136,6 @@ class Controls extends React.PureComponent {
         {selectTrack}
         {selectInstrument}
         <div className="position">{this.props.position}</div>
-
-        {/* <button
-        type="button"
-        onClick={this.props.stop}
-      >add beat</button>
-      <button
-        type="button"
-        onClick={this.props.stop}
-      >remove beat</button> */}
       </div>
     );
   }

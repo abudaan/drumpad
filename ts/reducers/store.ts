@@ -1,11 +1,12 @@
-import { compose, applyMiddleware, createStore, combineReducers } from 'redux';
+import { compose, applyMiddleware, createStore, combineReducers, DeepPartial } from 'redux';
 import { createLogger } from 'redux-logger';
 import thunkMiddleware from 'redux-thunk'
 import { controls, controlsInitialState } from './controls_reducer';
 import { song, songInitialState } from './song_reducer';
+import { SongState, ControlsState } from '../interfaces';
 
 const combinedReducers = combineReducers({ controls, song });
-const initialState = {
+const initialState: DeepPartial<{controls: ControlsState, song: SongState}> =  {
   controls: controlsInitialState,
   song: songInitialState,
 };
@@ -17,7 +18,7 @@ const getStore = () => {
     compose(
       applyMiddleware(
         thunkMiddleware,
-        // createLogger({ collapsed: true }),
+        createLogger({ collapsed: true }),
       ),
     ),
   );

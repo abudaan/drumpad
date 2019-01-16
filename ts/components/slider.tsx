@@ -37,7 +37,7 @@ class Slider extends React.PureComponent{
     }
 
     return (
-      <div id={this.props.id}>
+      <div className="react-slider" id={this.props.id}>
         <label htmlFor={id} dangerouslySetInnerHTML={createLabel(this.props)} />
         <input
           key={this.props.type}

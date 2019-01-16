@@ -72,36 +72,6 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       instrumentList,
       renderAction: RenderActions.INIT,
     };
-  } else if (action.type === Actions.ASSETPACK_LOADED) {
-    return {
-      ...state,
-      assetPack: action.payload.assetPack,
-      songList: action.payload.songList,
-      instrumentList: action.payload.instrumentList,
-    };
-  } else if (action.type === Actions.MIDIFILE_LOADED) {
-    const { song } = action.payload;
-    return {
-      ...state,
-      song,
-      trackList: song.tracks.map((t: Track) => t.name),
-      songList: action.payload.songList,
-    };
-  } else if (action.type === Actions.UPDATE_POSITION) {
-    return {
-      ...state,
-      ...action.payload.position,
-    }
-  } else if (action.type === Actions.ASSETPACK_LOADED) {
-    return {
-      ...state,
-      assetPack: action.payload.assetPack,
-    };
-  } else if (action.type === Actions.MIDIFILE_LOADED) {
-    return {
-      ...state,
-      midiFile: action.payload.midiFile,
-    };
   } else if (action.type === Actions.SELECT_SONG) {
     const songIndex = action.payload.songIndex;
     const source = state.midiFiles[songIndex] as MIDIFileData;
@@ -146,6 +116,36 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       allMIDIEvents,
       activeMIDIEventIds,
       renderAction: RenderActions.TRACK,
+    };
+  } else if (action.type === Actions.ASSETPACK_LOADED) {
+    return {
+      ...state,
+      assetPack: action.payload.assetPack,
+      songList: action.payload.songList,
+      instrumentList: action.payload.instrumentList,
+    };
+  } else if (action.type === Actions.MIDIFILE_LOADED) {
+    const { song } = action.payload;
+    return {
+      ...state,
+      song,
+      trackList: song.tracks.map((t: Track) => t.name),
+      songList: action.payload.songList,
+    };
+  } else if (action.type === Actions.UPDATE_POSITION) {
+    return {
+      ...state,
+      ...action.payload.position,
+    }
+  } else if (action.type === Actions.ASSETPACK_LOADED) {
+    return {
+      ...state,
+      assetPack: action.payload.assetPack,
+    };
+  } else if (action.type === Actions.MIDIFILE_LOADED) {
+    return {
+      ...state,
+      midiFile: action.payload.midiFile,
     };
   } else if (action.type === Actions.SEQUENCER_PLAY) {
     const renderAction = state.renderAction === RenderActions.PLAY ? RenderActions.PAUSE : RenderActions.PLAY;

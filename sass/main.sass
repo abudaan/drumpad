@@ -1,3 +1,5 @@
+@import "reset.css"
+    
 html
     -webkit-tap-highlight-color: rgba(0,0,0,0)
 
@@ -8,25 +10,48 @@ body
     height: 100%
 
 #controls
+    box-sizing: border-box
+    padding: 5px
+    background-color: pink
+    height: 50px
+    overflow: auto
+    display: flex
+    flex-direction: row    
+    flex-wrap: row nowrap
+    
     button
         height: 25px
-        width: 65px
-    div
-        height: 35px
-        label 
-            display: inline-block
-            min-width: 90px
+        width: auto
+        text-align: center
+        margin-right: 4px
+        white-space: nowrap
 
+    div
         input[type='range']
             margin: 0
         
         &.position
             font-size: 20px
             font-family: monospace
+        
+    select
+        margin-right: 4px
+        height: 25px
+
+    .react-slider
+        white-space: nowrap
+        height: 25px
+        margin-right: 4px
+        display: block
+        input[type='range']
+            vertical-align: middle
+        label 
+            display: inline-block
+            min-width: 90px
 
 
 #grid
-    margin-top: 10px
+    box-sizing: border-box
     display: flex
     flex-direction: row
     &:last-child
@@ -63,9 +88,11 @@ body
             &.active 
                 background-color: yellow
                 color: #00ff00
-            &.selected, :hover
+            &.selected, &:hover
                 background-color: lightblue
                 color: #0000ff
             &.drag
                 background-color: lightgreen
                 color: #0000ff
+            &.highlight
+                background-color: rgba(255, 9, 9, 0.4)
