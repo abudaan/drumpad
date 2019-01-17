@@ -14,6 +14,7 @@ import {
   stop,
   updateEvents,
   processMIDIEvent,
+  addRow,
 } from '../actions/actions'
 import { State, SongPosition, GridType, MIDIEvent, GridSelectedCells, MIDINote } from '../interfaces';
 import getInstrument from '../reducers/instrument_selector';
@@ -78,6 +79,7 @@ type PropTypes = {
   updateEvents: (cells: GridSelectedCells) => void,
   updatePosition: (pos: SongPosition) => void,
   processMIDIEvent: (data: Array<number>) => void,
+  addRow: () => void,
 };
 
 const mapStateToProps = (state: State) => {
@@ -134,6 +136,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     selectInstrument,
     updateEvents,
     processMIDIEvent,
+    addRow,
   }, dispatch);
 }
 
@@ -168,6 +171,7 @@ class App extends React.PureComponent {
         choosingTempo={this.props.choosingTempo}
         updateTempo={this.props.updateTempo}
         setLoop={this.props.setLoop}
+        addRow={this.props.addRow}
       >
       </Controls>
 

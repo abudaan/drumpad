@@ -43,6 +43,6 @@
     "start": "parcel index.html",
     "start-secure": "parcel index.html --https",
     "all": "npm run clean && npm run copy && npm run start",
-    "build": "parcel build index.html --public-url='/drummachine/v0.0.3'"
+    "build": "parcel build index.html --public-url='/drummachine/v0.0.4'"
   }
 }

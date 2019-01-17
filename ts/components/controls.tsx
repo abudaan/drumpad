@@ -26,6 +26,7 @@ type PropTypes = {
   selectTrack: (value: number) => void,
   selectSong: (value: number) => void,
   selectInstrument: (value: number) => void,
+  addRow: () => void,
 };
 
 class Controls extends React.PureComponent {
@@ -125,15 +126,10 @@ class Controls extends React.PureComponent {
           disabled={!this.props.enabled}
         />
 
-        {/* <button
-          type="button"
-          onClick={this.props.stop}
-        >add bar</button>
         <button
           type="button"
-          onClick={this.props.stop}
-        >remove bar</button>
-        */}
+          onClick={this.props.addRow}
+        >add row</button>
 
         {selectMIDIFile}
         {selectTrack}

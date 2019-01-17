@@ -137,6 +137,7 @@ class Grid extends React.PureComponent {
       width: `calc((100vw - 0px) / ${numCols})`,
       height: `calc((100vh - 50px) / ${numRows})`,
     };
+    console.log(numCols, numRows);
     const columns = [];
     let i = 0;
     for (let c = 0; c < numCols; c++) {
@@ -162,7 +163,9 @@ class Grid extends React.PureComponent {
             style={cellStyle}
             // label={id}
             className={classNames.join(' ')}
-          />
+          >
+            <span>{id}</span>
+          </div>
         );
       }
       const classNames = ['column'];

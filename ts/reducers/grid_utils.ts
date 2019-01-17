@@ -23,8 +23,8 @@ const getEvent = (events: Array<MIDIEvent>, ticks: number, noteNumber: number): 
   return match[0] || null;
 }
 
-type cg = { grid: GridType, granularity: number, updateInterval: number, granularityTicks: number, allMIDIEvents: Array<MIDIEvent> };
-const createGrid = (song: MIDIFileData, events: Array<MIDIEvent>, currentGranularity: number): cg => {
+type CreateGrid = { grid: GridType, granularity: number, updateInterval: number, granularityTicks: number, allMIDIEvents: Array<MIDIEvent> };
+const createGrid = (song: MIDIFileData, events: Array<MIDIEvent>, currentGranularity: number): CreateGrid => {
   const granularity = updateGranularity(events, song.ppq, currentGranularity);
   const numBars = 1; // events[events.length - 1].ticks -> do something here!
   const notes = getUniqNotes(events);
@@ -82,6 +82,35 @@ const createGrid = (song: MIDIFileData, events: Array<MIDIEvent>, currentGranula
   }
 };
 
+type AddRow = { cells: Array<GridCellData>, midiEvents: Array<MIDIEvent> }
+const addRow = (numCols: number, granularityTicks: number): AddRow => {
+  const noteNumber = 20; // default 20, user can change this in the ui
+  const cells = [];
+  const midiEvents = [];
+  for (let i = 0; i < numCols; i++) {
+    let ticks = i * granularityTicks;
+    const item: GridCellData = {
+      ticks,
+      noteNumber,
+      midiEventId: null,
+      selected: false,
+      active: false,
+    }
+    const noteOn = sequencer.createMidiEvent(ticks, 144, noteNumber, 100);
+    const noteOff = sequencer.createMidiEvent(ticks + granularityTicks, 128, noteNumber, 0);
+    noteOn.muted = true;
+    noteOff.muted = true;
+    midiEvents.push(noteOn, noteOff);
+    cells.push(item);
+  }
+
+  return {
+    midiEvents,
+    cells,
+  }
+};
+
 export {
   createGrid,
+  addRow,
 };

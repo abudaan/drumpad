@@ -1,7 +1,8 @@
 import * as Actions from '../actions/actions';
 import { SongState, IAction, Track, MIDIEvent, MIDIFileJSON, MIDIFileData, GridSelectedCells, GridCellData } from '../interfaces';
-import { createGrid } from './grid_utils';
+import { createGrid, addRow } from './grid_utils';
 import * as RenderActions from '../components/song';
+import grid_selector from './not in use/grid_selector';
 
 const songInitialState = {
   grid: {
@@ -135,6 +136,27 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       },
       activeMIDIEventIds,
       renderAction: RenderActions.UPDATE_EVENTS,
+    };
+  } else if (action.type === Actions.ADD_ROW) {
+    const {
+      cells,
+      midiEvents,
+    } = addRow(state.grid.cols, state.granularity);
+    return {
+      ...state,
+      grid: {
+        rows: state.grid.rows + 1,
+        cols: state.grid.cols,
+        cells: [
+          ...state.grid.cells,
+          ...cells,
+        ]
+      },
+      allMIDIEvents: [
+        ...state.allMIDIEvents,
+        ...midiEvents,
+      ],
+      renderAction: RenderActions.PASS,
     };
   } else if (action.type === Actions.PROCESS_MIDI_EVENT) {
     return {

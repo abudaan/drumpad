@@ -31,6 +31,7 @@ export const SELECT_TRACK = 'SELECT_TRACK';
 export const SELECT_SONG = 'SELECT_SONG';
 export const SELECT_INSTRUMENT = 'SELECT_INSTRUMENT';
 export const PROCESS_MIDI_EVENT = 'PLAY_MIDIEVENT';
+export const ADD_ROW = 'ADD_ROW';
 
 export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
   dispatch({
@@ -175,4 +176,8 @@ export const processMIDIEvent = (midiEvent: Array<number>): IAction<any> => ({
   payload: {
     midiEvent,
   }
+});
+
+export const addRow = (): IAction<any> => ({
+  type: ADD_ROW,
 });

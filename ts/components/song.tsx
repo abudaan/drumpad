@@ -108,7 +108,6 @@ class Song extends React.PureComponent {
         break;
 
       case PROCESS_MIDI_EVENT:
-        console.log(this.props.midiEvent);
         this.track.processMidiEvent(sequencer.createMidiEvent(this.props.midiEvent));
         break;
 
