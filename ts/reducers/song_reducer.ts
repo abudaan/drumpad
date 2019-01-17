@@ -2,13 +2,12 @@ import * as Actions from '../actions/actions';
 import { SongState, IAction, Track, MIDIEvent, MIDIFileJSON, MIDIFileData, GridSelectedCells, GridCellData } from '../interfaces';
 import { createGrid, addRow } from './grid_utils';
 import * as RenderActions from '../components/song';
-import grid_selector from './not in use/grid_selector';
 
 const songInitialState = {
   grid: {
-    rows: 0,
-    cols: 0,
-    cells: [],
+    numRows: 0,
+    numCols: 0,
+    rows: [],
   },
   os: 'unknown',
   ppq: 960,
@@ -34,6 +33,7 @@ const songInitialState = {
   sequencerReady: false,
   activeColumn: 0,
   midiEvent: null,
+  noteNumbers: [],
 };
 
 const song = (state: SongState = songInitialState, action: IAction<any>) => {
@@ -48,7 +48,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const timeEvents = source.timeEvents;
     const midiEvents = source.tracks[0].events.filter((e: MIDIEvent) => e.type === 144);
     const unmuted = midiEvents.map((e: MIDIEvent) => `${e.ticks}-${e.noteNumber}`);
-    const { grid, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents } = createGrid(source, midiEvents, granularity);
+    const { grid, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createGrid(source, midiEvents, granularity);
     const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
 
     return {
@@ -72,6 +72,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       songList: midiFiles.map((mf: MIDIFileJSON) => mf.name),
       trackList: midiFiles[0].tracks.map((t: Track) => t.name),
       instrumentList,
+      noteNumbers,
       renderAction: RenderActions.INIT,
     };
   } else if (action.type === Actions.SELECT_SONG) {
@@ -80,7 +81,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const timeEvents = source.timeEvents;
     const midiEvents = source.tracks[0].events.filter((e: MIDIEvent) => e.type === 144);
     const unmuted = midiEvents.map((e: MIDIEvent) => `${e.ticks}-${e.noteNumber}`);
-    const { grid, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents } = createGrid(source, midiEvents, state.granularity);
+    const { grid, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createGrid(source, midiEvents, state.granularity);
     const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
 
     return {
@@ -99,6 +100,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       granularity: newGranularity,
       granularityTicks,
       updateInterval,
+      noteNumbers,
       renderAction: RenderActions.SONG,
     };
   } else if (action.type === Actions.SELECT_TRACK) {
@@ -106,7 +108,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const source = state.midiFiles[state.songIndex];
     const midiEvents = source.tracks[trackIndex].events.filter((e: MIDIEvent) => e.type === 144);
     const unmuted = midiEvents.map((e: MIDIEvent) => `${e.ticks}-${e.noteNumber}`);
-    const { grid, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents } = createGrid(source, midiEvents, state.granularity);
+    const { grid, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createGrid(source, midiEvents, state.granularity);
     const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
     return {
       ...state,
@@ -117,13 +119,14 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       updateInterval,
       allMIDIEvents,
       activeMIDIEventIds,
+      noteNumbers,
       renderAction: RenderActions.TRACK,
     };
   } else if (action.type === Actions.UPDATE_EVENTS) {
     const data = action.payload.data as GridSelectedCells;
     const unmuted = Object.entries(data).filter(([key, value]) => value === true).map(([key, value]) => key);
     const activeMIDIEventIds = state.allMIDIEvents.filter((e: MIDIEvent) => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
-    const cells: Array<GridCellData> = state.grid.cells.map((cell: GridCellData) => ({
+    const cells: Array<GridCellData> = state.grid.cells.map(cell => ({
       ...cell,
       selected: data[`${cell.ticks}-${cell.noteNumber}`],
     }));
@@ -141,21 +144,20 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const {
       cells,
       midiEvents,
-    } = addRow(state.grid.cols, state.granularity);
+      noteNumbers,
+    } = addRow(state.grid, state.noteNumbers, state.granularityTicks);
     return {
       ...state,
       grid: {
-        rows: state.grid.rows + 1,
-        cols: state.grid.cols,
-        cells: [
-          ...state.grid.cells,
-          ...cells,
-        ]
+        numRows: state.grid.numRows + 1,
+        numCols: state.grid.numCols,
+        cells,
       },
       allMIDIEvents: [
         ...state.allMIDIEvents,
         ...midiEvents,
       ],
+      noteNumbers,
       renderAction: RenderActions.PASS,
     };
   } else if (action.type === Actions.PROCESS_MIDI_EVENT) {

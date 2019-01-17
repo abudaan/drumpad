@@ -30,6 +30,7 @@ export interface SongState {
   allMIDIEvents: Array<MIDIEvent>
   activeMIDIEventIds: Array<string>
   midiEvent: MIDIEvent | null
+  noteNumbers: Array<number>
 };
 
 export interface ControlsState {
@@ -232,6 +233,6 @@ export interface GridSelectedCells {
 
 export type GridType = {
   cells: Array<GridCellData>
-  rows: number
-  cols: number
+  numRows: number
+  numCols: number
 }

@@ -23,26 +23,32 @@ const getEvent = (events: Array<MIDIEvent>, ticks: number, noteNumber: number): 
   return match[0] || null;
 }
 
-type CreateGrid = { grid: GridType, granularity: number, updateInterval: number, granularityTicks: number, allMIDIEvents: Array<MIDIEvent> };
+type CreateGrid = { 
+  grid: GridType, 
+  noteNumbers: Array<number>, 
+  granularity: number, 
+  updateInterval: number, 
+  granularityTicks: number, 
+  allMIDIEvents: Array<MIDIEvent> 
+};
 const createGrid = (song: MIDIFileData, events: Array<MIDIEvent>, currentGranularity: number): CreateGrid => {
   const granularity = updateGranularity(events, song.ppq, currentGranularity);
   const numBars = 1; // events[events.length - 1].ticks -> do something here!
-  const notes = getUniqNotes(events);
+  const noteNumbers = getUniqNotes(events);
   const totalTicks = numBars * (song.nominator * (4 / song.denominator) * song.ppq);
   const granularityTicks = (4 / granularity) * song.ppq;
   const updateInterval = Math.round((granularityTicks / 2) * (60000 / song.bpm / song.ppq));
   const allMIDIEvents: Array<MIDIEvent> = [];
 
   const grid: GridType = {
-    rows: notes.length,
-    cols: totalTicks / granularityTicks,
+    numRows: noteNumbers.length,
+    numCols: totalTicks / granularityTicks,
     cells: [],
   };
 
-  const cells: Array<GridCellData> = [];
   for (let ticks = 0; ticks < totalTicks; ticks += granularityTicks) {
-    for (let j = 0; j < notes.length; j++) {
-      const noteNumber = notes[j];
+    for (let n = 0; n < noteNumbers.length; n++) {
+      const noteNumber = noteNumbers[n];  
       const event = getEvent(events, ticks, noteNumber)
       const item: GridCellData = {
         ticks,
@@ -60,21 +66,11 @@ const createGrid = (song: MIDIFileData, events: Array<MIDIEvent>, currentGranula
       allMIDIEvents.push(noteOn, noteOff);
       grid.cells.push(item);
     }
-/*    
-    type CellType = {
-      [id: string]: GridCellData
-    };
-    type AccType = CellType | Reduced<CellType>
-    const reducer = (accumulator: CellType, cell: GridCellData): AccType => {
-      accumulator[`${cell.ticks}-${cell.noteNumber}`] = cell;
-      return accumulator;
-    }
-    grid.cells = reduce(reducer, {}, cells);    
-*/
   }
 
   return {
     grid,
+    noteNumbers,
     granularity,
     granularityTicks,
     updateInterval,
@@ -82,12 +78,28 @@ const createGrid = (song: MIDIFileData, events: Array<MIDIEvent>, currentGranula
   }
 };
 
-type AddRow = { cells: Array<GridCellData>, midiEvents: Array<MIDIEvent> }
-const addRow = (numCols: number, granularityTicks: number): AddRow => {
-  const noteNumber = 20; // default 20, user can change this in the ui
-  const cells = [];
+type AddRow = { 
+  cells: Array<GridCellData>, 
+  midiEvents: Array<MIDIEvent> 
+  noteNumbers: Array<number>
+}
+const addRow = (grid: GridType, noteNumbers: Array<number>, granularityTicks: number): AddRow => {
+  
+  let noteNumber = noteNumbers[noteNumbers.length - 1] - 1;
+  // console.log(noteNumbers);
+  if (noteNumber === 127) {
+    noteNumber = noteNumbers[0] - 1;
+  } else if (noteNumber < 0) {
+    for(let i = 0; i < 127; i++) {
+      if(noteNumbers.includes(i) === false) {
+        noteNumber = i;
+        break;
+      }
+    }
+  }
+  const cells = [...grid.cells];
   const midiEvents = [];
-  for (let i = 0; i < numCols; i++) {
+  for (let i = 0; i < grid.numCols; i++) {
     let ticks = i * granularityTicks;
     const item: GridCellData = {
       ticks,
@@ -104,13 +116,44 @@ const addRow = (numCols: number, granularityTicks: number): AddRow => {
     cells.push(item);
   }
 
+  const newNoteNumbers = [
+    ...noteNumbers,
+    noteNumber
+  ];
+
+  
   return {
+    cells: sortRows(grid.numCols, granularityTicks, cells),
     midiEvents,
-    cells,
+    noteNumbers: newNoteNumbers.sort((a, b) => b - a),
   }
 };
+
+const sortRows = (numCols: number, granularityTicks: number, cells: Array<GridCellData>): Array<GridCellData> => {
+  const sorted = [];
+  for (let i = 0; i < numCols; i++) {
+    const ticks = i * granularityTicks;
+    const column = cells.filter(c => c.ticks === ticks).sort((a, b) => b.noteNumber - a.noteNumber);
+    sorted.push(...column);
+  }
+  return sorted;
+};
+
 
 export {
   createGrid,
   addRow,
 };
+
+
+/*    
+    type CellType = {
+      [id: string]: GridCellData
+    };
+    type AccType = CellType | Reduced<CellType>
+    const reducer = (accumulator: CellType, cell: GridCellData): AccType => {
+      accumulator[`${cell.ticks}-${cell.noteNumber}`] = cell;
+      return accumulator;
+    }
+    grid.cells = reduce(reducer, {}, cells);    
+*/

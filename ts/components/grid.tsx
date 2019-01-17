@@ -131,13 +131,12 @@ class Grid extends React.PureComponent {
   }
 
   render() {
-    const numCols = this.props.grid.cols;
-    const numRows = this.props.grid.rows;
+    const numCols = this.props.grid.numCols;
+    const numRows = this.props.grid.numRows;
     const cellStyle = {
       width: `calc((100vw - 0px) / ${numCols})`,
       height: `calc((100vh - 50px) / ${numRows})`,
     };
-    console.log(numCols, numRows);
     const columns = [];
     let i = 0;
     for (let c = 0; c < numCols; c++) {
