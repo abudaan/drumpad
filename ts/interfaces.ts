@@ -29,6 +29,7 @@ export interface SongState {
   timeEvents: Array<MIDIEvent>
   allMIDIEvents: Array<MIDIEvent>
   activeMIDIEventIds: Array<string>
+  midiEvent: MIDIEvent | null
 };
 
 export interface ControlsState {
@@ -163,6 +164,7 @@ export interface Track {
   addPart: (part: Part) => void
   removeEvents: (events: Array<MIDIEvent>) => void
   removeAllEvents: () => void
+  processMidiEvent: (event: MIDIEvent | Array<MIDIEvent>) => void
 };
 
 export interface Instrument {

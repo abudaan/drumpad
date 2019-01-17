@@ -1,5 +1,5 @@
 import sequencer from 'heartbeat-sequencer';
-import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config, GridCellData, Track, MIDIEvent, MIDIFileData } from '../interfaces';
+import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config, GridCellData, Track, MIDIEvent, MIDIFileData, MIDINote } from '../interfaces';
 import { isNil } from 'ramda';
 
 const status = (response: Response) => {

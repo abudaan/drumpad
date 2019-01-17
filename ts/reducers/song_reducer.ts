@@ -32,6 +32,7 @@ const songInitialState = {
   activeMIDIEventIds: [],
   sequencerReady: false,
   activeColumn: 0,
+  midiEvent: null,
 };
 
 const song = (state: SongState = songInitialState, action: IAction<any>) => {
@@ -117,6 +118,30 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       activeMIDIEventIds,
       renderAction: RenderActions.TRACK,
     };
+  } else if (action.type === Actions.UPDATE_EVENTS) {
+    const data = action.payload.data as GridSelectedCells;
+    const unmuted = Object.entries(data).filter(([key, value]) => value === true).map(([key, value]) => key);
+    const activeMIDIEventIds = state.allMIDIEvents.filter((e: MIDIEvent) => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
+    const cells: Array<GridCellData> = state.grid.cells.map((cell: GridCellData) => ({
+      ...cell,
+      selected: data[`${cell.ticks}-${cell.noteNumber}`],
+    }));
+    
+    return {
+      ...state,
+      grid: {
+        ...state.grid,
+        cells,
+      },
+      activeMIDIEventIds,
+      renderAction: RenderActions.UPDATE_EVENTS,
+    };
+  } else if (action.type === Actions.PROCESS_MIDI_EVENT) {
+    return {
+      ...state,
+      midiEvent: action.payload.midiEvent,
+      renderAction: RenderActions.PROCESS_MIDI_EVENT,
+    };
   } else if (action.type === Actions.ASSETPACK_LOADED) {
     return {
       ...state,
@@ -167,24 +192,6 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     return {
       ...state,
       renderAction: RenderActions.TEMPO,
-    };
-  } else if (action.type === Actions.UPDATE_EVENTS) {
-    const data = action.payload.data as GridSelectedCells;
-    const unmuted = Object.entries(data).filter(([key, value]) => value === true).map(([key, value]) => key);
-    const activeMIDIEventIds = state.allMIDIEvents.filter((e: MIDIEvent) => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
-    const cells: Array<GridCellData> = state.grid.cells.map((cell: GridCellData) => ({
-      ...cell,
-      selected: data[`${cell.ticks}-${cell.noteNumber}`],
-    }));
-    
-    return {
-      ...state,
-      grid: {
-        ...state.grid,
-        cells,
-      },
-      activeMIDIEventIds,
-      renderAction: RenderActions.UPDATE_EVENTS,
     };
   } else if (action.type === Actions.SET_LOOP) {
     return {

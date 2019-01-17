@@ -1,6 +1,6 @@
 import React from 'react';
 import sequencer from 'heartbeat-sequencer';
-import { HeartbeatSong, MIDIEvent, SongPosition, Track, Part } from '../interfaces';
+import { HeartbeatSong, MIDIEvent, SongPosition, Track, Part, MIDINote } from '../interfaces';
 
 // render actions
 export const PASS = 'PASS';
@@ -14,6 +14,7 @@ export const TEMPO = 'TEMPO';
 export const SET_LOOP = 'SET_LOOP';
 export const SELECT_INSTRUMENT = 'SELECT_INSTRUMENT';
 export const UPDATE_EVENTS = 'UPDATE_EVENTS';
+export const PROCESS_MIDI_EVENT = 'PROCESS_MIDI_EVENT';
 
 interface Song {
   part: Part
@@ -37,6 +38,7 @@ export type SongPropTypes = {
   trackIndex: number,
   instrumentName: string,
   renderAction: string,
+  midiEvent: MIDIEvent,
   timeEvents: Array<MIDIEvent>,
   allMIDIEvents: Array<MIDIEvent>,
   activeMIDIEventIds: Array<string>,
@@ -103,6 +105,11 @@ class Song extends React.PureComponent {
 
       case SELECT_INSTRUMENT:
         this.selectInstrument();
+        break;
+
+      case PROCESS_MIDI_EVENT:
+        console.log(this.props.midiEvent);
+        this.track.processMidiEvent(sequencer.createMidiEvent(this.props.midiEvent));
         break;
 
     }

@@ -4,6 +4,7 @@ import GridCell from './gridcell';
 
 interface PropTypes {
   updateCells: (cells: GridSelectedCells) => void,
+  processMIDIEvent: (data: Array<number>) => void,
   grid: GridType,
   activeColumn: number,
   enabled: boolean,
@@ -47,15 +48,17 @@ class Grid extends React.PureComponent {
 
   onCellClick(se: SyntheticEvent) {
     const e = se.nativeEvent;
+    let id = null;
+    let event: null | TouchEvent | MouseEvent = null;
     // console.log(e.type);
     if (e.type === 'touchstart') {
       this.hasTouchMoved = false;
     } else if (e.type === 'touchmove') {
       this.hasTouchMoved = true;
-      const event = e as TouchEvent;
+      event = e as TouchEvent;
       for (let i = 0; i < event.touches.length; i++) {
         const touch = event.touches[i];
-        const id = this.getCellId(touch);
+        id = this.getCellId(touch);
         if (id !== null) {
           if (this.lastCellIds[i] !== id) {
             this.changed++;
@@ -69,33 +72,43 @@ class Grid extends React.PureComponent {
         // console.log('cancel');
         return;
       }
-      const event = e as TouchEvent;
+      event = e as TouchEvent;
       for (let i = 0; i < event.changedTouches.length; i++) {
         const touch = event.changedTouches[i];
-        const id = this.getCellId(touch);
+        id = this.getCellId(touch);
         if (id !== null) {
           this.changed++;
           this.dirtyCells[id] = !this.dirtyCells[id];
         }
       }
-    } else if (e.type === 'click') {
-      const event = e as MouseEvent
-      const id = this.getCellId(event);
+    } else if (e.type === 'mousedown') {
+      event = e as MouseEvent
+      id = this.getCellId(event);
       if (id !== null) {
         this.changed++;
         this.dirtyCells[id] = !this.dirtyCells[id];
       }
+    } else if (e.type === 'mouseup') {
+      event = e as MouseEvent
+      id = this.getCellId(event);
     }
     if (this.props.playing === false) {
       this.props.updateCells(this.dirtyCells);
       this.changed = 0;
+      
       // play MIDI note is song not is playing
-      // if(this.props.playing === false) {
-      //   const midiEventId = this.props.grid.cells[id].midiEventId;
-      //   if (midiEventId !== null) {
-      //     console.log(midiEventId);
-      //   }
-      // }
+      if (event !== null && id !== null) {
+        const [
+          ticks,
+          noteNumber,
+        ] = id.split('-');
+        // console.log(event.type);
+        if (event.type === 'mousedown' || event.type === 'touchend') {
+          this.props.processMIDIEvent([0, 144, parseInt(noteNumber, 10), 100]);
+        } else {
+          this.props.processMIDIEvent([0, 128, parseInt(noteNumber, 10), 0]);
+        }
+      }
     }
     e.preventDefault();
   }
@@ -166,7 +179,8 @@ class Grid extends React.PureComponent {
         onTouchStartCapture={this.onCellClick.bind(this)}
         onTouchMoveCapture={this.onCellClick.bind(this)}
         onTouchEndCapture={this.onCellClick.bind(this)}
-        onClickCapture={this.onCellClick.bind(this)}
+        onMouseDownCapture={this.onCellClick.bind(this)}
+        onMouseUpCapture={this.onCellClick.bind(this)}
       >
         {columns}
       </div>

@@ -30,6 +30,7 @@ export const SET_LOOP = 'SET_LOOP';
 export const SELECT_TRACK = 'SELECT_TRACK';
 export const SELECT_SONG = 'SELECT_SONG';
 export const SELECT_INSTRUMENT = 'SELECT_INSTRUMENT';
+export const PROCESS_MIDI_EVENT = 'PLAY_MIDIEVENT';
 
 export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
   dispatch({
@@ -166,5 +167,12 @@ export const updatePosition = (position: SongPosition): IAction<any> => ({
   type: UPDATE_POSITION,
   payload: {
     position,
+  }
+});
+
+export const processMIDIEvent = (midiEvent: Array<number>): IAction<any> => ({
+  type: PROCESS_MIDI_EVENT,
+  payload: {
+    midiEvent,
   }
 });
