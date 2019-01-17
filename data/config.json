@@ -1,6 +1,6 @@
 {
-  "midiFile": "/data/CT-3-44.mid",
-  "assetPack": "/data/Kit-Shapes.json",
+  "midiFile": "./data/CT-3-44.mid",
+  "assetPack": "./data/Kit-Shapes.json",
   "tempoMin": 20,
   "tempoMax": 300,
   "granularity": 8,

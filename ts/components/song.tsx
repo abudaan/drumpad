@@ -128,12 +128,15 @@ class Song extends React.PureComponent {
       nominator: this.song.nominator,
       denominator: this.song.denominator,
     } = this.props);
+    // this.song.removeTimeEvents();
+    // this.song.addTimeEvents(this.props.timeEvents);
+    // API doesn't work so here's a hack:
+    this.song.timeEvents = this.props.timeEvents; 
+    this.song.setTempo(this.props.tempo);
   }
 
   updateTrack() {
-    // this.song.removeTimeEvents();
     this.part.removeEvents(this.part.events, this.part);
-    // this.song.addTimeEvents(this.props.timeEvents);
     this.part.addEvents(this.props.allMIDIEvents);
     this.part.needsUpdate = true;
     this.track.needsUpdate = true;
