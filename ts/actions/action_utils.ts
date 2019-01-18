@@ -1,5 +1,5 @@
 import sequencer from 'heartbeat-sequencer';
-import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config, GridCellData, Track, MIDIEvent, MIDIFileData, MIDINote } from '../interfaces';
+import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config, Track, MIDIEvent, MIDIFileData, MIDINote } from '../interfaces';
 import { isNil } from 'ramda';
 
 const status = (response: Response) => {
@@ -91,7 +91,7 @@ const createSongFromMIDIFile2 = (url: string) => loadArrayBuffer(url)
 
 
 // parse config file and load all assets that are listed in the config file
-const parseConfig = (config: Config): Promise<string> => {
+const parseConfig = (config: Config): Promise<Array<any>> => {
   return new Promise(async (resolve) => {
     if (config.midiFile) {
       await addMIDIFile(config.midiFile);
@@ -101,8 +101,9 @@ const parseConfig = (config: Config): Promise<string> => {
       await addAssetPack(ap);
       // await addAssetPack(config.assetPack);
     }
+    const instrument = sequencer.getInstruments()[0];
     // console.log(sequencer.getInstruments());
-    resolve(sequencer.os);
+    resolve(Object.entries(instrument.mapping))
   });
 }
 
@@ -141,6 +142,13 @@ const addEndListener = (songList: Array<HeartbeatSong>, action: () => void) => {
   });
 }
 
+
+const getInstrumentSamplesList = (index: number) => {
+  const instrument = sequencer.getInstruments()[index];
+  // console.log(index, instrument);
+  return Object.entries(instrument.mapping);
+}
+
 export {
   initSequencer,
   parseConfig,
@@ -152,4 +160,5 @@ export {
   getLoadedInstruments,
   createMIDIFileList,
   stopAllSongs,
+  getInstrumentSamplesList
 }

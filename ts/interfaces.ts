@@ -31,6 +31,7 @@ export interface SongState {
   activeMIDIEventIds: Array<string>
   midiEvent: MIDIEvent | null
   noteNumbers: Array<number>
+  instrumentSamplesList: Array<any>
 };
 
 export interface ControlsState {

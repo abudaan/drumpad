@@ -1,6 +1,6 @@
 import { Dispatch, Action } from 'redux';
-import { SongPosition, IAction, GridCellData, GridSelectedCells } from '../interfaces';
-import { ChangeEvent, MouseEvent } from 'react';
+import { SongPosition, IAction, GridSelectedCells } from '../interfaces';
+import { ChangeEvent, MouseEvent, SyntheticEvent } from 'react';
 import {
   initSequencer,
   loadJSON,
@@ -11,6 +11,7 @@ import {
   addAssetPack,
   addMIDIFile,
   loadArrayBuffer,
+  getInstrumentSamplesList,
 } from './action_utils';
 
 export const LOADING = 'LOADING'; // generic load action
@@ -32,6 +33,7 @@ export const SELECT_SONG = 'SELECT_SONG';
 export const SELECT_INSTRUMENT = 'SELECT_INSTRUMENT';
 export const PROCESS_MIDI_EVENT = 'PLAY_MIDIEVENT';
 export const ADD_ROW = 'ADD_ROW';
+export const SELECT_NOTE_NUMBER = 'SELECT_NOTE_NUMBER';
 
 export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
   dispatch({
@@ -39,16 +41,16 @@ export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
   });
   await initSequencer();
   const config = await loadJSON(configUrl);
-  const os = await parseConfig(config);
+  const instrumentSamplesList = await parseConfig(config);
   const midiFiles = createMIDIFileList();
 
   dispatch({
     type: CONFIG_LOADED,
     payload: {
       ...config,
-      os,
       midiFiles,
       instrumentList: getLoadedInstruments(),
+      instrumentSamplesList,
     }
   });
 };
@@ -93,6 +95,7 @@ export const selectInstrument = (instrumentIndex: number) => ({
   type: SELECT_INSTRUMENT,
   payload: {
     instrumentIndex,
+    instrumentSamplesList: getInstrumentSamplesList(instrumentIndex),
   }
 });
 
@@ -180,4 +183,12 @@ export const processMIDIEvent = (midiEvent: Array<number>): IAction<any> => ({
 
 export const addRow = (): IAction<any> => ({
   type: ADD_ROW,
+});
+
+export const selectNoteNumber = (newValue: number, oldValue: number): IAction<any> => ({
+  type: SELECT_NOTE_NUMBER,
+  payload: {
+    newValue,
+    oldValue
+  }
 });

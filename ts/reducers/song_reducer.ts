@@ -1,5 +1,5 @@
 import * as Actions from '../actions/actions';
-import { SongState, IAction, Track, MIDIEvent, MIDIFileJSON, MIDIFileData, GridSelectedCells, GridCellData } from '../interfaces';
+import { SongState, IAction, Track, MIDIEvent, MIDIFileJSON, MIDIFileData, GridSelectedCells } from '../interfaces';
 import { createGrid, addRow, getSelectedCells, cellIndexToMIDIIndex } from './grid_utils';
 import * as RenderActions from '../components/song';
 
@@ -34,6 +34,7 @@ const songInitialState = {
   activeColumn: 0,
   midiEvent: null,
   noteNumbers: [],
+  instrumentSamplesList: [],
 };
 
 const song = (state: SongState = songInitialState, action: IAction<any>) => {
@@ -42,7 +43,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       midiFiles,
       instrumentList,
       granularity,
-      os
+      instrumentSamplesList,
     } = action.payload;
     const source = midiFiles[0] as MIDIFileData;
     const timeEvents = source.timeEvents;
@@ -53,7 +54,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const selected = getSelectedCells(midiEvents, granularityTicks, noteNumbers);
     return {
       ...state,
-      os,
+      instrumentSamplesList,
       sequencerReady: true,
       ppq: source.ppq,
       bpm: source.bpm,
@@ -223,6 +224,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
   } else if (action.type === Actions.SELECT_INSTRUMENT) {
     return {
       ...state,
+      instrumentSamplesList: action.payload.instrumentSamplesList,
       renderAction: RenderActions.SELECT_INSTRUMENT,
     }
   } else if (action.type === Actions.UPDATE_TEMPO) {
@@ -234,6 +236,15 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     return {
       ...state,
       renderAction: RenderActions.SET_LOOP,
+    }
+  } else if (action.type === Actions.SELECT_NOTE_NUMBER) {
+    console.log(action.payload);
+    // update allMIDIEvents
+    // update activeMIDIEventIds
+    // update grid (order of rows)
+    return {
+      ...state,
+      // renderAction: RenderActions.SET_LOOP,
     }
   }
   return state;

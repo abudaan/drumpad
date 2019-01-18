@@ -15,13 +15,14 @@ import {
   updateEvents,
   processMIDIEvent,
   addRow,
+  selectNoteNumber,
 } from '../actions/actions'
 import { State, SongPosition, GridType, MIDIEvent, GridSelectedCells, MIDINote } from '../interfaces';
 import getInstrument from '../reducers/instrument_selector';
 import Pads from '../components/pads';
 import Controls from '../components/controls';
 import Song from '../components/song';
-import SamplesList from '../components/samples-list';
+import SamplesList from '../components/samples_list';
 
 interface App {
   props: PropTypes,
@@ -64,6 +65,7 @@ type PropTypes = {
   activeMIDIEventIds: Array<string>,
   midiEvent: MIDIEvent,
   noteNumbers: Array<number>,
+  instrumentSamplesList: Array<any>,
 
   // from instrument_selector
   instrumentName: string,
@@ -82,6 +84,7 @@ type PropTypes = {
   updatePosition: (pos: SongPosition) => void,
   processMIDIEvent: (data: Array<number>) => void,
   addRow: () => void,
+  selectNoteNumber: () => void,
 };
 
 const mapStateToProps = (state: State) => {
@@ -109,6 +112,7 @@ const mapStateToProps = (state: State) => {
     activeMIDIEventIds: state.song.activeMIDIEventIds,
     midiEvent: state.song.midiEvent,
     noteNumbers: state.song.noteNumbers,
+    instrumentSamplesList: state.song.instrumentSamplesList,
 
     // from controls_reducer
     trackIndex: state.controls.trackIndex,
@@ -140,6 +144,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     updateEvents,
     processMIDIEvent,
     addRow,
+    selectNoteNumber,
   }, dispatch);
 }
 
@@ -180,7 +185,9 @@ class App extends React.PureComponent {
 
       <div id="pads-container">
         <SamplesList
+          selectNoteNumber={this.props.selectNoteNumber}
           noteNumbers={this.props.noteNumbers}
+          instrumentSamplesList={this.props.instrumentSamplesList}
         />
         <Pads
           grid={this.props.grid}
