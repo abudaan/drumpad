@@ -60,7 +60,22 @@ body
     flex-direction: row
 
     #samples
+        display: flex
+        flex-direction: column
         width: 140px
+        border-right: 1px dotted #000fff
+        .cell 
+            box-sizing: border-box
+            height: 100% 
+            text-align: center
+            &:not(:first-child)
+                border-top: 1px dotted #000fff
+            display: flex
+            justify-content: center  
+            align-items: center
+            font-family: monospace
+            color: #dddddd
+            font-size: 15px
 
     #pads
         width: calc(100vw - 140px)
@@ -79,8 +94,8 @@ body
             flex-direction: column
             flex-wrap: nowrap
             background-color: #efefef
-            &:last-child
-                border-right: 1px solid #444
+            &:not(:last-child)
+                border-right: 1px dotted #00ff00
 
             &.active
                 background-color: rgba(255, 255, 0, 0.4)
@@ -89,10 +104,11 @@ body
                 // transition: visibility 0s 2s, opacity 2s linear
             
             .cell
+                box-sizing: border-box
                 height: 100% 
                 text-align: center
-                border-top: 1px solid #444
-                border-left: 1px solid #444
+                &:not(:first-child)
+                    border-top: 1px dotted #00ff00
                 display: flex
                 justify-content: center  
                 align-items: center

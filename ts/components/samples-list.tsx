@@ -1,13 +1,10 @@
 import React, { RefObject, SyntheticEvent } from 'react'
 
 interface PropTypes {
-  id: string,
-  style: Object,
-  label: string,
-  className: string,
+  noteNumbers: Array<string>,
 };
 
-interface GridCell {
+interface SamplesList {
   props: PropTypes,
 };
 
@@ -19,12 +16,12 @@ class SamplesList extends React.PureComponent {
     this.divRef = React.createRef();
   }
 
-
   render() {
     return <div
       id="samples"
       ref={this.divRef}
     >
+    {this.props.noteNumbers.map(n => <div key={n} className="cell">{n}</div>)}
     </div>;
   }
 }

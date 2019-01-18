@@ -137,7 +137,7 @@ class Pads extends React.PureComponent {
         const classNames = ['cell'];
         const id: string = `${r}-${c}`;
         this.dirtyCells[id] = false;
-        if (typeof this.props.grid.selected[id] !== 'undefined') {
+        if (this.props.grid.selected[id] === true) {
           classNames.push('selected');
           this.dirtyCells[id] = true;
         }

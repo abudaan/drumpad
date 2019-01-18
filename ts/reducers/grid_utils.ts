@@ -66,12 +66,7 @@ const createGrid = (song: MIDIFileData, events: Array<MIDIEvent>, currentGranula
   }
 };
 
-type AddRow = {
-  midiEvents: Array<MIDIEvent>
-  noteNumbers: Array<number>
-}
-const addRow = (numCols: number, noteNumbers: Array<number>, granularityTicks: number): AddRow => {
-/*
+const getUniqueNoteNumber = (noteNumbers: Array<number>): number => {
   let noteNumber = noteNumbers[noteNumbers.length - 1] - 1;
   // console.log(noteNumbers);
   if (noteNumber === 127) {
@@ -84,8 +79,15 @@ const addRow = (numCols: number, noteNumbers: Array<number>, granularityTicks: n
       }
     }
   }
-*/
-  const noteNumber = 20;  
+  return noteNumber;
+}
+
+type AddRow = {
+  midiEvents: Array<MIDIEvent>
+  noteNumbers: Array<number>
+}
+const addRow = (numCols: number, noteNumbers: Array<number>, granularityTicks: number): AddRow => {
+  const noteNumber = 20 // getUniqueNoteNumber(noteNumbers);  
   const midiEvents = [];
   for (let i = 0; i < numCols; i++) {
     let ticks = i * granularityTicks;
@@ -107,13 +109,14 @@ const addRow = (numCols: number, noteNumbers: Array<number>, granularityTicks: n
   }
 };
 
-const getSelectedCells = (midiEvents: Array<MIDIEvent>, numCols: number, numRows: number, granularityTicks: number, noteNumbers: Array<number>) => {
+const getSelectedCells = (midiEvents: Array<MIDIEvent>, granularityTicks: number, noteNumbers: Array<number>) => {
+
   type CellType = {
-    [id: string]: [number, number]
+    [id: string]: boolean
   };
   type AccType = CellType | Reduced<CellType>
   const reducer = (accumulator: CellType, cell: [number, number]): AccType => {
-    accumulator[`${cell[0]}-${cell[1]}`] = cell;
+    accumulator[`${cell[0]}-${cell[1]}`] = true;
     return accumulator;
   }
 
@@ -126,7 +129,7 @@ const getSelectedCells = (midiEvents: Array<MIDIEvent>, numCols: number, numRows
   return reduce(reducer, {}, selected);
 }
 
-
+/*
 const sortRows = (numCols: number, granularityTicks: number, cells: Array<GridCellData>): Array<GridCellData> => {
   const sorted = [];
   for (let i = 0; i < numCols; i++) {
@@ -136,7 +139,7 @@ const sortRows = (numCols: number, granularityTicks: number, cells: Array<GridCe
   }
   return sorted;
 };
-
+*/
 
 const cellIndexToMIDIIndex = (key: string, granularityTicks: number, noteNumbers: Array<number>): string => {
   const converted = key.split('-').map((a):number => parseInt(a, 10));

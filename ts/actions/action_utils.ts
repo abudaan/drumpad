@@ -101,6 +101,7 @@ const parseConfig = (config: Config): Promise<string> => {
       await addAssetPack(ap);
       // await addAssetPack(config.assetPack);
     }
+    // console.log(sequencer.getInstruments());
     resolve(sequencer.os);
   });
 }

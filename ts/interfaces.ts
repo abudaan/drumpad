@@ -224,7 +224,7 @@ export interface GridSelectedCells {
 }
 
 export type GridType = {
-  selected: Array<string>
+  selected: { [id: string]: boolean }
   numRows: number
   numCols: number
 }
