@@ -219,20 +219,12 @@ export interface SongInfo {
   denominator: number
 }
 
-export interface GridCellData {
-  ticks: number
-  noteNumber: number
-  midiEventId: null | string
-  active: boolean
-  selected: boolean
-}
-
 export interface GridSelectedCells {
   [id: string]: boolean
 }
 
 export type GridType = {
-  cells: Array<GridCellData>
+  selected: { [id: string]: [number, number] }
   numRows: number
   numCols: number
 }

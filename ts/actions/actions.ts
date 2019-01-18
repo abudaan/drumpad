@@ -1,5 +1,5 @@
 import { Dispatch, Action } from 'redux';
-import { SongPosition, IAction, GridCellData } from '../interfaces';
+import { SongPosition, IAction, GridCellData, GridSelectedCells } from '../interfaces';
 import { ChangeEvent, MouseEvent } from 'react';
 import {
   initSequencer,
@@ -150,7 +150,7 @@ export const updatePostion = (position: SongPosition): IAction<any> => ({
   }
 });
 
-export const updateEvents = (data: Array<GridCellData>): IAction<any> => ({
+export const updateEvents = (data: GridSelectedCells): IAction<any> => ({
   type: UPDATE_EVENTS,
   payload: {
     data,

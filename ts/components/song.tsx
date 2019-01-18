@@ -155,7 +155,7 @@ class Song extends React.PureComponent {
   }
 
   unmuteEvents() {
-    // console.log(this.props.activeMIDIEventIds);
+    console.log(this.props.activeMIDIEventIds);
     this.props.activeMIDIEventIds.forEach((id) => {
       const noteOn = this.part.eventsById[id];
       if (noteOn) {

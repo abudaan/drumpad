@@ -95,20 +95,15 @@ class Grid extends React.PureComponent {
     if (this.props.playing === false) {
       this.props.updateCells(this.dirtyCells);
       this.changed = 0;
-      
+
       // play MIDI note is song not is playing
-      if (event !== null && id !== null) {
-        const [
-          ticks,
-          noteNumber,
-        ] = id.split('-');
-        // console.log(event.type);
-        if (event.type === 'mousedown' || event.type === 'touchend') {
-          this.props.processMIDIEvent([0, 144, parseInt(noteNumber, 10), 100]);
-        } else {
-          this.props.processMIDIEvent([0, 128, parseInt(noteNumber, 10), 0]);
-        }
-      }
+      // if (event !== null && id !== null) {
+      //   if (event.type === 'mousedown' || event.type === 'touchend') {
+      //     this.props.processMIDIEvent(id, 144);
+      //   } else {
+      //     this.props.processMIDIEvent(id, 128);
+      //   }
+      // }
     }
     e.preventDefault();
   }
@@ -143,17 +138,14 @@ class Grid extends React.PureComponent {
       const rows = [];
       const active = c === this.props.activeColumn;
       for (let r = 0; r < numRows; r++) {
-        const item = this.props.grid.cells[i++];
         const classNames = ['cell'];
-        const id = `${item.ticks}-${item.noteNumber}`
-        if (item.selected === true) {
-          if (active === true) {
-            classNames.push('active');
-          } else {
-            classNames.push('selected');
-          }
+        const id = `${r}-${c}`;
+        this.dirtyCells[id] = false;
+        if (typeof this.props.grid.selected[id] !== 'undefined') {
+          classNames.push('selected');
+          this.dirtyCells[id] = true;
         }
-        this.dirtyCells[id] = item.selected === true;
+
         // add Cell.tsx back in so you can highlight the cells that are hovered / dragged
         rows.push(
           <div
