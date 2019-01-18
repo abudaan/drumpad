@@ -2,7 +2,7 @@ import React, { RefObject, SyntheticEvent } from 'react'
 
 interface PropTypes {
   noteNumbers: Array<number>,
-  instrumentSamplesList: Array<any>,
+  instrumentNoteNumbers: Array<number>,
   selectNoteNumber: (newValue: number, oldValue: number) => void
 };
 
@@ -18,8 +18,20 @@ class SamplesList extends React.PureComponent {
     this.divRef = React.createRef();
   }
 
+  checkIfDisabled (n: number): boolean {
+    this.props.noteNumbers.findIndex() === -1
+    return false;
+  }
+
   render() {
-    const options = this.props.instrumentSamplesList.map(o => (<option key={o[0]} value={o[0]}>{o[0]}</option>));
+    const options = this.props.instrumentNoteNumbers.map(n => (
+      <option
+        key={n}
+        value={n}
+        disabled={this.checkIfDisabled(n)}
+      >{n}
+      </option>
+    ));
     return <div
       id="samples"
       ref={this.divRef}
@@ -27,12 +39,12 @@ class SamplesList extends React.PureComponent {
       {this.props.noteNumbers.map(n => <div key={n} className="cell">
         {/* {n} */}
         <select
-          onChange={(e) => { 
+          onChange={(e) => {
             const value = parseInt(e.target.options[e.target.selectedIndex].value, 10);
             this.props.selectNoteNumber(value, n);
           }}
           value={`${n}`}
-          // defaultValue={`${n}`}
+        // defaultValue={`${n}`}
         >
           {options}
         </select>

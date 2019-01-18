@@ -113,7 +113,6 @@ const addRow = (numCols: number, noteNumbers: Array<number>, granularityTicks: n
 };
 
 const getSelectedCells = (midiEvents: Array<MIDIEvent>, granularityTicks: number, noteNumbers: Array<number>) => {
-
   type CellType = {
     [id: string]: boolean
   };

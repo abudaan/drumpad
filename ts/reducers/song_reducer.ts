@@ -35,6 +35,7 @@ const songInitialState = {
   midiEvent: null,
   noteNumbers: [],
   instrumentSamplesList: [],
+  instrumentNoteNumbers: [],
   unmuted: [],
 };
 
@@ -55,7 +56,8 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const selected = getSelectedCells(midiEvents, granularityTicks, noteNumbers);
     return {
       ...state,
-      instrumentSamplesList, //: instrumentSamplesList.filter(),
+      instrumentSamplesList, 
+      instrumentNoteNumbers: instrumentSamplesList.map((o: any) => parseInt(o[0], 10)),
       sequencerReady: true,
       ppq: source.ppq,
       bpm: source.bpm,
@@ -230,6 +232,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     return {
       ...state,
       instrumentSamplesList: action.payload.instrumentSamplesList,
+      instrumentNoteNumbers: action.payload.instrumentSamplesList.map((o: any) => parseInt(o[0], 10)),
       renderAction: RenderActions.SELECT_INSTRUMENT,
     }
   } else if (action.type === Actions.UPDATE_TEMPO) {
@@ -248,11 +251,18 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       newNoteNumber,
     } = action.payload;
     const { allMIDIEvents, noteNumbers, unmuted } = updateNoteNumber(oldNoteNumber, newNoteNumber, state.allMIDIEvents, state.unmuted, state.noteNumbers);
-    const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);    
-    console.log(allMIDIEvents.filter(e => e.noteNumber === newNoteNumber));
+    const activeMIDIEvents = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144);
+    const activeMIDIEventIds = activeMIDIEvents.map(e => e.id);
+    const selected = getSelectedCells(activeMIDIEvents, state.granularityTicks, noteNumbers);
+    
+    // console.log(activeMIDIEvents, selected)
     return {
       ...state,
       unmuted,
+      grid: {
+        ...state.grid,
+        selected,
+      },
       noteNumbers,
       allMIDIEvents,
       activeMIDIEventIds,

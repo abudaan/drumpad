@@ -65,7 +65,7 @@ type PropTypes = {
   activeMIDIEventIds: Array<string>,
   midiEvent: MIDIEvent,
   noteNumbers: Array<number>,
-  instrumentSamplesList: Array<any>,
+  instrumentNoteNumbers: Array<number>,
 
   // from instrument_selector
   instrumentName: string,
@@ -113,6 +113,7 @@ const mapStateToProps = (state: State) => {
     midiEvent: state.song.midiEvent,
     noteNumbers: state.song.noteNumbers,
     instrumentSamplesList: state.song.instrumentSamplesList,
+    instrumentNoteNumbers: state.song.instrumentNoteNumbers,
 
     // from controls_reducer
     trackIndex: state.controls.trackIndex,
@@ -187,7 +188,7 @@ class App extends React.PureComponent {
         <SamplesList
           selectNoteNumber={this.props.selectNoteNumber}
           noteNumbers={this.props.noteNumbers}
-          instrumentSamplesList={this.props.instrumentSamplesList}
+          instrumentNoteNumbers={this.props.instrumentNoteNumbers}
         />
         <Pads
           grid={this.props.grid}

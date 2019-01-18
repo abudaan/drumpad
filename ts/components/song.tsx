@@ -51,7 +51,7 @@ class Song extends React.PureComponent {
   }
 
   render() {
-    console.log('<Song> render', this.props.renderAction);
+    // console.log('<Song> render', this.props.renderAction);
     switch (this.props.renderAction) {
       case INIT:
         this.initSong();
