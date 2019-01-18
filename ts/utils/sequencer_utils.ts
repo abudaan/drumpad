@@ -1,6 +1,9 @@
+// utils used by ./reducers/song_reducer.ts
+
 import sequencer from 'heartbeat-sequencer';
 import { MIDIEvent, MIDIFileData } from "../interfaces";
 import { uniq, reduce, Reduced } from "ramda";
+import { controlsInitialState } from '../reducers/controls_reducer';
 
 const getUniqNotes = (events: Array<MIDIEvent>): Array<number> => uniq(events.map(e => e.noteNumber)).sort((a, b) => b - a);
 
@@ -142,7 +145,7 @@ const sortRows = (numCols: number, granularityTicks: number, cells: Array<GridCe
 */
 
 const cellIndexToMIDIIndex = (key: string, granularityTicks: number, noteNumbers: Array<number>): string => {
-  const converted = key.split('-').map((a):number => parseInt(a, 10));
+  const converted = key.split('-').map((a): number => parseInt(a, 10));
   const ticks = converted[1] * granularityTicks;
   const noteNumber = noteNumbers[converted[0]];
   // console.log(ticks, noteNumber);
@@ -150,10 +153,40 @@ const cellIndexToMIDIIndex = (key: string, granularityTicks: number, noteNumbers
 }
 
 
+type UpdateNoteNumber = { allMIDIEvents: Array<MIDIEvent>, unmuted: Array<string>, noteNumbers: Array<number> };
+const updateNoteNumber = (oldNoteNumber: number, newNoteNumber: number, midiEvents: Array<MIDIEvent>, unmuted: Array<string>, noteNumbers: Array<number>): UpdateNoteNumber => {
+  const newMIDIEvents = midiEvents.map((e: MIDIEvent) => {
+    if (e.noteNumber === oldNoteNumber) {
+      const clone = sequencer.createMidiEvent(e.ticks, e.type, newNoteNumber, e.data2);
+      clone.muted = true;
+      return clone;
+    } else {
+      return e;
+    }
+  });
+  const newNoteNumbers = noteNumbers.map(n => n === oldNoteNumber ? newNoteNumber : n).sort((a, b) => b - a);
+  const newUnmuted = unmuted.map(id => {
+    const [
+      ticks,
+      noteNumber,
+     ] = id.split('-');
+     if (parseInt(noteNumber, 10) === oldNoteNumber) {
+       return `${ticks}-${newNoteNumber}`;
+     }
+     return id;
+  });
+  return {
+    allMIDIEvents: newMIDIEvents,
+    noteNumbers: newNoteNumbers,
+    unmuted: newUnmuted,
+  };
+}
+
 export {
   cellIndexToMIDIIndex,
   getSelectedCells,
   createGrid,
   addRow,
+  updateNoteNumber,
 };
 

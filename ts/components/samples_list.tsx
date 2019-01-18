@@ -25,7 +25,7 @@ class SamplesList extends React.PureComponent {
       ref={this.divRef}
     >
       {this.props.noteNumbers.map(n => <div key={n} className="cell">
-        {n}
+        {/* {n} */}
         <select
           onChange={(e) => { 
             const value = parseInt(e.target.options[e.target.selectedIndex].value, 10);

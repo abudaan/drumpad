@@ -1,3 +1,5 @@
+// utils used by ./actions/actions.ts
+
 import sequencer from 'heartbeat-sequencer';
 import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config, Track, MIDIEvent, MIDIFileData, MIDINote } from '../interfaces';
 import { isNil } from 'ramda';

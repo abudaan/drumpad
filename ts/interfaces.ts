@@ -32,6 +32,7 @@ export interface SongState {
   midiEvent: MIDIEvent | null
   noteNumbers: Array<number>
   instrumentSamplesList: Array<any>
+  unmuted: Array<string>
 };
 
 export interface ControlsState {

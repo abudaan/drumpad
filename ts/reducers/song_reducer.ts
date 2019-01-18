@@ -1,7 +1,7 @@
 import * as Actions from '../actions/actions';
-import { SongState, IAction, Track, MIDIEvent, MIDIFileJSON, MIDIFileData, GridSelectedCells } from '../interfaces';
-import { createGrid, addRow, getSelectedCells, cellIndexToMIDIIndex } from './grid_utils';
 import * as RenderActions from '../components/song';
+import { SongState, IAction, Track, MIDIEvent, MIDIFileJSON, MIDIFileData, GridSelectedCells } from '../interfaces';
+import { createGrid, addRow, getSelectedCells, cellIndexToMIDIIndex, updateNoteNumber } from '../utils/sequencer_utils';
 
 const songInitialState = {
   grid: {
@@ -35,6 +35,7 @@ const songInitialState = {
   midiEvent: null,
   noteNumbers: [],
   instrumentSamplesList: [],
+  unmuted: [],
 };
 
 const song = (state: SongState = songInitialState, action: IAction<any>) => {
@@ -54,7 +55,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const selected = getSelectedCells(midiEvents, granularityTicks, noteNumbers);
     return {
       ...state,
-      instrumentSamplesList,
+      instrumentSamplesList, //: instrumentSamplesList.filter(),
       sequencerReady: true,
       ppq: source.ppq,
       bpm: source.bpm,
@@ -66,6 +67,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
         numCols,
         selected,
       },
+      unmuted,
       midiFiles,
       songIndex: 0,
       timeEvents,
@@ -107,6 +109,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
         numCols,
         selected,
       },
+      unmuted,
       granularity: newGranularity,
       granularityTicks,
       updateInterval,
@@ -130,6 +133,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
         numCols,
         selected,
       },
+      unmuted,
       granularity: newGranularity,
       granularityTicks,
       updateInterval,
@@ -153,6 +157,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
         ...state.grid,
         selected,
       },
+      unmuted,
       activeMIDIEventIds,
       renderAction: RenderActions.UPDATE_EVENTS,
     };
@@ -238,13 +243,20 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       renderAction: RenderActions.SET_LOOP,
     }
   } else if (action.type === Actions.SELECT_NOTE_NUMBER) {
-    console.log(action.payload);
-    // update allMIDIEvents
-    // update activeMIDIEventIds
-    // update grid (order of rows)
+    const {
+      oldNoteNumber,
+      newNoteNumber,
+    } = action.payload;
+    const { allMIDIEvents, noteNumbers, unmuted } = updateNoteNumber(oldNoteNumber, newNoteNumber, state.allMIDIEvents, state.unmuted, state.noteNumbers);
+    const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);    
+    console.log(allMIDIEvents.filter(e => e.noteNumber === newNoteNumber));
     return {
       ...state,
-      // renderAction: RenderActions.SET_LOOP,
+      unmuted,
+      noteNumbers,
+      allMIDIEvents,
+      activeMIDIEventIds,
+      renderAction: RenderActions.TRACK,
     }
   }
   return state;

@@ -12,7 +12,7 @@ import {
   addMIDIFile,
   loadArrayBuffer,
   getInstrumentSamplesList,
-} from './action_utils';
+} from '../utils/action_utils';
 
 export const LOADING = 'LOADING'; // generic load action
 export const LOAD_ERROR = 'LOAD_ERROR';
@@ -185,10 +185,10 @@ export const addRow = (): IAction<any> => ({
   type: ADD_ROW,
 });
 
-export const selectNoteNumber = (newValue: number, oldValue: number): IAction<any> => ({
+export const selectNoteNumber = (newNoteNumber: number, oldNoteNumber: number): IAction<any> => ({
   type: SELECT_NOTE_NUMBER,
   payload: {
-    newValue,
-    oldValue
+    newNoteNumber,
+    oldNoteNumber,
   }
 });
