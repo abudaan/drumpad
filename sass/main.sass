@@ -55,50 +55,62 @@ body
             display: inline-block
             min-width: 78px
 
-
-#grid
-    box-sizing: border-box
+#pads-container
     display: flex
     flex-direction: row
-    &:last-child
-        border-bottom: 1px solid #444
 
-    .column
+    #samples
+        width: 140px
+
+    #pads
+        width: calc(100vw - 140px)
+        height: calc(100vh - 50px)
+        box-sizing: border-box
         display: flex
-        flex-direction: column
-        flex-wrap: nowrap
-        background-color: #efefef
+        flex-direction: row
+        justify-content: space-around
         &:last-child
-            border-right: 1px solid #444
+            border-bottom: 1px solid #444
 
-        &.active
-            background-color: rgba(255, 255, 0, 0.4)
-            // visibility: hidden
-            // opacity: 0
-            // transition: visibility 0s 2s, opacity 2s linear
-        
-        .cell 
-            text-align: center
-            border-top: 1px solid #444
-            border-left: 1px solid #444
+        .column
+            width: 100%
+            align-content: space-around
             display: flex
-            justify-content: center  
-            align-items: center
-            font-family: monospace
-            color: #dddddd
-            font-size: 25px
-            background-color: none
-            user-select: none
-            cursor: pointer
-            // margin: 3px
-            &.active 
-                background-color: yellow
-                color: #00ff00
-            &.selected
-                background-color: lightblue
-                color: #0000ff
-            &.drag
-                background-color: lightgreen
-                color: #0000ff
-            &.highlight
-                background-color: rgba(255, 9, 9, 0.4)
+            flex-direction: column
+            flex-wrap: nowrap
+            background-color: #efefef
+            &:last-child
+                border-right: 1px solid #444
+
+            &.active
+                background-color: rgba(255, 255, 0, 0.4)
+                // visibility: hidden
+                // opacity: 0
+                // transition: visibility 0s 2s, opacity 2s linear
+            
+            .cell
+                height: 100% 
+                text-align: center
+                border-top: 1px solid #444
+                border-left: 1px solid #444
+                display: flex
+                justify-content: center  
+                align-items: center
+                font-family: monospace
+                color: #dddddd
+                font-size: 25px
+                background-color: none
+                user-select: none
+                cursor: pointer
+                // margin: 3px
+                &.active 
+                    background-color: yellow
+                    color: #00ff00
+                &.selected
+                    background-color: lightblue
+                    color: #0000ff
+                &.drag
+                    background-color: lightgreen
+                    color: #0000ff
+                &.highlight
+                    background-color: rgba(255, 9, 9, 0.4)

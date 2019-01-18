@@ -1,5 +1,5 @@
 import sequencer from 'heartbeat-sequencer';
-import { MIDIEvent, MIDIFileData, GridCellData, GridType } from "../interfaces";
+import { MIDIEvent, MIDIFileData } from "../interfaces";
 import { uniq, reduce, Reduced } from "ramda";
 
 const getUniqNotes = (events: Array<MIDIEvent>): Array<number> => uniq(events.map(e => e.noteNumber)).sort((a, b) => b - a);
@@ -67,12 +67,11 @@ const createGrid = (song: MIDIFileData, events: Array<MIDIEvent>, currentGranula
 };
 
 type AddRow = {
-  cells: Array<GridCellData>,
   midiEvents: Array<MIDIEvent>
   noteNumbers: Array<number>
 }
-const addRow = (grid: GridType, noteNumbers: Array<number>, granularityTicks: number): AddRow => {
-
+const addRow = (numCols: number, noteNumbers: Array<number>, granularityTicks: number): AddRow => {
+/*
   let noteNumber = noteNumbers[noteNumbers.length - 1] - 1;
   // console.log(noteNumbers);
   if (noteNumber === 127) {
@@ -85,23 +84,16 @@ const addRow = (grid: GridType, noteNumbers: Array<number>, granularityTicks: nu
       }
     }
   }
-  const cells = [...grid.cells];
+*/
+  const noteNumber = 20;  
   const midiEvents = [];
-  for (let i = 0; i < grid.numCols; i++) {
+  for (let i = 0; i < numCols; i++) {
     let ticks = i * granularityTicks;
-    const item: GridCellData = {
-      ticks,
-      noteNumber,
-      midiEventId: null,
-      selected: false,
-      active: false,
-    }
     const noteOn = sequencer.createMidiEvent(ticks, 144, noteNumber, 100);
     const noteOff = sequencer.createMidiEvent(ticks + granularityTicks, 128, noteNumber, 0);
     noteOn.muted = true;
     noteOff.muted = true;
     midiEvents.push(noteOn, noteOff);
-    cells.push(item);
   }
 
   const newNoteNumbers = [
@@ -110,7 +102,6 @@ const addRow = (grid: GridType, noteNumbers: Array<number>, granularityTicks: nu
   ];
 
   return {
-    cells: sortRows(grid.numCols, granularityTicks, cells),
     midiEvents,
     noteNumbers: newNoteNumbers.sort((a, b) => b - a),
   }

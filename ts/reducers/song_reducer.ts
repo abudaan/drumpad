@@ -2,13 +2,12 @@ import * as Actions from '../actions/actions';
 import { SongState, IAction, Track, MIDIEvent, MIDIFileJSON, MIDIFileData, GridSelectedCells, GridCellData } from '../interfaces';
 import { createGrid, addRow, getSelectedCells, cellIndexToMIDIIndex } from './grid_utils';
 import * as RenderActions from '../components/song';
-import values from 'ramda/es/values';
 
 const songInitialState = {
   grid: {
     numRows: 0,
     numCols: 0,
-    rows: [],
+    selected: [],
   },
   os: 'unknown',
   ppq: 960,
@@ -159,16 +158,14 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     };
   } else if (action.type === Actions.ADD_ROW) {
     const {
-      cells,
       midiEvents,
       noteNumbers,
-    } = addRow(state.grid, state.noteNumbers, state.granularityTicks);
+    } = addRow(state.grid.numCols, state.noteNumbers, state.granularityTicks);
     return {
       ...state,
       grid: {
+        ...state.grid,
         numRows: state.grid.numRows + 1,
-        numCols: state.grid.numCols,
-        cells,
       },
       allMIDIEvents: [
         ...state.allMIDIEvents,

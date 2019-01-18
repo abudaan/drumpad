@@ -11,11 +11,11 @@ interface PropTypes {
   playing: boolean,
 };
 
-interface Grid {
+interface Pads {
   props: PropTypes,
 };
 
-class Grid extends React.PureComponent {
+class Pads extends React.PureComponent {
   dirtyCells: GridSelectedCells
   lastCellIds: Array<null | string>
   hasTouchMoved: boolean
@@ -128,10 +128,6 @@ class Grid extends React.PureComponent {
   render() {
     const numCols = this.props.grid.numCols;
     const numRows = this.props.grid.numRows;
-    const cellStyle = {
-      width: `calc((100vw - 0px) / ${numCols})`,
-      height: `calc((100vh - 50px) / ${numRows})`,
-    };
     const columns = [];
     let i = 0;
     for (let c = 0; c < numCols; c++) {
@@ -139,7 +135,7 @@ class Grid extends React.PureComponent {
       const active = c === this.props.activeColumn;
       for (let r = 0; r < numRows; r++) {
         const classNames = ['cell'];
-        const id = `${r}-${c}`;
+        const id: string = `${r}-${c}`;
         this.dirtyCells[id] = false;
         if (typeof this.props.grid.selected[id] !== 'undefined') {
           classNames.push('selected');
@@ -151,7 +147,6 @@ class Grid extends React.PureComponent {
           <div
             id={id}
             key={id}
-            style={cellStyle}
             // label={id}
             className={classNames.join(' ')}
           >
@@ -169,7 +164,7 @@ class Grid extends React.PureComponent {
     }
     return (
       <div
-        id="grid"
+        id="pads"
         onTouchStartCapture={this.onCellClick.bind(this)}
         onTouchMoveCapture={this.onCellClick.bind(this)}
         onTouchEndCapture={this.onCellClick.bind(this)}
@@ -182,4 +177,4 @@ class Grid extends React.PureComponent {
   }
 }
 
-export default Grid;
+export default Pads;

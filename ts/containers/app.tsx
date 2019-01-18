@@ -18,9 +18,10 @@ import {
 } from '../actions/actions'
 import { State, SongPosition, GridType, MIDIEvent, GridSelectedCells, MIDINote } from '../interfaces';
 import getInstrument from '../reducers/instrument_selector';
-import Grid from '../components/grid';
+import Pads from '../components/pads';
 import Controls from '../components/controls';
 import Song from '../components/song';
+import SamplesList from '../components/samples-list';
 
 interface App {
   props: PropTypes,
@@ -175,14 +176,18 @@ class App extends React.PureComponent {
       >
       </Controls>
 
-      <Grid
-        grid={this.props.grid}
-        activeColumn={this.props.activeColumn}
-        enabled={this.props.controlsEnabled}
-        updateCells={this.props.updateEvents}
-        processMIDIEvent={this.props.processMIDIEvent}
-        playing={this.props.playing}
-      ></Grid>
+      <div id="pads-container">
+        <SamplesList
+        />
+        <Pads
+          grid={this.props.grid}
+          activeColumn={this.props.activeColumn}
+          enabled={this.props.controlsEnabled}
+          updateCells={this.props.updateEvents}
+          processMIDIEvent={this.props.processMIDIEvent}
+          playing={this.props.playing}
+        ></Pads>
+      </div>
 
       { this.props.sequencerReady === true && 
       <Song
