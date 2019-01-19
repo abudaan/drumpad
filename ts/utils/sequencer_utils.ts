@@ -69,28 +69,22 @@ const createGrid = (song: MIDIFileData, events: Array<MIDIEvent>, currentGranula
   }
 };
 
-const getUniqueNoteNumber = (noteNumbers: Array<number>): number => {
-  let noteNumber = noteNumbers[noteNumbers.length - 1] - 1;
-  // console.log(noteNumbers);
-  if (noteNumber === 127) {
-    noteNumber = noteNumbers[0] - 1;
-  } else if (noteNumber < 0) {
-    for (let i = 0; i < 127; i++) {
-      if (noteNumbers.includes(i) === false) {
-        noteNumber = i;
-        break;
-      }
+const getNextNoteNumber = (instrumentNoteNumber: Array<number>, noteNumbers: Array<number>): number => {
+  let i = 0;
+  for (i = 0; i < 127; i++) {
+    if (instrumentNoteNumber.includes(i) === true && !noteNumbers.includes(i)) {
+      break;
     }
   }
-  return noteNumber;
+  return i;
 }
 
 type AddRow = {
   midiEvents: Array<MIDIEvent>
   noteNumbers: Array<number>
 }
-const addRow = (numCols: number, noteNumbers: Array<number>, granularityTicks: number): AddRow => {
-  const noteNumber = 20 // getUniqueNoteNumber(noteNumbers);  
+const addRow = (numCols: number, noteNumbers: Array<number>, instrumentNoteNumbers: Array<number>, granularityTicks: number): AddRow => {
+  const noteNumber = getNextNoteNumber(instrumentNoteNumbers, noteNumbers);  
   const midiEvents = [];
   for (let i = 0; i < numCols; i++) {
     let ticks = i * granularityTicks;

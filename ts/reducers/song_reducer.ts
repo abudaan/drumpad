@@ -167,7 +167,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const {
       midiEvents,
       noteNumbers,
-    } = addRow(state.grid.numCols, state.noteNumbers, state.granularityTicks);
+    } = addRow(state.grid.numCols, state.noteNumbers, state.instrumentNoteNumbers, state.granularityTicks);
     return {
       ...state,
       grid: {

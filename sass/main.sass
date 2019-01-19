@@ -71,7 +71,8 @@ body
             &:not(:first-child)
                 border-top: 1px dotted #000fff
             display: flex
-            justify-content: center  
+            flex-direction: column
+            justify-content: space-around  
             align-items: center
             font-family: monospace
             color: #dddddd
@@ -81,6 +82,10 @@ body
                 width: 60px
                 font-size: 15px
                 font-family: monospace
+            
+            button
+                margin-top: 5px
+                font-size: 12px
 
     #pads
         width: calc(100vw - 140px)

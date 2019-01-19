@@ -18,36 +18,38 @@ class SamplesList extends React.PureComponent {
     this.divRef = React.createRef();
   }
 
-  checkIfDisabled (n: number): boolean {
-    this.props.noteNumbers.findIndex() === -1
-    return false;
+  checkIfDisabled (index: number, noteNumber: number): boolean {
+    return this.props.noteNumbers.indexOf(noteNumber) !== -1 && index !== noteNumber;
   }
 
-  render() {
+  getOptions (index: number): Array<JSX.Element> { 
     const options = this.props.instrumentNoteNumbers.map(n => (
       <option
         key={n}
         value={n}
-        disabled={this.checkIfDisabled(n)}
+        disabled={this.checkIfDisabled(index, n)}
       >{n}
       </option>
     ));
+    return options;
+  }
+
+  render() {
     return <div
       id="samples"
       ref={this.divRef}
     >
       {this.props.noteNumbers.map(n => <div key={n} className="cell">
-        {/* {n} */}
         <select
           onChange={(e) => {
             const value = parseInt(e.target.options[e.target.selectedIndex].value, 10);
             this.props.selectNoteNumber(value, n);
           }}
           value={`${n}`}
-        // defaultValue={`${n}`}
         >
-          {options}
+          {this.getOptions(n)}
         </select>
+        <button disabled>upload sample</button>
       </div>)}
     </div>;
   }
