@@ -1,7 +1,7 @@
 // utils used by ./reducers/song_reducer.ts
 
 import sequencer from 'heartbeat-sequencer';
-import { MIDIEvent, MIDIFileData } from "../interfaces";
+import { MIDIEvent, MIDIFileData, HeartbeatSong } from "../interfaces";
 import { uniq, reduce, Reduced } from "ramda";
 import { controlsInitialState } from '../reducers/controls_reducer';
 
@@ -175,11 +175,23 @@ const updateNoteNumber = (oldNoteNumber: number, newNoteNumber: number, midiEven
   };
 }
 
+const stopAllSongs = () => {
+  const songs = sequencer.getSongs();
+  Object.values(songs).forEach((s) => {
+    const song = s as HeartbeatSong;
+    song.stop();
+    // song.removeEventListener('end');
+    // sequencer.deleteSong(song);
+  });
+};
+
+
 export {
   cellIndexToMIDIIndex,
   getSelectedCells,
   createGrid,
   addRow,
   updateNoteNumber,
+  stopAllSongs,
 };
 

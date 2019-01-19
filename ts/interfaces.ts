@@ -205,9 +205,9 @@ export type MIDIFileData = {
 
 // config file that gets loaded when the app starts
 export interface Config {
-  midiFile: string
-  assetPack: string
-  instrument: string
+  midiFiles: Array<string>
+  assetPacks: Array<string>
+  instruments: Array<string>
   tempoMin: number
   tempoMax: number
   granularity: number

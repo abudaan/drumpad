@@ -3,6 +3,7 @@
 import sequencer from 'heartbeat-sequencer';
 import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config, Track, MIDIEvent, MIDIFileData, MIDINote } from '../interfaces';
 import { isNil } from 'ramda';
+import ap from 'ramda/es/ap';
 
 const status = (response: Response) => {
   if (response.ok) {
@@ -43,28 +44,31 @@ const getLoadedInstruments = () =>
     .filter((name: string) => name !== 'metronome');
 
 
-const stopAllSongs = () => {
-  const songs = sequencer.getSongs();
-  Object.values(songs).forEach((s) => {
-    const song = s as HeartbeatSong;
-    song.stop();
-    // song.removeEventListener('end');
-    // sequencer.deleteSong(song);
-  });
-};
-
-
 const addMIDIFile = (url: string): Promise<MIDIFileJSON> => new Promise((resolve) => {
   sequencer.addMidiFile({ url }, (json: MIDIFileJSON) => {
+    // console.log(url);
     resolve(json);
   });
 });
 
-
-const addAssetPack = (ap: AssetPack): Promise<AssetPack> => new Promise(async (resolve) => {
+const addAssetPack = (ap: AssetPack): Promise<void> => new Promise((resolve) => {
   sequencer.addAssetPack(ap, () => {
-    resolve(ap);
+    resolve();
   });
+})
+
+const addAssetPacks = (aps: Array<AssetPack>): Promise<void> => new Promise((resolve) => {
+  let max = aps.length;
+  aps.forEach(ap => {
+    sequencer.addAssetPack(ap,
+      () => {
+        max--;
+        // console.log(max);
+        if (max === 0) {
+          resolve();
+        }
+      })
+  })
 })
 
 // const addAssetPack = (url: string): Promise<AssetPack> => new Promise(async (resolve) => {
@@ -93,15 +97,16 @@ const createSongFromMIDIFile2 = (url: string) => loadArrayBuffer(url)
 
 
 // parse config file and load all assets that are listed in the config file
-const parseConfig = (config: Config): Promise<Array<any>> => {
+const parseConfig = async (config: Config): Promise<Array<any>> => {
   return new Promise(async (resolve) => {
-    if (config.midiFile) {
-      await addMIDIFile(config.midiFile);
+    if (config.midiFiles) {
+      // console.log(config.midiFiles.map(async url => addMIDIFile(url)));
+      await Promise.all(config.midiFiles.map(url => addMIDIFile(url)));
     }
-    if (config.assetPack) {
-      const ap = await loadJSON(config.assetPack);
-      await addAssetPack(ap);
-      // await addAssetPack(config.assetPack);
+    if (config.assetPacks) {
+      const aps: Array<AssetPack> = await Promise.all(config.assetPacks.map(url => loadJSON(url)));
+      await addAssetPacks(aps);
+      // await Promise.all(aps.map(ap => addAssetPack(ap)));
     }
     const instrument = sequencer.getInstruments()[0];
     // console.log(sequencer.getInstruments());
@@ -161,6 +166,5 @@ export {
   addEndListener,
   getLoadedInstruments,
   createMIDIFileList,
-  stopAllSongs,
   getInstrumentSamplesList
 }
