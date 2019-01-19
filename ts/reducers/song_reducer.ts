@@ -232,7 +232,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     return {
       ...state,
       instrumentSamplesList: action.payload.instrumentSamplesList,
-      instrumentNoteNumbers: action.payload.instrumentSamplesList.map((o: any) => parseInt(o[0], 10)),
+      instrumentNoteNumbers: action.payload.instrumentNoteNumbers,
       renderAction: RenderActions.SELECT_INSTRUMENT,
     }
   } else if (action.type === Actions.UPDATE_TEMPO) {

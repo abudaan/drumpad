@@ -9,7 +9,7 @@ export interface SongState {
   grid: GridType
   midiFiles: Array<MIDIFileJSON>
   trackList: Array<Track>
-  instrumentList: Array<string>
+  instrumentList: Array<[number, string]>
   songList: Array<string>
   position?: SongPosition
   bar?: number
@@ -171,8 +171,15 @@ export interface Track {
   processMidiEvent: (event: MIDIEvent | Array<MIDIEvent>) => void
 };
 
+export type InstrumentMapping = {
+  [id: string]: {
+    [id: string]: string
+  }
+}
+
 export interface Instrument {
   name: string
+  mapping: InstrumentMapping
 };
 
 export interface AssetPack {

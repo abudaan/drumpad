@@ -1,9 +1,8 @@
 // utils used by ./actions/actions.ts
 
 import sequencer from 'heartbeat-sequencer';
-import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config, Track, MIDIEvent, MIDIFileData, MIDINote } from '../interfaces';
+import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config, Track, MIDIEvent, MIDIFileData, MIDINote, InstrumentMapping } from '../interfaces';
 import { isNil } from 'ramda';
-import ap from 'ramda/es/ap';
 
 const status = (response: Response) => {
   if (response.ok) {
@@ -40,8 +39,8 @@ const getLoadedMIDIFiles = () =>
 
 const getLoadedInstruments = () =>
   sequencer.getInstruments()
-    .map((i: Instrument) => i.name)
-    .filter((name: string) => name !== 'metronome');
+    .map((i: Instrument, index: number) => [index, i.name])
+    .filter((t: [number, string]) => t[1] !== 'metronome');
 
 
 const addMIDIFile = (url: string): Promise<MIDIFileJSON> => new Promise((resolve) => {
@@ -71,12 +70,13 @@ const addAssetPacks = (aps: Array<AssetPack>): Promise<void> => new Promise((res
   })
 })
 
-// const addAssetPack = (url: string): Promise<AssetPack> => new Promise(async (resolve) => {
-//   const ap = await loadJSON(url);
-//   sequencer.addAssetPack(ap, () => {    
-//     resolve(ap);
-//   });
-// })
+// this version does not work on Android!
+const addAssetPack2 = (url: string): Promise<AssetPack> => new Promise(async (resolve) => {
+  const ap = await loadJSON(url);
+  sequencer.addAssetPack(ap, () => {
+    resolve(ap);
+  });
+})
 
 
 // load binary MIDI file, add it to the assets and create a song from it
@@ -151,9 +151,21 @@ const addEndListener = (songList: Array<HeartbeatSong>, action: () => void) => {
 
 
 const getInstrumentSamplesList = (index: number) => {
-  const instrument = sequencer.getInstruments()[index];
-  // console.log(index, instrument);
-  return Object.entries(instrument.mapping);
+  const instrument: Instrument = sequencer.getInstruments()[index];
+  let instrumentSamplesList: Array<[string, {[id: string]: string}]> = [];
+  let instrumentNoteNumbers = [];
+  // console.log(index, instrument.name);
+  if (instrument.name === 'sinewave') {
+    instrumentNoteNumbers = Array.from(new Array(127).keys());
+    // console.log(instrumentNoteNumbers);
+  } else {
+    instrumentSamplesList = Object.entries(instrument.mapping);
+    instrumentNoteNumbers = instrumentSamplesList.map((o: any) => parseInt(o[0], 10));
+  }
+  return {
+    instrumentSamplesList,
+    instrumentNoteNumbers,
+  }
 }
 
 export {

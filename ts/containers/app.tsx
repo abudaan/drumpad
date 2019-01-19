@@ -53,7 +53,7 @@ type PropTypes = {
   grid: GridType,
   trackList: Array<string>,
   songList: Array<string>,
-  instrumentList: Array<string>,
+  instrumentList: Array<[number, string]>,
   ticks: number,
   activeColumn: number,
   timestamp: number,

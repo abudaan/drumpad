@@ -91,13 +91,20 @@ export const selectTrack = (trackIndex: number) => ({
   }
 });
 
-export const selectInstrument = (instrumentIndex: number) => ({
-  type: SELECT_INSTRUMENT,
-  payload: {
-    instrumentIndex,
-    instrumentSamplesList: getInstrumentSamplesList(instrumentIndex),
+export const selectInstrument = (instrumentIndex: number) => {
+  const {
+    instrumentSamplesList,
+    instrumentNoteNumbers,
+  } = getInstrumentSamplesList(instrumentIndex);
+  return {
+    type: SELECT_INSTRUMENT,
+    payload: {
+      instrumentIndex,
+      instrumentSamplesList,
+      instrumentNoteNumbers,
+    }
   }
-});
+}
 
 export const selectSong = (songIndex: number) => (dispatch: Dispatch) => {
   dispatch({

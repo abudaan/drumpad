@@ -15,7 +15,7 @@ type PropTypes = {
   loop: boolean,
   songList: Array<string>,
   trackList: Array<string>,
-  instrumentList: Array<string>,
+  instrumentList: Array<[number, string]>,
   position: string,
 
   choosingTempo: (event: React.ChangeEvent) => void,
@@ -73,13 +73,13 @@ class Controls extends React.PureComponent {
     let selectInstrument;
     if (this.props.instrumentList.length > 1) {
       const options = this.props.instrumentList.map(instrument => {
-        return <option key={instrument}>{instrument}</option>;
+        return <option key={instrument[1]} value={instrument[0]}>{instrument[1]}</option>;
       });
       selectInstrument = <select
         onChange={(e) => {
           if (e.nativeEvent.target !== null) {
             const t = e.nativeEvent.target as HTMLSelectElement;
-            this.props.selectInstrument(t.selectedIndex)
+            this.props.selectInstrument(parseInt(t.options[t.selectedIndex].value, 10))
           }
         }}
       >

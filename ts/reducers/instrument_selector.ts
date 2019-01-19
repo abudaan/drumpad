@@ -18,7 +18,7 @@ export default createSelector(
 
     let instrumentName: string = '';
     if (!isNil(instrumentList) && !isNil(instrumentList[instrumentIndex])) {
-      instrumentName = instrumentList[instrumentIndex];
+      instrumentName = instrumentList[instrumentIndex][1];
     }
 
     return {
