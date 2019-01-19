@@ -182,10 +182,11 @@ export const updatePosition = (position: SongPosition): IAction<any> => ({
   }
 });
 
-export const processMIDIEvent = (midiEvent: Array<number>): IAction<any> => ({
+export const processMIDIEvent = (id: string, type: number): IAction<any> => ({
   type: PROCESS_MIDI_EVENT,
   payload: {
-    midiEvent,
+    id,
+    type,
   }
 });
 

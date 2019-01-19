@@ -1,7 +1,7 @@
 import * as Actions from '../actions/actions';
 import * as RenderActions from '../components/song';
 import { SongState, IAction, Track, MIDIEvent, MIDIFileJSON, MIDIFileData, GridSelectedCells } from '../interfaces';
-import { createGrid, addRow, getSelectedCells, cellIndexToMIDIIndex, updateNoteNumber } from '../utils/sequencer_utils';
+import { createGrid, addRow, getSelectedCells, cellIndexToMIDIIndex, updateNoteNumber, cellIndexToMIDIEvent } from '../utils/song_reducer_utils';
 
 const songInitialState = {
   grid: {
@@ -146,9 +146,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     };
   } else if (action.type === Actions.UPDATE_EVENTS) {
     const data = action.payload.data as GridSelectedCells;
-    const unmuted = Object.entries(data)
-      .filter(([key, value]) => value === true)
-      .map(([key, value]) => cellIndexToMIDIIndex(key, state.granularityTicks, state.noteNumbers));
+    const unmuted = Object.entries(data).filter(([key, value]) => value === true).map(([key, value]) => cellIndexToMIDIIndex(key, state.granularityTicks, state.noteNumbers));
     const activeMIDIEvents = state.allMIDIEvents.filter((e: MIDIEvent) => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144);
     const activeMIDIEventIds = activeMIDIEvents.map(e => e.id);
     const selected = getSelectedCells(activeMIDIEvents, state.granularityTicks, state.noteNumbers);
@@ -203,9 +201,10 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       renderAction: RenderActions.UPDATE_EVENTS,
     }
   } else if (action.type === Actions.PROCESS_MIDI_EVENT) {
+    const midiEvent = cellIndexToMIDIEvent(action.payload.id, action.payload.type, state.noteNumbers);
     return {
       ...state,
-      midiEvent: action.payload.midiEvent,
+      midiEvent,
       renderAction: RenderActions.PROCESS_MIDI_EVENT,
     };
   } else if (action.type === Actions.ASSETPACK_LOADED) {
@@ -275,7 +274,6 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const activeMIDIEvents = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144);
     const activeMIDIEventIds = activeMIDIEvents.map(e => e.id);
     const selected = getSelectedCells(activeMIDIEvents, state.granularityTicks, noteNumbers);
-
     // console.log(activeMIDIEvents, selected)
     return {
       ...state,

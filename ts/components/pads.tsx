@@ -1,10 +1,9 @@
 import React, { SyntheticEvent } from 'react';
 import { GridType, GridSelectedCells } from '../interfaces';
-import GridCell from './gridcell';
 
 interface PropTypes {
   updateCells: (cells: GridSelectedCells) => void,
-  processMIDIEvent: (data: Array<number>) => void,
+  processMIDIEvent: (id: string, type: number) => void,
   grid: GridType,
   activeColumn: number,
   enabled: boolean,
@@ -97,13 +96,13 @@ class Pads extends React.PureComponent {
       this.changed = 0;
 
       // play MIDI note is song not is playing
-      // if (event !== null && id !== null) {
-      //   if (event.type === 'mousedown' || event.type === 'touchend') {
-      //     this.props.processMIDIEvent(id, 144);
-      //   } else {
-      //     this.props.processMIDIEvent(id, 128);
-      //   }
-      // }
+      if (event !== null && id !== null) {
+        if (event.type === 'mousedown' || event.type === 'touchend') {
+          this.props.processMIDIEvent(id, 144);
+        } else {
+          this.props.processMIDIEvent(id, 128);
+        }
+      }
     }
     e.preventDefault();
   }
