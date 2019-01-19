@@ -4,6 +4,7 @@ interface PropTypes {
   noteNumbers: Array<number>,
   instrumentNoteNumbers: Array<number>,
   selectNoteNumber: (newValue: number, oldValue: number) => void
+  removeRow: (noteNumber: number) => void
 };
 
 interface SamplesList {
@@ -37,7 +38,6 @@ class SamplesList extends React.PureComponent {
   render() {
     return <div
       id="samples"
-      ref={this.divRef}
     >
       {this.props.noteNumbers.map(n => <div key={n} className="cell">
         <select
@@ -50,6 +50,7 @@ class SamplesList extends React.PureComponent {
           {this.getOptions(n)}
         </select>
         <button disabled>upload sample</button>
+        <button onClick={() => { this.props.removeRow(n) }}>remove row</button>
       </div>)}
     </div>;
   }

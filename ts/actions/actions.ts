@@ -33,6 +33,7 @@ export const SELECT_SONG = 'SELECT_SONG';
 export const SELECT_INSTRUMENT = 'SELECT_INSTRUMENT';
 export const PROCESS_MIDI_EVENT = 'PLAY_MIDIEVENT';
 export const ADD_ROW = 'ADD_ROW';
+export const REMOVE_ROW = 'REMOVE_ROW';
 export const SELECT_NOTE_NUMBER = 'SELECT_NOTE_NUMBER';
 
 export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
@@ -190,6 +191,13 @@ export const processMIDIEvent = (midiEvent: Array<number>): IAction<any> => ({
 
 export const addRow = (): IAction<any> => ({
   type: ADD_ROW,
+});
+
+export const removeRow = (noteNumber: number): IAction<any> => ({
+  type: REMOVE_ROW,
+  payload: {
+    noteNumber,
+  }
 });
 
 export const selectNoteNumber = (newNoteNumber: number, oldNoteNumber: number): IAction<any> => ({

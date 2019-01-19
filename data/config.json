@@ -1,13 +1,13 @@
 {
   "midiFiles": [
-    "./data/SH-3-44.mid",
+    "./data/CT-3-44.mid",
     "./data/JN-3-44.mid",
-    "./data/CT-3-44.mid"
+    "./data/SH-3-44.mid"
   ],
   "assetPacks": [
-    "./data/Kit-Shapes.json",
-    "./data/Kit-Jungle.json",
-    "./data/Kit-City.json"
+    "./data/Kit-Shapes.json"
+    // "./data/Kit-City.json",
+    // "./data/Kit-Jungle.json"
   ],
   "tempoMin": 20,
   "tempoMax": 300,

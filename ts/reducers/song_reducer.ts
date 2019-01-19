@@ -56,7 +56,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const selected = getSelectedCells(midiEvents, granularityTicks, noteNumbers);
     return {
       ...state,
-      instrumentSamplesList, 
+      instrumentSamplesList,
       instrumentNoteNumbers: instrumentSamplesList.map((o: any) => parseInt(o[0], 10)),
       sequencerReady: true,
       ppq: source.ppq,
@@ -181,6 +181,27 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       noteNumbers,
       renderAction: RenderActions.PASS,
     };
+  } else if (action.type === Actions.REMOVE_ROW) {
+    const noteNumber = action.payload.noteNumber;
+    const allMIDIEvents = [...state.allMIDIEvents.filter(e => e.noteNumber !== noteNumber)];
+    const noteNumbers = [...state.noteNumbers.filter(n => n !== noteNumber)];
+    const activeMIDIEvents = allMIDIEvents.filter((e: MIDIEvent) => state.activeMIDIEventIds.includes(e.id) && e.type === 144);
+    const activeMIDIEventIds = activeMIDIEvents.map(e => e.id);
+    const selected = getSelectedCells(activeMIDIEvents, state.granularityTicks, noteNumbers);
+    const unmuted = state.unmuted.filter(id => parseInt(id.split('-')[1], 10) !== noteNumber);
+    return {
+      ...state,
+      grid: {
+        ...state.grid,
+        numRows: state.grid.numRows - 1,
+        selected,
+      },
+      activeMIDIEventIds,
+      allMIDIEvents,
+      noteNumbers,
+      unmuted,
+      renderAction: RenderActions.UPDATE_EVENTS,
+    }
   } else if (action.type === Actions.PROCESS_MIDI_EVENT) {
     return {
       ...state,
@@ -254,7 +275,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const activeMIDIEvents = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144);
     const activeMIDIEventIds = activeMIDIEvents.map(e => e.id);
     const selected = getSelectedCells(activeMIDIEvents, state.granularityTicks, noteNumbers);
-    
+
     // console.log(activeMIDIEvents, selected)
     return {
       ...state,

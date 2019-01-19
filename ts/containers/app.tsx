@@ -16,6 +16,7 @@ import {
   processMIDIEvent,
   addRow,
   selectNoteNumber,
+  removeRow,
 } from '../actions/actions'
 import { State, SongPosition, GridType, MIDIEvent, GridSelectedCells, MIDINote } from '../interfaces';
 import getInstrument from '../reducers/instrument_selector';
@@ -85,6 +86,7 @@ type PropTypes = {
   processMIDIEvent: (data: Array<number>) => void,
   addRow: () => void,
   selectNoteNumber: () => void,
+  removeRow: (noteNumber: number) => void,
 };
 
 const mapStateToProps = (state: State) => {
@@ -146,6 +148,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     processMIDIEvent,
     addRow,
     selectNoteNumber,
+    removeRow,
   }, dispatch);
 }
 
@@ -186,6 +189,7 @@ class App extends React.PureComponent {
 
       <div id="pads-container">
         <SamplesList
+          removeRow={this.props.removeRow}
           selectNoteNumber={this.props.selectNoteNumber}
           noteNumbers={this.props.noteNumbers}
           instrumentNoteNumbers={this.props.instrumentNoteNumbers}
