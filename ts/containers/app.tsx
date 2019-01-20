@@ -19,6 +19,8 @@ import {
   removeRow,
   selectMIDIInPort,
   selectMIDIOutPort,
+  updateMIDIOutLatency,
+  choosingMIDIOutLatency,
 } from '../actions/actions'
 import { State, SongPosition, GridType, MIDIEvent, GridSelectedPads } from '../interfaces';
 import getInstrument from '../reducers/instrument_selector';
@@ -45,6 +47,8 @@ type PropTypes = {
   tempoTmp: number,
   tempoMin: number,
   tempoMax: number,
+  midiOutLatency: number,
+  midiOutLatencyTmp: number,
 
   // from song_reducer
   ppq: number,
@@ -86,7 +90,9 @@ type PropTypes = {
   play: (e: React.MouseEvent) => void,
   stop: (e: React.MouseEvent) => void,
   choosingTempo: (e: React.ChangeEvent) => void,
+  choosingMIDIOutLatency: (e: React.ChangeEvent) => void,
   updateTempo: (e: React.MouseEvent) => void,
+  updateMIDIOutLatency: (e: React.MouseEvent) => void,
   updateEvents: (pads: GridSelectedPads) => void,
   updatePosition: (pos: SongPosition) => void,
   playSampleFromPad: (id: string, type: number) => void,
@@ -141,6 +147,8 @@ const mapStateToProps = (state: State) => {
     tempoMin: state.controls.tempoMin,
     tempoMax: state.controls.tempoMax,
     timestamp: state.controls.timestamp,
+    midiOutLatency: state.controls.midiOutLatency,
+    midiOutLatencyTmp: state.controls.midiOutLatencyTmp,
   };
 };
 
@@ -163,6 +171,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     removeRow,
     selectMIDIInPort,
     selectMIDIOutPort,
+    updateMIDIOutLatency,
+    choosingMIDIOutLatency,
   }, dispatch);
 }
 
@@ -184,7 +194,6 @@ class App extends React.PureComponent {
         instrumentList={this.props.instrumentList}
         playing={this.props.playing}
         loop={this.props.loop}
-        tempo={this.props.tempo}
         tempoTmp={this.props.tempoTmp}
         minTempo={this.props.tempoMin}
         maxTempo={this.props.tempoMax}
@@ -196,12 +205,15 @@ class App extends React.PureComponent {
         selectInstrument={this.props.selectInstrument}
         choosingTempo={this.props.choosingTempo}
         updateTempo={this.props.updateTempo}
+        choosingMIDIOutLatency={this.props.choosingMIDIOutLatency}
+        updateMIDIOutLatency={this.props.updateMIDIOutLatency}
         setLoop={this.props.setLoop}
         addRow={this.props.addRow}
         midiInputsList={this.props.midiInputsList}
         midiOutputsList={this.props.midiOutputsList}
         selectMIDIInPort={this.props.selectMIDIInPort}
         selectMIDIOutPort={this.props.selectMIDIOutPort}
+        midiOutLatencyTmp={this.props.midiOutLatencyTmp}
       >
       </Controls>
 
@@ -245,6 +257,7 @@ class App extends React.PureComponent {
         midiEvent={this.props.midiEvent}
         connectedMIDIInputs={this.props.connectedMIDIInputs}
         connectedMIDIOutputs={this.props.connectedMIDIOutputs}
+        midiOutLatency={this.props.midiOutLatency}
       >
       </Song>}
     </div>

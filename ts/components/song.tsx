@@ -17,6 +17,7 @@ export const UPDATE_EVENTS = 'UPDATE_EVENTS';
 export const PROCESS_MIDI_EVENT = 'PROCESS_MIDI_EVENT';
 export const SET_MIDI_IN = 'SET_MIDI_IN';
 export const SET_MIDI_OUT = 'SET_MIDI_OUT';
+export const SET_MIDI_OUT_LATENCY = 'SET_MIDI_OUT_LATENCY';
 
 interface Song {
   part: Part
@@ -46,6 +47,7 @@ export type SongPropTypes = {
   activeMIDIEventIds: Array<string>,
   connectedMIDIInputs: Array<[string, boolean]>
   connectedMIDIOutputs: Array<[string, boolean]>
+  midiOutLatency: number,
   updatePosition: (pos: SongPosition) => void,
 };
 
@@ -129,6 +131,10 @@ class Song extends React.PureComponent {
         })
         break;
 
+      case SET_MIDI_OUT_LATENCY:
+        this.track.audioLatency = this.props.midiOutLatency;
+        break;
+
     }
     return false;
   }
@@ -138,7 +144,6 @@ class Song extends React.PureComponent {
     this.part = sequencer.createPart();
     this.part.addEvents(this.props.allMIDIEvents);
     this.track.addPart(this.part);
-    this.track.audioLatency = 200;
     this.song = sequencer.createSong({
       tracks: [this.track],
       timeEvents: this.props.timeEvents,

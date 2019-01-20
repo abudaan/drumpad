@@ -1,5 +1,5 @@
 import { Dispatch, Action } from 'redux';
-import { SongPosition, IAction, GridSelectedPads, MIDIPortsObject, MIDIFileJSON, Config, MIDIFileData } from '../interfaces';
+import { SongPosition, IAction, GridSelectedPads, MIDIPortsObject, Config, MIDIFileData } from '../interfaces';
 import { ChangeEvent, MouseEvent } from 'react';
 import {
   initSequencer,
@@ -20,6 +20,8 @@ export const SEQUENCER_PLAY = 'SEQUENCER PLAY';
 export const SEQUENCER_STOP = 'SEQUENCER STOP';
 export const CHOOSING_TEMPO = 'CHOOSING TEMPO'; // while dragging the thumb of the range input
 export const UPDATE_TEMPO = 'UPDATE TEMPO'; // while releasing the thumb
+export const CHOOSING_MIDI_OUT_LATENCY = 'CHOOSING_MIDI_OUT_LATENCY'; // while dragging the thumb of the range input
+export const UPDATE_MIDI_OUT_LATENCY = 'UPDATE_MIDI_OUT_LATENCY'; // while releasing the thumb
 export const UPDATE_POSITION = 'UPDATE POSITION';
 export const UPDATE_EVENTS = 'UPDATE EVENTS';
 export const ASSETPACK_LOADED = 'ASSETPACK LOADED';
@@ -153,6 +155,23 @@ export const play = () => ({
 export const stop = (): Action => ({
   type: SEQUENCER_STOP,
 });
+
+export const choosingMIDIOutLatency = (e: ChangeEvent<HTMLInputElement>): IAction<any> => ({
+  type: CHOOSING_MIDI_OUT_LATENCY,
+  payload: {
+    latencyTmp: parseInt(e.target.value, 10),
+  }
+});
+
+export const updateMIDIOutLatency = (e: MouseEvent<HTMLInputElement>): IAction<any> => {
+  const t = e.target as HTMLInputElement;
+  return {
+    type: UPDATE_MIDI_OUT_LATENCY,
+    payload: {
+      latency: parseInt(t.value, 10),
+    }
+  }
+};
 
 export const choosingTempo = (e: ChangeEvent<HTMLInputElement>): IAction<any> => ({
   type: CHOOSING_TEMPO,

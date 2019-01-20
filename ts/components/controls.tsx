@@ -7,7 +7,6 @@ interface Controls {
 
 type PropTypes = {
   enabled: boolean,
-  tempo: number,
   tempoTmp: number,
   minTempo: number,
   maxTempo: number,
@@ -19,9 +18,12 @@ type PropTypes = {
   position: string,
   midiInputsList: Array<[string, string]>,
   midiOutputsList: Array<[string, string]>,
+  midiOutLatencyTmp: number,
 
   choosingTempo: (event: React.ChangeEvent) => void,
   updateTempo: (event: React.MouseEvent) => void,
+  choosingMIDIOutLatency: (event: React.ChangeEvent) => void,
+  updateMIDIOutLatency: (event: React.MouseEvent) => void,
   play: (event: React.MouseEvent) => void,
   stop: (event: React.MouseEvent) => void,
   setLoop: (loop: boolean) => void,
@@ -171,6 +173,17 @@ class Controls extends React.PureComponent {
         {selectInstrument}
         {selectMIDIIn}
         {selectMIDIOut}
+
+        <Slider
+          min={0}
+          max={500}
+          label="latency"
+          value={this.props.midiOutLatencyTmp}
+          onMouseUp={this.props.updateMIDIOutLatency}
+          onChange={this.props.choosingMIDIOutLatency}
+          disabled={!this.props.enabled}
+        />
+
         <div className="position">{this.props.position}</div>
       </div>
     );

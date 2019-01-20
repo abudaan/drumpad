@@ -343,6 +343,11 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       connectedMIDIOutputs,
       renderAction: RenderActions.SET_MIDI_OUT,
     }
+  } else if (action.type === Actions.UPDATE_MIDI_OUT_LATENCY) {
+    return {
+      ...state,
+      renderAction: RenderActions.SET_MIDI_OUT_LATENCY,
+    };
   } else {
     return state;
   }

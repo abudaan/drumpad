@@ -22,6 +22,8 @@ const controlsInitialState = {
     32
   ],
   timestamp: 0,
+  midiOutLatencyTmp: 0,
+  midiOutLatency: 0,
 };
 
 const controls = (state: ControlsState = controlsInitialState, action: IAction<any>) => {
@@ -64,6 +66,16 @@ const controls = (state: ControlsState = controlsInitialState, action: IAction<a
     return {
       ...state,
       tempo: action.payload.tempo
+    };
+  } else if (action.type === Actions.CHOOSING_MIDI_OUT_LATENCY) {
+    return {
+      ...state,
+      midiOutLatencyTmp: action.payload.latencyTmp,
+    };
+  } else if (action.type === Actions.UPDATE_MIDI_OUT_LATENCY) {
+    return {
+      ...state,
+      midiOutLatency: action.payload.latency
     };
   } else if (action.type === Actions.SELECT_TRACK) {
     return {

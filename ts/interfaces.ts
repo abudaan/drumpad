@@ -58,6 +58,8 @@ export interface ControlsState {
   granularity: number
   granularityOptions: Array<number>
   timestamp: number
+  midiOutLatency: number,
+  midiOutLatencyTmp: number,
 };
 
 export interface State {
