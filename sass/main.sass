@@ -21,6 +21,8 @@ body
     flex-wrap: row nowrap
     
     button
+        flex-grow: 0
+        flex-shrink: 0
         font-family: monospace
         height: 25px
         width: auto
@@ -29,6 +31,8 @@ body
         white-space: nowrap
 
     div
+        flex-grow: 0
+        flex-shrink: 0
         input[type='range']
             margin: 0
         
@@ -39,11 +43,15 @@ body
             font-family: monospace
         
     select
+        flex-grow: 0
+        flex-shrink: 0
         margin-right: 4px
         height: 25px
         font-family: monospace
 
     .react-slider
+        flex-grow: 0
+        flex-shrink: 0
         white-space: nowrap
         height: 25px
         margin-top: 4px
@@ -53,7 +61,7 @@ body
             vertical-align: middle
         label 
             display: inline-block
-            min-width: 78px
+            min-width: 100px
 
 #matrix-container
     display: flex

@@ -177,7 +177,7 @@ class Controls extends React.PureComponent {
 
         <Slider
           min={0}
-          max={500}
+          max={1000}
           label="latency"
           value={this.props.midiOutLatencyTmp}
           onMouseUp={this.props.updateMIDIOutLatency}
