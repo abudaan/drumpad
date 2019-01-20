@@ -1,4 +1,4 @@
-import React, { RefObject, SyntheticEvent } from 'react'
+import React, { RefObject } from 'react'
 
 interface PropTypes {
   noteNumbers: Array<number>,

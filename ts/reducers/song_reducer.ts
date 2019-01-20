@@ -1,8 +1,8 @@
 import { isNil } from 'ramda';
 import * as Actions from '../actions/actions';
 import * as RenderActions from '../components/song';
-import { SongState, IAction, Track, MIDIEvent, MIDIFileJSON, MIDIFileData, MatricSelectedCells, MIDIFileDataTrack } from '../interfaces';
-import { createMatrix, addRow, getSelectedCells, cellIdToTicksAndNoteNumber, updateNoteNumber, cellIdToMIDIEvent, noteNumberToMIDIEvent } from '../utils/song_reducer_utils';
+import { SongState, IAction, Track, MIDIEvent, MIDIFileData, MatricSelectedCells, MIDIFileDataTrack } from '../interfaces';
+import { createMatrix, addRow, getSelectedCells, cellIdToTicksAndNoteNumber, updateNoteNumber, cellIdToMIDIEvent, noteNumberToMIDIEvent, getInstrumentData } from '../utils/song_reducer_utils';
 
 const songInitialState = {
   matrix: {
@@ -35,8 +35,10 @@ const songInitialState = {
   activeColumn: 0,
   midiEvent: null,
   noteNumbers: [],
+  instruments: [],
   instrumentSamplesList: [],
   instrumentNoteNumbers: [],
+  instrumentIndex: 0,
   unmuted: [],
   midiInputs: {},
   midiOutputs: {},
@@ -50,9 +52,10 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
   if (action.type === Actions.CONFIG_LOADED) {
     const {
       midiFilesData,
+      loadedInstruments: instruments,
       instrumentList,
-      granularity,
       instrumentSamplesList,
+      granularity,
       midiInputs,
       midiOutputs,
     } = action.payload as Actions.LoadConfigPayload;
@@ -65,6 +68,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const selected = getSelectedCells(midiEvents, granularityTicks, noteNumbers);
     return {
       ...state,
+      instruments,
       instrumentSamplesList,
       instrumentNoteNumbers: instrumentSamplesList.map((o: any) => parseInt(o[0], 10)),
       sequencerReady: true,
@@ -108,7 +112,6 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const { numCols, numRows, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createMatrix(source, midiEvents, state.granularity);
     const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
     const selected = getSelectedCells(midiEvents, granularityTicks, noteNumbers);
-
     return {
       ...state,
       ppq: source.ppq,
@@ -141,7 +144,6 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const { numRows, numCols, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createMatrix(source, midiEvents, state.granularity);
     const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
     const selected = getSelectedCells(midiEvents, granularityTicks, noteNumbers);
-
     return {
       ...state,
       trackIndex,
@@ -165,7 +167,6 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const activeMIDIEvents = state.allMIDIEvents.filter((e: MIDIEvent) => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144);
     const activeMIDIEventIds = activeMIDIEvents.map(e => e.id);
     const selected = getSelectedCells(activeMIDIEvents, state.granularityTicks, state.noteNumbers);
-
     return {
       ...state,
       matrix: {
@@ -271,11 +272,12 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       renderAction: RenderActions.STOP,
     }
   } else if (action.type === Actions.SELECT_INSTRUMENT) {
+    const instrumentIndex = action.payload.instrumentIndex;
     return {
       ...state,
-      instrumentSamplesList: action.payload.instrumentSamplesList,
-      instrumentNoteNumbers: action.payload.instrumentNoteNumbers,
       renderAction: RenderActions.SELECT_INSTRUMENT,
+      instrumentIndex,
+      ...getInstrumentData(state.instruments[instrumentIndex], instrumentIndex),
     }
   } else if (action.type === Actions.UPDATE_TEMPO) {
     return {
@@ -329,6 +331,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
   } else if (action.type === Actions.SELECT_MIDI_OUT_PORT) {
     const portId = action.payload.portId;
     const port = state.midiOutputs[portId];
+    const instrumentIndex = portId === 'null' ? state.instrumentIndex : -1;
     const connectedMIDIOutputs = state.connectedMIDIOutputs.map(data => {
       if (portId === 'none') {
         return [data[0], false];
@@ -342,6 +345,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       ...state,
       connectedMIDIOutputs,
       renderAction: RenderActions.SET_MIDI_OUT,
+      ...getInstrumentData(state.instruments[instrumentIndex], instrumentIndex),
     }
   } else if (action.type === Actions.UPDATE_MIDI_OUT_LATENCY) {
     return {

@@ -64,9 +64,10 @@ body
         flex-direction: column
         width: 140px
         border-right: 1px dotted #000fff
+
         .cell 
             box-sizing: border-box
-            height: 100% 
+            flex-grow: 1
             text-align: center
             &:not(:first-child)
                 border-top: 1px dotted #000fff
@@ -82,6 +83,10 @@ body
                 width: 60px
                 font-size: 15px
                 font-family: monospace
+
+            option[disabled] 
+                background-color: #efefef
+                color: #ccc
             
             button
                 margin-top: 5px
@@ -115,7 +120,7 @@ body
             
             .cell
                 box-sizing: border-box
-                height: 100% 
+                flex-grow: 1
                 text-align: center
                 &:not(:first-child)
                     border-top: 1px dotted #00ff00

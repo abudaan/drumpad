@@ -1,6 +1,6 @@
 import React from 'react';
 import sequencer from 'heartbeat-sequencer';
-import { HeartbeatSong, MIDIEvent, SongPosition, Track, Part, MIDINote } from '../interfaces';
+import { HeartbeatSong, MIDIEvent, SongPosition, Track, Part } from '../interfaces';
 
 // render actions
 export const PASS = 'PASS';

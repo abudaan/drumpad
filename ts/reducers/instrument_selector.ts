@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { State, ControlsState, SongState, Track, MIDIEvent } from '../interfaces';
+import { State, ControlsState, SongState, Instrument } from '../interfaces';
 import { isNil } from 'ramda';
 
 const getSongState = (state: State): SongState => state.song;

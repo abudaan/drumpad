@@ -1,7 +1,7 @@
 // utils used by ./reducers/song_reducer.ts
 
 import sequencer from 'heartbeat-sequencer';
-import { MIDIEvent, MIDIFileData, HeartbeatSong } from "../interfaces";
+import { MIDIEvent, MIDIFileData, HeartbeatSong, Instrument } from "../interfaces";
 import { uniq, reduce, Reduced, isNil } from "ramda";
 
 
@@ -200,6 +200,30 @@ const addEndListener = (songList: Array<HeartbeatSong>, action: () => void) => {
 }
 
 
+const getInstrumentData = (instrument: Instrument, index: number) => {
+  let instrumentSamplesList: Array<[string, { [id: string]: string }]> = [];
+  let instrumentNoteNumbers = [];
+  if (index === -1) {
+    return {
+      instrumentNoteNumbers: Array.from(new Array(127).keys()),
+      instrumentSamplesList,
+    }
+  }
+  // const instrument: Instrument = sequencer.getInstruments()[index];
+  // console.log(index, instrument.name);
+  if (instrument.name === 'sinewave') {
+    instrumentNoteNumbers = Array.from(new Array(127).keys());
+    // console.log(instrumentNoteNumbers);
+  } else {
+    instrumentSamplesList = Object.entries(instrument.mapping);
+    instrumentNoteNumbers = instrumentSamplesList.map((o: any) => parseInt(o[0], 10));
+  }
+  return {
+    instrumentSamplesList,
+    instrumentNoteNumbers,
+  }
+}
+
 export {
   cellIdToTicksAndNoteNumber,
   cellIdToMIDIEvent,
@@ -210,6 +234,7 @@ export {
   updateNoteNumber,
   stopAllSongs,
   addEndListener,
+  getInstrumentData,
 };
 
 

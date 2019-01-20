@@ -147,7 +147,7 @@ class Matrix extends React.PureComponent {
             // label={id}
             className={classNames.join(' ')}
           >
-            <span>{id}</span>
+            {/* <span>{id}</span> */}
           </div>
         );
       }

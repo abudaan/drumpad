@@ -1,5 +1,5 @@
 import { Dispatch, Action } from 'redux';
-import { SongPosition, IAction, MatricSelectedCells, MIDIPortsObject, Config, MIDIFileData } from '../interfaces';
+import { SongPosition, IAction, MatricSelectedCells, MIDIPortsObject, Config, MIDIFileData, Instrument } from '../interfaces';
 import { ChangeEvent, MouseEvent } from 'react';
 import {
   initSequencer,
@@ -10,7 +10,6 @@ import {
   addAssetPack,
   addMIDIFile,
   loadArrayBuffer,
-  getInstrumentSamplesList,
 } from '../utils/action_utils';
 
 export const LOADING = 'LOADING'; // generic load action
@@ -43,6 +42,7 @@ export const SELECT_MIDI_OUT_PORT = 'SELECT_MIDI_OUT_PORT';
 
 export interface LoadConfigPayload extends Config {
   midiFilesData: Array<MIDIFileData>
+  loadedInstruments: Array<Instrument>
   instrumentList: [number, string]
   instrumentSamplesList: Array<[string, { [id: string]: string }]>
   midiInputs: MIDIPortsObject
@@ -55,6 +55,7 @@ export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
   await initSequencer();
   const config = await loadJSON(configUrl);
   const {
+    loadedInstruments,
     instrumentSamplesList,
     midiInputs,
     midiOutputs,
@@ -66,6 +67,7 @@ export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
     payload: {
       ...config,
       midiFilesData,
+      loadedInstruments,
       instrumentList: getLoadedInstruments(),
       instrumentSamplesList,
       midiInputs,
@@ -112,16 +114,10 @@ export const selectTrack = (trackIndex: number) => ({
 });
 
 export const selectInstrument = (instrumentIndex: number) => {
-  const {
-    instrumentSamplesList,
-    instrumentNoteNumbers,
-  } = getInstrumentSamplesList(instrumentIndex);
   return {
     type: SELECT_INSTRUMENT,
     payload: {
       instrumentIndex,
-      instrumentSamplesList,
-      instrumentNoteNumbers,
     }
   }
 }
@@ -253,11 +249,13 @@ export const selectNoteNumber = (newNoteNumber: number, oldNoteNumber: number) =
       oldNoteNumber,
     }
   });
-  dispatch(playSample(newNoteNumber, 144));
-  // send NOTE_OFF for continuous sounds like organ and strings
   setTimeout(() => {
-    dispatch(playSample(newNoteNumber, 128));
-  }, 700);
+    dispatch(playSample(newNoteNumber, 144));
+    // send NOTE_OFF for continuous sounds like organ and strings
+    setTimeout(() => {
+      dispatch(playSample(newNoteNumber, 128));
+    }, 700);
+  }, 0);
 };
 
 // using redux-multi
@@ -274,14 +272,15 @@ export const selectNoteNumber = (newNoteNumber: number, oldNoteNumber: number) =
 //   ];
 // };
 
-export const selectMIDIInPort = (portId: number) => ({
+export const selectMIDIInPort = (portId: string) => ({
   type: SELECT_MIDI_IN_PORT,
   payload: {
     portId,
   }
 });
 
-export const selectMIDIOutPort = (portId: number) => ({
+
+export const selectMIDIOutPort = (portId: string) => ({
   type: SELECT_MIDI_OUT_PORT,
   payload: {
     portId,

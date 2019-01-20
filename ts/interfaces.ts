@@ -9,6 +9,7 @@ export interface SongState {
   matrix: MatrixType
   midiFilesData: Array<MIDIFileData>
   trackList: Array<Track>
+  instruments: Array<Instrument>
   instrumentList: Array<[number, string]>
   songList: Array<string>
   position?: SongPosition
@@ -40,6 +41,7 @@ export interface SongState {
   midiOutputsList: Array<MIDIPort>
   connectedMIDIInputs: Array<[string, boolean]>
   connectedMIDIOutputs: Array<[string, boolean]>
+  instrumentIndex: number,
 };
 
 export interface ControlsState {
