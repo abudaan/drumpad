@@ -17,6 +17,8 @@ import {
   addRow,
   selectNoteNumber,
   removeRow,
+  selectMIDIInPort,
+  selectMIDIOutPort,
 } from '../actions/actions'
 import { State, SongPosition, GridType, MIDIEvent, GridSelectedPads } from '../interfaces';
 import getInstrument from '../reducers/instrument_selector';
@@ -67,6 +69,10 @@ type PropTypes = {
   midiEvent: MIDIEvent,
   noteNumbers: Array<number>,
   instrumentNoteNumbers: Array<number>,
+  midiInputsList: Array<[string, string]>,
+  midiOutputsList: Array<[string, string]>,
+  connectedMIDIInputs: Array<[string, boolean]>,
+  connectedMIDIOutputs: Array<[string, boolean]>,
 
   // from instrument_selector
   instrumentName: string,
@@ -87,6 +93,8 @@ type PropTypes = {
   addRow: () => void,
   selectNoteNumber: () => void,
   removeRow: (noteNumber: number) => void,
+  selectMIDIInPort: (portId: string) => void,
+  selectMIDIOutPort: (portId: string) => void,
 };
 
 const mapStateToProps = (state: State) => {
@@ -116,6 +124,10 @@ const mapStateToProps = (state: State) => {
     noteNumbers: state.song.noteNumbers,
     instrumentSamplesList: state.song.instrumentSamplesList,
     instrumentNoteNumbers: state.song.instrumentNoteNumbers,
+    midiInputsList: state.song.midiInputsList,
+    midiOutputsList: state.song.midiOutputsList,
+    connectedMIDIInputs: state.song.connectedMIDIInputs,
+    connectedMIDIOutputs: state.song.connectedMIDIOutputs,
 
     // from controls_reducer
     trackIndex: state.controls.trackIndex,
@@ -149,6 +161,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     addRow,
     selectNoteNumber,
     removeRow,
+    selectMIDIInPort,
+    selectMIDIOutPort,
   }, dispatch);
 }
 
@@ -184,6 +198,10 @@ class App extends React.PureComponent {
         updateTempo={this.props.updateTempo}
         setLoop={this.props.setLoop}
         addRow={this.props.addRow}
+        midiInputsList={this.props.midiInputsList}
+        midiOutputsList={this.props.midiOutputsList}
+        selectMIDIInPort={this.props.selectMIDIInPort}
+        selectMIDIOutPort={this.props.selectMIDIOutPort}
       >
       </Controls>
 
@@ -225,6 +243,8 @@ class App extends React.PureComponent {
         tempo={this.props.tempo}
         loop={this.props.loop}
         midiEvent={this.props.midiEvent}
+        connectedMIDIInputs={this.props.connectedMIDIInputs}
+        connectedMIDIOutputs={this.props.connectedMIDIOutputs}
       >
       </Song>}
     </div>

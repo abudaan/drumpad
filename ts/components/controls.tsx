@@ -17,6 +17,8 @@ type PropTypes = {
   trackList: Array<string>,
   instrumentList: Array<[number, string]>,
   position: string,
+  midiInputsList: Array<[string, string]>,
+  midiOutputsList: Array<[string, string]>,
 
   choosingTempo: (event: React.ChangeEvent) => void,
   updateTempo: (event: React.MouseEvent) => void,
@@ -27,6 +29,8 @@ type PropTypes = {
   selectSong: (value: number) => void,
   selectInstrument: (value: number) => void,
   addRow: () => void,
+  selectMIDIInPort: (portId: string) => void,
+  selectMIDIOutPort: (portId: string) => void,
 };
 
 class Controls extends React.PureComponent {
@@ -86,6 +90,37 @@ class Controls extends React.PureComponent {
         {options}
       </select>
     }
+
+    let selectMIDIIn;
+    if (this.props.midiInputsList.length > 0) {
+      const options: Array<JSX.Element> = this.props.midiInputsList.map(port => {
+        return <option key={port[0]} value={port[0]}>{port[1]}</option>;
+      });
+      selectMIDIIn = <select
+        onChange={e => {
+          const t = e.nativeEvent.target as HTMLSelectElement;
+          this.props.selectMIDIInPort(t.options[t.selectedIndex].value);
+        }}
+      >
+        {options}
+      </select>
+    }
+
+    let selectMIDIOut;
+    if (this.props.midiOutputsList.length > 0) {
+      const options: Array<JSX.Element> = this.props.midiOutputsList.map(port => {
+        return <option key={port[0]} value={port[0]}>{port[1]}</option>;
+      });
+      selectMIDIOut = <select
+        onChange={e => {
+          const t = e.nativeEvent.target as HTMLSelectElement;
+          this.props.selectMIDIOutPort(t.options[t.selectedIndex].value);
+        }}
+      >
+        {options}
+      </select>
+    }
+
     return (
       <div
         id="controls"
@@ -134,6 +169,8 @@ class Controls extends React.PureComponent {
         {selectMIDIFile}
         {selectTrack}
         {selectInstrument}
+        {selectMIDIIn}
+        {selectMIDIOut}
         <div className="position">{this.props.position}</div>
       </div>
     );

@@ -1,5 +1,5 @@
 import { Dispatch, Action } from 'redux';
-import { SongPosition, IAction, GridSelectedPads } from '../interfaces';
+import { SongPosition, IAction, GridSelectedPads, MIDIPortsObject, MIDIFileJSON, Config, MIDIFileData } from '../interfaces';
 import { ChangeEvent, MouseEvent } from 'react';
 import {
   initSequencer,
@@ -35,25 +35,42 @@ export const PLAY_SAMPLE_FROM_PAD = 'PLAY_SAMPLE_FROM_PAD';
 export const ADD_ROW = 'ADD_ROW';
 export const REMOVE_ROW = 'REMOVE_ROW';
 export const SELECT_NOTE_NUMBER = 'SELECT_NOTE_NUMBER';
+export const SELECT_MIDI_IN_PORT = 'SELECT_MIDI_IN_PORT';
+export const SELECT_MIDI_OUT_PORT = 'SELECT_MIDI_OUT_PORT';
 
+
+export interface LoadConfigPayload extends Config {
+  midiFilesData: Array<MIDIFileData>
+  instrumentList: [number, string]
+  instrumentSamplesList: Array<[string, { [id: string]: string }]>
+  midiInputs: MIDIPortsObject
+  midiOutputs: MIDIPortsObject
+}
 export const loadConfig = (configUrl: string) => async (dispatch: Dispatch) => {
   dispatch({
     type: LOADING,
   });
   await initSequencer();
   const config = await loadJSON(configUrl);
-  const instrumentSamplesList = await parseConfig(config);
-  const midiFiles = createMIDIFileList();
+  const {
+    instrumentSamplesList,
+    midiInputs,
+    midiOutputs,
+  } = await parseConfig(config);
+  const midiFilesData = createMIDIFileList();
 
-  dispatch({
+  const event = {
     type: CONFIG_LOADED,
     payload: {
       ...config,
-      midiFiles,
+      midiFilesData,
       instrumentList: getLoadedInstruments(),
       instrumentSamplesList,
-    }
-  });
+      midiInputs,
+      midiOutputs,
+    } as LoadConfigPayload
+  }
+  dispatch(event);
 };
 
 export const loadAssetPack = (url: string) => async (dispatch: Dispatch) => {
@@ -237,3 +254,17 @@ export const selectNoteNumber = (newNoteNumber: number, oldNoteNumber: number) =
 //     playSample(newNoteNumber, 144),
 //   ];
 // };
+
+export const selectMIDIInPort = (portId: number) => ({
+  type: SELECT_MIDI_IN_PORT,
+  payload: {
+    portId,
+  }
+});
+
+export const selectMIDIOutPort = (portId: number) => ({
+  type: SELECT_MIDI_OUT_PORT,
+  payload: {
+    portId,
+  }
+});

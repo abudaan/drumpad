@@ -15,6 +15,8 @@ export const SET_LOOP = 'SET_LOOP';
 export const SELECT_INSTRUMENT = 'SELECT_INSTRUMENT';
 export const UPDATE_EVENTS = 'UPDATE_EVENTS';
 export const PROCESS_MIDI_EVENT = 'PROCESS_MIDI_EVENT';
+export const SET_MIDI_IN = 'SET_MIDI_IN';
+export const SET_MIDI_OUT = 'SET_MIDI_OUT';
 
 interface Song {
   part: Part
@@ -42,6 +44,8 @@ export type SongPropTypes = {
   timeEvents: Array<MIDIEvent>,
   allMIDIEvents: Array<MIDIEvent>,
   activeMIDIEventIds: Array<string>,
+  connectedMIDIInputs: Array<[string, boolean]>
+  connectedMIDIOutputs: Array<[string, boolean]>
   updatePosition: (pos: SongPosition) => void,
 };
 
@@ -51,7 +55,7 @@ class Song extends React.PureComponent {
   }
 
   render() {
-    // console.log('<Song> render', this.props.renderAction);
+    console.log('<Song> render', this.props.renderAction);
     switch (this.props.renderAction) {
       case INIT:
         this.initSong();
@@ -111,6 +115,20 @@ class Song extends React.PureComponent {
         this.track.processMidiEvent(sequencer.createMidiEvent(this.props.midiEvent));
         break;
 
+      case SET_MIDI_IN:
+        this.props.connectedMIDIInputs.forEach(item => {
+          // console.log(item);
+          this.track.setMidiInput(item[0], item[1]);
+        })
+        break;
+
+      case SET_MIDI_OUT:
+        this.props.connectedMIDIOutputs.forEach(item => {
+          // console.log(item);
+          this.track.setMidiOutput(item[0], item[1]);
+        })
+        break;
+
     }
     return false;
   }
@@ -137,7 +155,7 @@ class Song extends React.PureComponent {
     // this.song.removeTimeEvents();
     // this.song.addTimeEvents(this.props.timeEvents);
     // API doesn't work so here's a hack:
-    this.song.timeEvents = this.props.timeEvents; 
+    this.song.timeEvents = this.props.timeEvents;
     this.song.setTempo(this.props.tempo);
   }
 

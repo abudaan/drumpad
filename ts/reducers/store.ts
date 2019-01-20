@@ -20,7 +20,7 @@ const getStore = () => {
       applyMiddleware(
         thunkMiddleware,
         // reduxMulti,
-        createLogger({ collapsed: true }),
+        // createLogger({ collapsed: true }),
       ),
     ),
   );

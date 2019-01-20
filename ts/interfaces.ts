@@ -7,7 +7,7 @@ export interface SongState {
   nominator: number
   denominator: number
   grid: GridType
-  midiFiles: Array<MIDIFileJSON>
+  midiFilesData: Array<MIDIFileData>
   trackList: Array<Track>
   instrumentList: Array<[number, string]>
   songList: Array<string>
@@ -34,6 +34,12 @@ export interface SongState {
   instrumentSamplesList: Array<any>
   instrumentNoteNumbers: Array<number>
   unmuted: Array<string>
+  midiInputs: MIDIPortsObject
+  midiOutputs: MIDIPortsObject
+  midiInputsList: Array<MIDIPort>
+  midiOutputsList: Array<MIDIPort>
+  connectedMIDIInputs: Array<[string, boolean]>
+  connectedMIDIOutputs: Array<[string, boolean]>
 };
 
 export interface ControlsState {
@@ -169,6 +175,8 @@ export interface Track {
   removeEvents: (events: Array<MIDIEvent>) => void
   removeAllEvents: () => void
   processMidiEvent: (event: MIDIEvent | Array<MIDIEvent>) => void
+  setMidiInput: (id: string, flag: boolean) => void
+  setMidiOutput: (id: string, flag: boolean) => void
 };
 
 export type InstrumentMapping = {
@@ -187,6 +195,21 @@ export interface AssetPack {
   midifiles: Array<string>
 }
 
+export interface MIDIPort {
+  id: string,
+  connection: string,
+  manufacturer: string,
+  name: string,
+  state: string,
+  type: string,
+  verions: string,
+  onstatechange: () => {},
+}
+
+export interface MIDIPortsObject {
+  [id: string]: MIDIPort
+}
+
 export interface MIDIFileJSON {
   id: string,
   url: string,
@@ -199,6 +222,10 @@ export interface MIDIFileJSON {
   timeEvents: Array<MIDIEvent>
 }
 
+export type MIDIFileDataTrack = {
+  name: string, events: Array<MIDIEvent>
+}
+
 export type MIDIFileData = {
   ppq: number,
   bpm: number,
@@ -206,7 +233,7 @@ export type MIDIFileData = {
   denominator: number,
   name: string,
   timeEvents: Array<MIDIEvent>,
-  tracks: Array<{ name: string, events: Array<MIDIEvent> }>,
+  tracks: Array<MIDIFileDataTrack>,
 };
 
 

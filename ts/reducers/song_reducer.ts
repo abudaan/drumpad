@@ -1,6 +1,7 @@
+import { isNil } from 'ramda';
 import * as Actions from '../actions/actions';
 import * as RenderActions from '../components/song';
-import { SongState, IAction, Track, MIDIEvent, MIDIFileJSON, MIDIFileData, GridSelectedPads } from '../interfaces';
+import { SongState, IAction, Track, MIDIEvent, MIDIFileJSON, MIDIFileData, GridSelectedPads, MIDIFileDataTrack } from '../interfaces';
 import { createGrid, addRow, getSelectedPads, padIndexToMIDIIndex, updateNoteNumber, padIndexToMIDIEvent, noteNumberToMIDIEvent } from '../utils/song_reducer_utils';
 
 const songInitialState = {
@@ -19,7 +20,7 @@ const songInitialState = {
   songList: [],
   songIndex: 0,
   trackList: [],
-  midiFiles: [],
+  midiFilesData: [],
   instrumentList: [],
   instrumentName: null,
   granularity: 8,
@@ -37,17 +38,25 @@ const songInitialState = {
   instrumentSamplesList: [],
   instrumentNoteNumbers: [],
   unmuted: [],
+  midiInputs: {},
+  midiOutputs: {},
+  midiInputsList: [],
+  midiOutputsList: [],
+  connectedMIDIInputs: [],
+  connectedMIDIOutputs: [],
 };
 
 const song = (state: SongState = songInitialState, action: IAction<any>) => {
   if (action.type === Actions.CONFIG_LOADED) {
     const {
-      midiFiles,
+      midiFilesData,
       instrumentList,
       granularity,
       instrumentSamplesList,
-    } = action.payload;
-    const source = midiFiles[0] as MIDIFileData;
+      midiInputs,
+      midiOutputs,
+    } = action.payload as Actions.LoadConfigPayload;
+    const source = midiFilesData[0] as MIDIFileData;
     const timeEvents = source.timeEvents;
     const midiEvents = source.tracks[0].events.filter((e: MIDIEvent) => e.type === 144);
     const { numRows, numCols, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createGrid(source, midiEvents, granularity);
@@ -70,7 +79,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
         selected,
       },
       unmuted,
-      midiFiles,
+      midiFilesData,
       songIndex: 0,
       timeEvents,
       allMIDIEvents,
@@ -78,15 +87,21 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       granularity: newGranularity,
       granularityTicks,
       updateInterval,
-      songList: midiFiles.map((mf: MIDIFileJSON) => mf.name),
-      trackList: midiFiles[0].tracks.map((t: Track) => t.name),
+      songList: midiFilesData.map((mfd: MIDIFileData) => mfd.name),
+      trackList: midiFilesData[0].tracks.map((t: MIDIFileDataTrack) => t.name),
       instrumentList,
       noteNumbers,
+      midiInputs,
+      midiOutputs,
+      midiInputsList: [['none', 'MIDI in'], ...Object.values(midiInputs).map(p => [p.id, p.name])],
+      midiOutputsList: [['none', 'MIDI out'], ...Object.values(midiOutputs).map(p => [p.id, p.name])],
+      connectedMIDIInputs: Object.values(midiInputs).map(p => [p.id, false]),
+      connectedMIDIOutputs: Object.values(midiOutputs).map(p => [p.id, false]),
       renderAction: RenderActions.INIT,
     };
   } else if (action.type === Actions.SELECT_SONG) {
     const songIndex = action.payload.songIndex;
-    const source = state.midiFiles[songIndex] as MIDIFileData;
+    const source = state.midiFilesData[songIndex];
     const timeEvents = source.timeEvents;
     const midiEvents = source.tracks[0].events.filter((e: MIDIEvent) => e.type === 144);
     const unmuted = midiEvents.map((e: MIDIEvent) => `${e.ticks}-${e.noteNumber}`);
@@ -104,7 +119,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       timeEvents,
       allMIDIEvents,
       activeMIDIEventIds,
-      trackList: state.midiFiles[songIndex].tracks.map((t: Track) => t.name),
+      trackList: state.midiFilesData[songIndex].tracks.map((t: MIDIFileDataTrack) => t.name),
       trackIndex: 0,
       grid: {
         numRows,
@@ -120,7 +135,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     };
   } else if (action.type === Actions.SELECT_TRACK) {
     const { trackIndex } = action.payload;
-    const source = state.midiFiles[state.songIndex];
+    const source = state.midiFilesData[state.songIndex];
     const midiEvents = source.tracks[trackIndex].events.filter((e: MIDIEvent) => e.type === 144);
     const unmuted = midiEvents.map((e: MIDIEvent) => `${e.ticks}-${e.noteNumber}`);
     const { numRows, numCols, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createGrid(source, midiEvents, state.granularity);
@@ -294,9 +309,44 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       activeMIDIEventIds,
       renderAction: RenderActions.TRACK,
     }
+  } else if (action.type === Actions.SELECT_MIDI_IN_PORT) {
+    const portId = action.payload.portId;
+    const port = state.midiInputs[portId];
+    const connectedMIDIInputs = state.connectedMIDIInputs.map(data => {
+      if (portId === 'none') {
+        return [data[0], false];
+      }
+      if (data[0] === portId) {
+        return [portId, !isNil(port)]
+      }
+      return data;
+    });
+    return {
+      ...state,
+      connectedMIDIInputs,
+      renderAction: RenderActions.SET_MIDI_IN,
+    }
+  } else if (action.type === Actions.SELECT_MIDI_OUT_PORT) {
+    const portId = action.payload.portId;
+    const port = state.midiOutputs[portId];
+    const connectedMIDIOutputs = state.connectedMIDIOutputs.map(data => {
+      if (portId === 'none') {
+        return [data[0], false];
+      }
+      if (data[0] === portId) {
+        return [portId, !isNil(port)]
+      }
+      return data;
+    });
+    return {
+      ...state,
+      connectedMIDIOutputs,
+      renderAction: RenderActions.SET_MIDI_OUT,
+    }
+  } else {
+    return state;
   }
-  return state;
-};
+}
 
 export {
   song,

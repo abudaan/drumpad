@@ -1,7 +1,7 @@
 // utils used by ./actions/actions.ts
 
 import sequencer from 'heartbeat-sequencer';
-import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config, Track, MIDIFileData } from '../interfaces';
+import { MIDIFileJSON, Instrument, HeartbeatSong, AssetPack, Config, Track, MIDIFileData, InstrumentMapping, MIDIPort, MIDIPortsObject } from '../interfaces';
 import { isNil } from 'ramda';
 
 const status = (response: Response) => {
@@ -92,7 +92,8 @@ const createSongFromMIDIFile2 = (url: string) => loadArrayBuffer(url)
 
 
 // parse config file and load all assets that are listed in the config file
-const parseConfig = async (config: Config): Promise<Array<any>> => new Promise(async (resolve) => {
+type ParseConfig = { instrumentSamplesList: Array<[string, { [id: string]: string }]>, midiInputs: { [id: string]: MIDIPort }, midiOutputs: { [id: string]: MIDIPort } }
+const parseConfig = async (config: Config): Promise<ParseConfig> => new Promise(async (resolve) => {
   if (config.midiFiles) {
     // console.log(config.midiFiles.map(async url => addMIDIFile(url)));
     await Promise.all(config.midiFiles.map(url => addMIDIFile(url)));
@@ -103,8 +104,11 @@ const parseConfig = async (config: Config): Promise<Array<any>> => new Promise(a
     // await Promise.all(aps.map(ap => addAssetPack(ap)));
   }
   const instrument = sequencer.getInstruments()[0];
-  // console.log(sequencer.getInstruments());
-  resolve(Object.entries(instrument.mapping))
+  resolve({
+    instrumentSamplesList: Object.entries(instrument.mapping),
+    midiInputs: sequencer.midiInputs,
+    midiOutputs: sequencer.midiOutputs,
+  })
 });
 
 
