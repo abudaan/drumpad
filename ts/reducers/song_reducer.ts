@@ -1,7 +1,7 @@
 import * as Actions from '../actions/actions';
 import * as RenderActions from '../components/song';
-import { SongState, IAction, Track, MIDIEvent, MIDIFileJSON, MIDIFileData, GridSelectedCells } from '../interfaces';
-import { createGrid, addRow, getSelectedCells, cellIndexToMIDIIndex, updateNoteNumber, cellIndexToMIDIEvent } from '../utils/song_reducer_utils';
+import { SongState, IAction, Track, MIDIEvent, MIDIFileJSON, MIDIFileData, GridSelectedPads } from '../interfaces';
+import { createGrid, addRow, getSelectedPads, padIndexToMIDIIndex, updateNoteNumber, padIndexToMIDIEvent, noteNumberToMIDIEvent } from '../utils/song_reducer_utils';
 
 const songInitialState = {
   grid: {
@@ -53,7 +53,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const { numRows, numCols, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createGrid(source, midiEvents, granularity);
     const unmuted = midiEvents.map((e: MIDIEvent) => `${e.ticks}-${e.noteNumber}`);
     const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
-    const selected = getSelectedCells(midiEvents, granularityTicks, noteNumbers);
+    const selected = getSelectedPads(midiEvents, granularityTicks, noteNumbers);
     return {
       ...state,
       instrumentSamplesList,
@@ -92,7 +92,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const unmuted = midiEvents.map((e: MIDIEvent) => `${e.ticks}-${e.noteNumber}`);
     const { numCols, numRows, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createGrid(source, midiEvents, state.granularity);
     const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
-    const selected = getSelectedCells(midiEvents, granularityTicks, noteNumbers);
+    const selected = getSelectedPads(midiEvents, granularityTicks, noteNumbers);
 
     return {
       ...state,
@@ -125,7 +125,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const unmuted = midiEvents.map((e: MIDIEvent) => `${e.ticks}-${e.noteNumber}`);
     const { numRows, numCols, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createGrid(source, midiEvents, state.granularity);
     const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
-    const selected = getSelectedCells(midiEvents, granularityTicks, noteNumbers);
+    const selected = getSelectedPads(midiEvents, granularityTicks, noteNumbers);
 
     return {
       ...state,
@@ -145,11 +145,11 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       renderAction: RenderActions.TRACK,
     };
   } else if (action.type === Actions.UPDATE_EVENTS) {
-    const data = action.payload.data as GridSelectedCells;
-    const unmuted = Object.entries(data).filter(([key, value]) => value === true).map(([key, value]) => cellIndexToMIDIIndex(key, state.granularityTicks, state.noteNumbers));
+    const data = action.payload.data as GridSelectedPads;
+    const unmuted = Object.entries(data).filter(([key, value]) => value === true).map(([key, value]) => padIndexToMIDIIndex(key, state.granularityTicks, state.noteNumbers));
     const activeMIDIEvents = state.allMIDIEvents.filter((e: MIDIEvent) => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144);
     const activeMIDIEventIds = activeMIDIEvents.map(e => e.id);
-    const selected = getSelectedCells(activeMIDIEvents, state.granularityTicks, state.noteNumbers);
+    const selected = getSelectedPads(activeMIDIEvents, state.granularityTicks, state.noteNumbers);
 
     return {
       ...state,
@@ -185,7 +185,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const noteNumbers = [...state.noteNumbers.filter(n => n !== noteNumber)];
     const activeMIDIEvents = allMIDIEvents.filter((e: MIDIEvent) => state.activeMIDIEventIds.includes(e.id) && e.type === 144);
     const activeMIDIEventIds = activeMIDIEvents.map(e => e.id);
-    const selected = getSelectedCells(activeMIDIEvents, state.granularityTicks, noteNumbers);
+    const selected = getSelectedPads(activeMIDIEvents, state.granularityTicks, noteNumbers);
     const unmuted = state.unmuted.filter(id => parseInt(id.split('-')[1], 10) !== noteNumber);
     return {
       ...state,
@@ -200,8 +200,15 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       unmuted,
       renderAction: RenderActions.UPDATE_EVENTS,
     }
-  } else if (action.type === Actions.PROCESS_MIDI_EVENT) {
-    const midiEvent = cellIndexToMIDIEvent(action.payload.id, action.payload.type, state.noteNumbers);
+  } else if (action.type === Actions.PLAY_SAMPLE) {
+    const midiEvent = noteNumberToMIDIEvent(action.payload.noteNumber, action.payload.type);
+    return {
+      ...state,
+      midiEvent,
+      renderAction: RenderActions.PROCESS_MIDI_EVENT,
+    };
+  } else if (action.type === Actions.PLAY_SAMPLE_FROM_PAD) {
+    const midiEvent = padIndexToMIDIEvent(action.payload.id, action.payload.type, state.noteNumbers);
     return {
       ...state,
       midiEvent,
@@ -273,7 +280,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const { allMIDIEvents, noteNumbers, unmuted } = updateNoteNumber(oldNoteNumber, newNoteNumber, state.allMIDIEvents, state.unmuted, state.noteNumbers);
     const activeMIDIEvents = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144);
     const activeMIDIEventIds = activeMIDIEvents.map(e => e.id);
-    const selected = getSelectedCells(activeMIDIEvents, state.granularityTicks, noteNumbers);
+    const selected = getSelectedPads(activeMIDIEvents, state.granularityTicks, noteNumbers);
     // console.log(activeMIDIEvents, selected)
     return {
       ...state,

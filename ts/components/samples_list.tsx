@@ -37,7 +37,7 @@ class SamplesList extends React.PureComponent {
 
   render() {
     return <div
-      id="samples"
+      id="samples-list"
     >
       {this.props.noteNumbers.map(n => <div key={n} className="cell">
         <select

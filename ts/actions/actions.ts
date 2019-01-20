@@ -1,12 +1,11 @@
 import { Dispatch, Action } from 'redux';
-import { SongPosition, IAction, GridSelectedCells } from '../interfaces';
-import { ChangeEvent, MouseEvent, SyntheticEvent } from 'react';
+import { SongPosition, IAction, GridSelectedPads } from '../interfaces';
+import { ChangeEvent, MouseEvent } from 'react';
 import {
   initSequencer,
   loadJSON,
   parseConfig,
   createMIDIFileList,
-  addEndListener,
   getLoadedInstruments,
   addAssetPack,
   addMIDIFile,
@@ -31,7 +30,8 @@ export const SET_LOOP = 'SET_LOOP';
 export const SELECT_TRACK = 'SELECT_TRACK';
 export const SELECT_SONG = 'SELECT_SONG';
 export const SELECT_INSTRUMENT = 'SELECT_INSTRUMENT';
-export const PROCESS_MIDI_EVENT = 'PLAY_MIDIEVENT';
+export const PLAY_SAMPLE = 'PLAY_SAMPLE';
+export const PLAY_SAMPLE_FROM_PAD = 'PLAY_SAMPLE_FROM_PAD';
 export const ADD_ROW = 'ADD_ROW';
 export const REMOVE_ROW = 'REMOVE_ROW';
 export const SELECT_NOTE_NUMBER = 'SELECT_NOTE_NUMBER';
@@ -161,7 +161,7 @@ export const updatePostion = (position: SongPosition): IAction<any> => ({
   }
 });
 
-export const updateEvents = (data: GridSelectedCells): IAction<any> => ({
+export const updateEvents = (data: GridSelectedPads): IAction<any> => ({
   type: UPDATE_EVENTS,
   payload: {
     data,
@@ -182,8 +182,16 @@ export const updatePosition = (position: SongPosition): IAction<any> => ({
   }
 });
 
-export const processMIDIEvent = (id: string, type: number): IAction<any> => ({
-  type: PROCESS_MIDI_EVENT,
+export const playSample = (noteNumber: number, type: number): IAction<any> => ({
+  type: PLAY_SAMPLE,
+  payload: {
+    noteNumber,
+    type,
+  }
+});
+
+export const playSampleFromPad = (id: string, type: number): IAction<any> => ({
+  type: PLAY_SAMPLE_FROM_PAD,
   payload: {
     id,
     type,
@@ -201,10 +209,31 @@ export const removeRow = (noteNumber: number): IAction<any> => ({
   }
 });
 
-export const selectNoteNumber = (newNoteNumber: number, oldNoteNumber: number): IAction<any> => ({
-  type: SELECT_NOTE_NUMBER,
-  payload: {
-    newNoteNumber,
-    oldNoteNumber,
-  }
-});
+export const selectNoteNumber = (newNoteNumber: number, oldNoteNumber: number) => async (dispatch: Dispatch) => {
+  dispatch({
+    type: SELECT_NOTE_NUMBER,
+    payload: {
+      newNoteNumber,
+      oldNoteNumber,
+    }
+  });
+  dispatch(playSample(newNoteNumber, 144));
+  // send NOTE_OFF for continuous sounds like organ and strings
+  setTimeout(() => {
+    dispatch(playSample(newNoteNumber, 128));
+  }, 700);
+};
+
+// using redux-multi
+// export const selectNoteNumber = (newNoteNumber: number, oldNoteNumber: number) => {
+//   return [
+//     {
+//       type: SELECT_NOTE_NUMBER,
+//       payload: {
+//         newNoteNumber,
+//         oldNoteNumber,
+//       }
+//     },
+//     playSample(newNoteNumber, 144),
+//   ];
+// };

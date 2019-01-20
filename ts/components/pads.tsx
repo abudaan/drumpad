@@ -1,9 +1,9 @@
 import React, { SyntheticEvent } from 'react';
-import { GridType, GridSelectedCells } from '../interfaces';
+import { GridType, GridSelectedPads } from '../interfaces';
 
 interface PropTypes {
-  updateCells: (cells: GridSelectedCells) => void,
-  processMIDIEvent: (id: string, type: number) => void,
+  update: (cells: GridSelectedPads) => void,
+  playSampleFromPad: (id: string, type: number) => void,
   grid: GridType,
   activeColumn: number,
   enabled: boolean,
@@ -15,7 +15,7 @@ interface Pads {
 };
 
 class Pads extends React.PureComponent {
-  dirtyCells: GridSelectedCells
+  dirtyCells: GridSelectedPads
   lastCellIds: Array<null | string>
   hasTouchMoved: boolean
   changed: number
@@ -92,16 +92,14 @@ class Pads extends React.PureComponent {
       id = this.getCellId(event);
     }
     if (this.props.playing === false) {
-      this.props.updateCells(this.dirtyCells);
+      this.props.update(this.dirtyCells);
       this.changed = 0;
-
-      // play MIDI note is song not is playing
-      if (event !== null && id !== null) {
-        if (event.type === 'mousedown' || event.type === 'touchend') {
-          this.props.processMIDIEvent(id, 144);
-        } else {
-          this.props.processMIDIEvent(id, 128);
-        }
+    }
+    if (event !== null && id !== null && this.dirtyCells[id] === true) {
+      if (event.type === 'mousedown' || event.type === 'touchend') {
+        this.props.playSampleFromPad(id, 144);
+      } else {
+        this.props.playSampleFromPad(id, 128);
       }
     }
     e.preventDefault();
@@ -111,7 +109,7 @@ class Pads extends React.PureComponent {
     // perform some caching here in case of dragging / mousmove
     const threshold = 0;// this.hasTouchMoved ? 15 : 0;
     if (this.props.playing && this.changed > threshold) {
-      this.props.updateCells(this.dirtyCells);
+      this.props.update(this.dirtyCells);
       this.changed = 0;
       // this.hasTouchMoved = false;
     }
@@ -120,7 +118,7 @@ class Pads extends React.PureComponent {
 
   dispatchUpdate() {
     if (this.props.playing === false) {
-      this.props.updateCells(this.dirtyCells);
+      this.props.update(this.dirtyCells);
     }
   }
 

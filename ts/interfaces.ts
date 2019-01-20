@@ -229,7 +229,7 @@ export interface SongInfo {
   denominator: number
 }
 
-export interface GridSelectedCells {
+export interface GridSelectedPads {
   [id: string]: boolean
 }
 

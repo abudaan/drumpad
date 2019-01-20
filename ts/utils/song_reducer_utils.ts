@@ -109,13 +109,13 @@ const addRow = (numCols: number, noteNumbers: Array<number>, instrumentNoteNumbe
 };
 
 
-const getSelectedCells = (midiEvents: Array<MIDIEvent>, granularityTicks: number, noteNumbers: Array<number>) => {
-  type CellType = {
+const getSelectedPads = (midiEvents: Array<MIDIEvent>, granularityTicks: number, noteNumbers: Array<number>) => {
+  type PadType = {
     [id: string]: boolean
   };
-  type AccType = CellType | Reduced<CellType>
-  const reducer = (accumulator: CellType, cell: [number, number]): AccType => {
-    accumulator[`${cell[0]}-${cell[1]}`] = true;
+  type AccType = PadType | Reduced<PadType>
+  const reducer = (accumulator: PadType, pad: [number, number]): AccType => {
+    accumulator[`${pad[0]}-${pad[1]}`] = true;
     return accumulator;
   }
   const selected: Array<[number, number]> = midiEvents.map(e => {
@@ -127,19 +127,8 @@ const getSelectedCells = (midiEvents: Array<MIDIEvent>, granularityTicks: number
   return reduce(reducer, {}, selected);
 }
 
-/*
-const sortRows = (numCols: number, granularityTicks: number, cells: Array<GridCellData>): Array<GridCellData> => {
-  const sorted = [];
-  for (let i = 0; i < numCols; i++) {
-    const ticks = i * granularityTicks;
-    const column = cells.filter(c => c.ticks === ticks).sort((a, b) => b.noteNumber - a.noteNumber);
-    sorted.push(...column);
-  }
-  return sorted;
-};
-*/
 
-const cellIndexToMIDIIndex = (key: string, granularityTicks: number, noteNumbers: Array<number>): string => {
+const padIndexToMIDIIndex = (key: string, granularityTicks: number, noteNumbers: Array<number>): string => {
   const converted = key.split('-').map((a): number => parseInt(a, 10));
   const ticks = converted[1] * granularityTicks;
   const noteNumber = noteNumbers[converted[0]];
@@ -148,11 +137,14 @@ const cellIndexToMIDIIndex = (key: string, granularityTicks: number, noteNumbers
 }
 
 
-const cellIndexToMIDIEvent = (key: string, type: number, noteNumbers: Array<number>): MIDIEvent => {
+const padIndexToMIDIEvent = (key: string, type: number, noteNumbers: Array<number>): MIDIEvent => {
   const converted = key.split('-').map((a): number => parseInt(a, 10));
   const noteNumber = noteNumbers[converted[0]];
   return sequencer.createMidiEvent(0, type, noteNumber, type === 144 ? 100 : 0);
 }
+
+
+const noteNumberToMIDIEvent = (noteNumber: number, type: number): MIDIEvent => sequencer.createMidiEvent(0, type, noteNumber, type === 144 ? 100 : 0);
 
 
 type UpdateNoteNumber = { allMIDIEvents: Array<MIDIEvent>, unmuted: Array<string>, noteNumbers: Array<number> };
@@ -209,9 +201,10 @@ const addEndListener = (songList: Array<HeartbeatSong>, action: () => void) => {
 
 
 export {
-  cellIndexToMIDIIndex,
-  cellIndexToMIDIEvent,
-  getSelectedCells,
+  padIndexToMIDIIndex,
+  padIndexToMIDIEvent,
+  noteNumberToMIDIEvent,
+  getSelectedPads,
   createGrid,
   addRow,
   updateNoteNumber,
@@ -219,3 +212,16 @@ export {
   addEndListener,
 };
 
+
+
+/*
+const sortRows = (numCols: number, granularityTicks: number, cells: Array<GridCellData>): Array<GridCellData> => {
+  const sorted = [];
+  for (let i = 0; i < numCols; i++) {
+    const ticks = i * granularityTicks;
+    const column = cells.filter(c => c.ticks === ticks).sort((a, b) => b.noteNumber - a.noteNumber);
+    sorted.push(...column);
+  }
+  return sorted;
+};
+*/

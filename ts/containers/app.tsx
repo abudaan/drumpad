@@ -13,12 +13,12 @@ import {
   play,
   stop,
   updateEvents,
-  processMIDIEvent,
+  playSampleFromPad,
   addRow,
   selectNoteNumber,
   removeRow,
 } from '../actions/actions'
-import { State, SongPosition, GridType, MIDIEvent, GridSelectedCells, MIDINote } from '../interfaces';
+import { State, SongPosition, GridType, MIDIEvent, GridSelectedPads } from '../interfaces';
 import getInstrument from '../reducers/instrument_selector';
 import Pads from '../components/pads';
 import Controls from '../components/controls';
@@ -81,9 +81,9 @@ type PropTypes = {
   stop: (e: React.MouseEvent) => void,
   choosingTempo: (e: React.ChangeEvent) => void,
   updateTempo: (e: React.MouseEvent) => void,
-  updateEvents: (cells: GridSelectedCells) => void,
+  updateEvents: (pads: GridSelectedPads) => void,
   updatePosition: (pos: SongPosition) => void,
-  processMIDIEvent: (id: string, type: number) => void,
+  playSampleFromPad: (id: string, type: number) => void,
   addRow: () => void,
   selectNoteNumber: () => void,
   removeRow: (noteNumber: number) => void,
@@ -145,7 +145,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     selectSong,
     selectInstrument,
     updateEvents,
-    processMIDIEvent,
+    playSampleFromPad,
     addRow,
     selectNoteNumber,
     removeRow,
@@ -198,8 +198,8 @@ class App extends React.PureComponent {
           grid={this.props.grid}
           activeColumn={this.props.activeColumn}
           enabled={this.props.controlsEnabled}
-          updateCells={this.props.updateEvents}
-          processMIDIEvent={this.props.processMIDIEvent}
+          update={this.props.updateEvents}
+          playSampleFromPad={this.props.playSampleFromPad}
           playing={this.props.playing}
         ></Pads>
       </div>

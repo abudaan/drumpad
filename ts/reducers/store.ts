@@ -1,5 +1,6 @@
 import { compose, applyMiddleware, createStore, combineReducers, DeepPartial } from 'redux';
 import { createLogger } from 'redux-logger';
+// import reduxMulti from 'redux-multi';
 import thunkMiddleware from 'redux-thunk'
 import { controls, controlsInitialState } from './controls_reducer';
 import { song, songInitialState } from './song_reducer';
@@ -18,7 +19,8 @@ const getStore = () => {
     compose(
       applyMiddleware(
         thunkMiddleware,
-        // createLogger({ collapsed: true }),
+        // reduxMulti,
+        createLogger({ collapsed: true }),
       ),
     ),
   );

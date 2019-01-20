@@ -13,6 +13,7 @@
     "react-redux": "^6.0.0",
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
+    "redux-multi": "^0.1.12",
     "redux-thunk": "^2.3.0",
     "reset.css": "^2.0.2"
   },
