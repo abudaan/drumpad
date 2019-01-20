@@ -171,6 +171,7 @@ export interface Track {
   events: Array<MIDIEvent>
   needsUpdate: boolean
   partsById: { [id: string]: Part }
+  audioLatency: number
   addPart: (part: Part) => void
   removeEvents: (events: Array<MIDIEvent>) => void
   removeAllEvents: () => void

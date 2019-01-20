@@ -138,6 +138,7 @@ class Song extends React.PureComponent {
     this.part = sequencer.createPart();
     this.part.addEvents(this.props.allMIDIEvents);
     this.track.addPart(this.part);
+    this.track.audioLatency = 200;
     this.song = sequencer.createSong({
       tracks: [this.track],
       timeEvents: this.props.timeEvents,
