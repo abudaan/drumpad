@@ -13,7 +13,7 @@ import {
   play,
   stop,
   updateEvents,
-  playSampleFromPad,
+  playSampleFromCell,
   addRow,
   selectNoteNumber,
   removeRow,
@@ -22,9 +22,9 @@ import {
   updateMIDIOutLatency,
   choosingMIDIOutLatency,
 } from '../actions/actions'
-import { State, SongPosition, GridType, MIDIEvent, GridSelectedPads } from '../interfaces';
+import { State, SongPosition, MatrixType, MIDIEvent, MatricSelectedCells } from '../interfaces';
 import getInstrument from '../reducers/instrument_selector';
-import Pads from '../components/pads';
+import Matrix from '../components/matrix';
 import Controls from '../components/controls';
 import Song from '../components/song';
 import SamplesList from '../components/samples_list';
@@ -57,7 +57,7 @@ type PropTypes = {
   denominator: number,
   position: string,
   sequencerReady: boolean,
-  grid: GridType,
+  matrix: MatrixType,
   trackList: Array<string>,
   songList: Array<string>,
   instrumentList: Array<[number, string]>,
@@ -93,9 +93,9 @@ type PropTypes = {
   choosingMIDIOutLatency: (e: React.ChangeEvent) => void,
   updateTempo: (e: React.MouseEvent) => void,
   updateMIDIOutLatency: (e: React.MouseEvent) => void,
-  updateEvents: (pads: GridSelectedPads) => void,
+  updateEvents: (cells: MatricSelectedCells) => void,
   updatePosition: (pos: SongPosition) => void,
-  playSampleFromPad: (id: string, type: number) => void,
+  playSampleFromCell: (id: string, type: number) => void,
   addRow: () => void,
   selectNoteNumber: () => void,
   removeRow: (noteNumber: number) => void,
@@ -114,7 +114,7 @@ const mapStateToProps = (state: State) => {
     denominator: state.song.denominator,
     position: state.song.barsAsString,
     sequencerReady: state.song.sequencerReady,
-    grid: state.song.grid,
+    matrix: state.song.matrix,
     updateInterval: state.song.updateInterval,
     trackList: state.song.trackList,
     instrumentList: state.song.instrumentList,
@@ -165,7 +165,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     selectSong,
     selectInstrument,
     updateEvents,
-    playSampleFromPad,
+    playSampleFromCell,
     addRow,
     selectNoteNumber,
     removeRow,
@@ -217,21 +217,21 @@ class App extends React.PureComponent {
       >
       </Controls>
 
-      <div id="pads-container">
+      <div id="matrix-container">
         <SamplesList
           removeRow={this.props.removeRow}
           selectNoteNumber={this.props.selectNoteNumber}
           noteNumbers={this.props.noteNumbers}
           instrumentNoteNumbers={this.props.instrumentNoteNumbers}
         />
-        <Pads
-          grid={this.props.grid}
+        <Matrix
+          matrix={this.props.matrix}
           activeColumn={this.props.activeColumn}
           enabled={this.props.controlsEnabled}
           update={this.props.updateEvents}
-          playSampleFromPad={this.props.playSampleFromPad}
+          playSampleFromCell={this.props.playSampleFromCell}
           playing={this.props.playing}
-        ></Pads>
+        ></Matrix>
       </div>
 
       { this.props.sequencerReady === true && 

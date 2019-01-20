@@ -1,21 +1,21 @@
 import React, { SyntheticEvent } from 'react';
-import { GridType, GridSelectedPads } from '../interfaces';
+import { MatrixType, MatricSelectedCells } from '../interfaces';
 
 interface PropTypes {
-  update: (cells: GridSelectedPads) => void,
-  playSampleFromPad: (id: string, type: number) => void,
-  grid: GridType,
+  update: (cells: MatricSelectedCells) => void,
+  playSampleFromCell: (id: string, type: number) => void,
+  matrix: MatrixType,
   activeColumn: number,
   enabled: boolean,
   playing: boolean,
 };
 
-interface Pads {
+interface Matrix {
   props: PropTypes,
 };
 
-class Pads extends React.PureComponent {
-  dirtyCells: GridSelectedPads
+class Matrix extends React.PureComponent {
+  dirtyCells: MatricSelectedCells
   lastCellIds: Array<null | string>
   hasTouchMoved: boolean
   changed: number
@@ -97,9 +97,9 @@ class Pads extends React.PureComponent {
     }
     if (event !== null && id !== null && this.dirtyCells[id] === true) {
       if (event.type === 'mousedown' || event.type === 'touchend') {
-        this.props.playSampleFromPad(id, 144);
+        this.props.playSampleFromCell(id, 144);
       } else {
-        this.props.playSampleFromPad(id, 128);
+        this.props.playSampleFromCell(id, 128);
       }
     }
     e.preventDefault();
@@ -123,8 +123,8 @@ class Pads extends React.PureComponent {
   }
 
   render() {
-    const numCols = this.props.grid.numCols;
-    const numRows = this.props.grid.numRows;
+    const numCols = this.props.matrix.numCols;
+    const numRows = this.props.matrix.numRows;
     const columns = [];
     let i = 0;
     for (let c = 0; c < numCols; c++) {
@@ -134,7 +134,7 @@ class Pads extends React.PureComponent {
         const classNames = ['cell'];
         const id: string = `${r}-${c}`;
         this.dirtyCells[id] = false;
-        if (this.props.grid.selected[id] === true) {
+        if (this.props.matrix.selected[id] === true) {
           classNames.push('selected');
           this.dirtyCells[id] = true;
         }
@@ -161,7 +161,7 @@ class Pads extends React.PureComponent {
     }
     return (
       <div
-        id="pads"
+        id="matrix"
         onTouchStartCapture={this.onCellClick.bind(this)}
         onTouchMoveCapture={this.onCellClick.bind(this)}
         onTouchEndCapture={this.onCellClick.bind(this)}
@@ -174,4 +174,4 @@ class Pads extends React.PureComponent {
   }
 }
 
-export default Pads;
+export default Matrix;

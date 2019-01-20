@@ -6,7 +6,7 @@ export interface SongState {
   bpm: number
   nominator: number
   denominator: number
-  grid: GridType
+  matrix: MatrixType
   midiFilesData: Array<MIDIFileData>
   trackList: Array<Track>
   instrumentList: Array<[number, string]>
@@ -259,11 +259,11 @@ export interface SongInfo {
   denominator: number
 }
 
-export interface GridSelectedPads {
+export interface MatricSelectedCells {
   [id: string]: boolean
 }
 
-export type GridType = {
+export type MatrixType = {
   selected: { [id: string]: boolean }
   numRows: number
   numCols: number

@@ -1,11 +1,11 @@
 import { isNil } from 'ramda';
 import * as Actions from '../actions/actions';
 import * as RenderActions from '../components/song';
-import { SongState, IAction, Track, MIDIEvent, MIDIFileJSON, MIDIFileData, GridSelectedPads, MIDIFileDataTrack } from '../interfaces';
-import { createGrid, addRow, getSelectedPads, padIndexToMIDIIndex, updateNoteNumber, padIndexToMIDIEvent, noteNumberToMIDIEvent } from '../utils/song_reducer_utils';
+import { SongState, IAction, Track, MIDIEvent, MIDIFileJSON, MIDIFileData, MatricSelectedCells, MIDIFileDataTrack } from '../interfaces';
+import { createMatrix, addRow, getSelectedCells, cellIdToTicksAndNoteNumber, updateNoteNumber, cellIdToMIDIEvent, noteNumberToMIDIEvent } from '../utils/song_reducer_utils';
 
 const songInitialState = {
-  grid: {
+  matrix: {
     numRows: 0,
     numCols: 0,
     selected: {},
@@ -59,10 +59,10 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const source = midiFilesData[0] as MIDIFileData;
     const timeEvents = source.timeEvents;
     const midiEvents = source.tracks[0].events.filter((e: MIDIEvent) => e.type === 144);
-    const { numRows, numCols, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createGrid(source, midiEvents, granularity);
+    const { numRows, numCols, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createMatrix(source, midiEvents, granularity);
     const unmuted = midiEvents.map((e: MIDIEvent) => `${e.ticks}-${e.noteNumber}`);
     const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
-    const selected = getSelectedPads(midiEvents, granularityTicks, noteNumbers);
+    const selected = getSelectedCells(midiEvents, granularityTicks, noteNumbers);
     return {
       ...state,
       instrumentSamplesList,
@@ -73,7 +73,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       nominator: source.nominator,
       denominator: source.denominator,
       song,
-      grid: {
+      matrix: {
         numRows,
         numCols,
         selected,
@@ -105,9 +105,9 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const timeEvents = source.timeEvents;
     const midiEvents = source.tracks[0].events.filter((e: MIDIEvent) => e.type === 144);
     const unmuted = midiEvents.map((e: MIDIEvent) => `${e.ticks}-${e.noteNumber}`);
-    const { numCols, numRows, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createGrid(source, midiEvents, state.granularity);
+    const { numCols, numRows, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createMatrix(source, midiEvents, state.granularity);
     const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
-    const selected = getSelectedPads(midiEvents, granularityTicks, noteNumbers);
+    const selected = getSelectedCells(midiEvents, granularityTicks, noteNumbers);
 
     return {
       ...state,
@@ -121,7 +121,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       activeMIDIEventIds,
       trackList: state.midiFilesData[songIndex].tracks.map((t: MIDIFileDataTrack) => t.name),
       trackIndex: 0,
-      grid: {
+      matrix: {
         numRows,
         numCols,
         selected,
@@ -138,14 +138,14 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const source = state.midiFilesData[state.songIndex];
     const midiEvents = source.tracks[trackIndex].events.filter((e: MIDIEvent) => e.type === 144);
     const unmuted = midiEvents.map((e: MIDIEvent) => `${e.ticks}-${e.noteNumber}`);
-    const { numRows, numCols, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createGrid(source, midiEvents, state.granularity);
+    const { numRows, numCols, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createMatrix(source, midiEvents, state.granularity);
     const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
-    const selected = getSelectedPads(midiEvents, granularityTicks, noteNumbers);
+    const selected = getSelectedCells(midiEvents, granularityTicks, noteNumbers);
 
     return {
       ...state,
       trackIndex,
-      grid: {
+      matrix: {
         numRows,
         numCols,
         selected,
@@ -160,16 +160,16 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       renderAction: RenderActions.TRACK,
     };
   } else if (action.type === Actions.UPDATE_EVENTS) {
-    const data = action.payload.data as GridSelectedPads;
-    const unmuted = Object.entries(data).filter(([key, value]) => value === true).map(([key, value]) => padIndexToMIDIIndex(key, state.granularityTicks, state.noteNumbers));
+    const data = action.payload.data as MatricSelectedCells;
+    const unmuted = Object.entries(data).filter(([key, value]) => value === true).map(([key, value]) => cellIdToTicksAndNoteNumber(key, state.granularityTicks, state.noteNumbers));
     const activeMIDIEvents = state.allMIDIEvents.filter((e: MIDIEvent) => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144);
     const activeMIDIEventIds = activeMIDIEvents.map(e => e.id);
-    const selected = getSelectedPads(activeMIDIEvents, state.granularityTicks, state.noteNumbers);
+    const selected = getSelectedCells(activeMIDIEvents, state.granularityTicks, state.noteNumbers);
 
     return {
       ...state,
-      grid: {
-        ...state.grid,
+      matrix: {
+        ...state.matrix,
         selected,
       },
       unmuted,
@@ -180,12 +180,12 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const {
       midiEvents,
       noteNumbers,
-    } = addRow(state.grid.numCols, state.noteNumbers, state.instrumentNoteNumbers, state.granularityTicks);
+    } = addRow(state.matrix.numCols, state.noteNumbers, state.instrumentNoteNumbers, state.granularityTicks);
     return {
       ...state,
-      grid: {
-        ...state.grid,
-        numRows: state.grid.numRows + 1,
+      matrix: {
+        ...state.matrix,
+        numRows: state.matrix.numRows + 1,
       },
       allMIDIEvents: [
         ...state.allMIDIEvents,
@@ -200,13 +200,13 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const noteNumbers = [...state.noteNumbers.filter(n => n !== noteNumber)];
     const activeMIDIEvents = allMIDIEvents.filter((e: MIDIEvent) => state.activeMIDIEventIds.includes(e.id) && e.type === 144);
     const activeMIDIEventIds = activeMIDIEvents.map(e => e.id);
-    const selected = getSelectedPads(activeMIDIEvents, state.granularityTicks, noteNumbers);
+    const selected = getSelectedCells(activeMIDIEvents, state.granularityTicks, noteNumbers);
     const unmuted = state.unmuted.filter(id => parseInt(id.split('-')[1], 10) !== noteNumber);
     return {
       ...state,
-      grid: {
-        ...state.grid,
-        numRows: state.grid.numRows - 1,
+      matrix: {
+        ...state.matrix,
+        numRows: state.matrix.numRows - 1,
         selected,
       },
       activeMIDIEventIds,
@@ -222,8 +222,8 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
       midiEvent,
       renderAction: RenderActions.PROCESS_MIDI_EVENT,
     };
-  } else if (action.type === Actions.PLAY_SAMPLE_FROM_PAD) {
-    const midiEvent = padIndexToMIDIEvent(action.payload.id, action.payload.type, state.noteNumbers);
+  } else if (action.type === Actions.PLAY_SAMPLE_FROM_CELL) {
+    const midiEvent = cellIdToMIDIEvent(action.payload.id, action.payload.type, state.noteNumbers);
     return {
       ...state,
       midiEvent,
@@ -295,13 +295,13 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const { allMIDIEvents, noteNumbers, unmuted } = updateNoteNumber(oldNoteNumber, newNoteNumber, state.allMIDIEvents, state.unmuted, state.noteNumbers);
     const activeMIDIEvents = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144);
     const activeMIDIEventIds = activeMIDIEvents.map(e => e.id);
-    const selected = getSelectedPads(activeMIDIEvents, state.granularityTicks, noteNumbers);
+    const selected = getSelectedCells(activeMIDIEvents, state.granularityTicks, noteNumbers);
     // console.log(activeMIDIEvents, selected)
     return {
       ...state,
       unmuted,
-      grid: {
-        ...state.grid,
+      matrix: {
+        ...state.matrix,
         selected,
       },
       noteNumbers,

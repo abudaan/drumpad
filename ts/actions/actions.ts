@@ -1,5 +1,5 @@
 import { Dispatch, Action } from 'redux';
-import { SongPosition, IAction, GridSelectedPads, MIDIPortsObject, Config, MIDIFileData } from '../interfaces';
+import { SongPosition, IAction, MatricSelectedCells, MIDIPortsObject, Config, MIDIFileData } from '../interfaces';
 import { ChangeEvent, MouseEvent } from 'react';
 import {
   initSequencer,
@@ -33,7 +33,7 @@ export const SELECT_TRACK = 'SELECT_TRACK';
 export const SELECT_SONG = 'SELECT_SONG';
 export const SELECT_INSTRUMENT = 'SELECT_INSTRUMENT';
 export const PLAY_SAMPLE = 'PLAY_SAMPLE';
-export const PLAY_SAMPLE_FROM_PAD = 'PLAY_SAMPLE_FROM_PAD';
+export const PLAY_SAMPLE_FROM_CELL = 'PLAY_SAMPLE_FROM_CELL';
 export const ADD_ROW = 'ADD_ROW';
 export const REMOVE_ROW = 'REMOVE_ROW';
 export const SELECT_NOTE_NUMBER = 'SELECT_NOTE_NUMBER';
@@ -197,7 +197,7 @@ export const updatePostion = (position: SongPosition): IAction<any> => ({
   }
 });
 
-export const updateEvents = (data: GridSelectedPads): IAction<any> => ({
+export const updateEvents = (data: MatricSelectedCells): IAction<any> => ({
   type: UPDATE_EVENTS,
   payload: {
     data,
@@ -226,8 +226,8 @@ export const playSample = (noteNumber: number, type: number): IAction<any> => ({
   }
 });
 
-export const playSampleFromPad = (id: string, type: number): IAction<any> => ({
-  type: PLAY_SAMPLE_FROM_PAD,
+export const playSampleFromCell = (id: string, type: number): IAction<any> => ({
+  type: PLAY_SAMPLE_FROM_CELL,
   payload: {
     id,
     type,

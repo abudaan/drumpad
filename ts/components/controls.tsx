@@ -131,7 +131,8 @@ class Controls extends React.PureComponent {
           if (
             e.nativeEvent.target === document.getElementById('controls') ||
             e.nativeEvent.target === document.getElementById('container') ||
-            e.nativeEvent.target === document.getElementById('grid')
+            e.nativeEvent.target === document.getElementById('matrix') ||
+            e.nativeEvent.target === document.getElementById('samples-list')
           ) {
             e.preventDefault();
           }
