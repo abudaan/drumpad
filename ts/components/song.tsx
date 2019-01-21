@@ -1,6 +1,6 @@
 import React from 'react';
 import sequencer from 'heartbeat-sequencer';
-import { HeartbeatSong, MIDIEvent, SongPosition, Track, Part } from '../interfaces';
+import { HeartbeatSong, MIDIEvent, SongPosition, Track, Part, MIDIPortsObject } from '../interfaces';
 
 // render actions
 export const PASS = 'PASS';
@@ -47,8 +47,10 @@ export type SongPropTypes = {
   activeMIDIEventIds: Array<string>,
   connectedMIDIInputs: Array<[string, boolean]>
   connectedMIDIOutputs: Array<[string, boolean]>
+  midiInputs: MIDIPortsObject,
   midiOutLatency: number,
   updatePosition: (pos: SongPosition) => void,
+  handleIncomingMIDIMessage: (m: WebMidi.MIDIMessageEvent) => void,
 };
 
 class Song extends React.PureComponent {
@@ -119,14 +121,18 @@ class Song extends React.PureComponent {
 
       case SET_MIDI_IN:
         this.props.connectedMIDIInputs.forEach(item => {
-          // console.log(item);
           this.track.setMidiInput(item[0], item[1]);
+          const port = this.props.midiInputs[item[0]];
+          if (item[1] === true) {
+            port.addEventListener('midimessage', this.props.handleIncomingMIDIMessage);
+          } else {
+            port.removeEventListener('midimessage', this.props.handleIncomingMIDIMessage);
+          }
         })
         break;
 
       case SET_MIDI_OUT:
         this.props.connectedMIDIOutputs.forEach(item => {
-          // console.log(item);
           this.track.setMidiOutput(item[0], item[1]);
         })
         break;
@@ -144,6 +150,7 @@ class Song extends React.PureComponent {
     this.part = sequencer.createPart();
     this.part.addEvents(this.props.allMIDIEvents);
     this.track.addPart(this.part);
+    this.track.monitor = true;
     this.song = sequencer.createSong({
       tracks: [this.track],
       timeEvents: this.props.timeEvents,

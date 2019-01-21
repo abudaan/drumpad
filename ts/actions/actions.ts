@@ -38,6 +38,7 @@ export const REMOVE_ROW = 'REMOVE_ROW';
 export const SELECT_NOTE_NUMBER = 'SELECT_NOTE_NUMBER';
 export const SELECT_MIDI_IN_PORT = 'SELECT_MIDI_IN_PORT';
 export const SELECT_MIDI_OUT_PORT = 'SELECT_MIDI_OUT_PORT';
+export const HANDLE_INCOMING_MIDI_MESSAGE = 'HANDLE_INCOMING_MIDI_MESSAGE';
 
 
 export interface LoadConfigPayload extends Config {
@@ -286,3 +287,11 @@ export const selectMIDIOutPort = (portId: string) => ({
     portId,
   }
 });
+
+
+export const handleIncomingMIDIMessage = (midiMessage: WebMidi.MIDIMessageEvent) =>({
+  type: HANDLE_INCOMING_MIDI_MESSAGE,
+  payload: {
+    midiMessage,
+  }
+})

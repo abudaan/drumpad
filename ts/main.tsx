@@ -4,6 +4,8 @@ import { Provider } from 'react-redux';
 import getStore from './reducers/store';
 import App from './containers/app';
 
+// see: 
+const JZZ = require('jzz');
 const store = getStore();
 
 render(

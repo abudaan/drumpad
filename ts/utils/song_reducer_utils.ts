@@ -128,6 +128,19 @@ const getSelectedCells = (midiEvents: Array<MIDIEvent>, granularityTicks: number
 }
 
 
+const getActiveCells = (noteNumber: number, noteNumbers: Array<number>, numCols: number, numRows: number): { [id: string]: boolean } => {
+  const active: {[id: string]: boolean} = {};
+  const index = noteNumbers.indexOf(noteNumber);
+  for (let r = 0; r < numRows; r++) {
+    for (let c = 0; c < numCols; c++) {
+      active[`${r}-${c}`] = index === r;
+    }
+  }
+  // console.log(noteNumber, index, noteNumbers, active);
+  return active;
+}
+
+
 const cellIdToTicksAndNoteNumber = (key: string, granularityTicks: number, noteNumbers: Array<number>): string => {
   const converted = key.split('-').map((a): number => parseInt(a, 10));
   const ticks = converted[1] * granularityTicks;
@@ -229,6 +242,7 @@ export {
   cellIdToMIDIEvent,
   noteNumberToMIDIEvent,
   getSelectedCells,
+  getActiveCells,
   createMatrix,
   addRow,
   updateNoteNumber,

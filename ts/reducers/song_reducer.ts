@@ -2,13 +2,16 @@ import { isNil } from 'ramda';
 import * as Actions from '../actions/actions';
 import * as RenderActions from '../components/song';
 import { SongState, IAction, Track, MIDIEvent, MIDIFileData, MatricSelectedCells, MIDIFileDataTrack } from '../interfaces';
-import { createMatrix, addRow, getSelectedCells, cellIdToTicksAndNoteNumber, updateNoteNumber, cellIdToMIDIEvent, noteNumberToMIDIEvent, getInstrumentData } from '../utils/song_reducer_utils';
+import { createMatrix, addRow, getSelectedCells, cellIdToTicksAndNoteNumber, updateNoteNumber, cellIdToMIDIEvent, noteNumberToMIDIEvent, getInstrumentData, getActiveCells } from '../utils/song_reducer_utils';
+import grid_selector from '../not in use/grid_selector';
+import Matrix from '../components/matrix';
 
 const songInitialState = {
   matrix: {
     numRows: 0,
     numCols: 0,
     selected: {},
+    active: {},
   },
   os: 'unknown',
   ppq: 960,
@@ -66,6 +69,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const unmuted = midiEvents.map((e: MIDIEvent) => `${e.ticks}-${e.noteNumber}`);
     const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
     const selected = getSelectedCells(midiEvents, granularityTicks, noteNumbers);
+    const active = getActiveCells(-1, state.noteNumbers, numCols, numRows);
     return {
       ...state,
       instruments,
@@ -81,6 +85,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
         numRows,
         numCols,
         selected,
+        active,
       },
       unmuted,
       midiFilesData,
@@ -112,6 +117,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const { numCols, numRows, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createMatrix(source, midiEvents, state.granularity);
     const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
     const selected = getSelectedCells(midiEvents, granularityTicks, noteNumbers);
+    const active = getActiveCells(-1, state.noteNumbers, numCols, numRows);
     return {
       ...state,
       ppq: source.ppq,
@@ -128,6 +134,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
         numRows,
         numCols,
         selected,
+        active,
       },
       unmuted,
       granularity: newGranularity,
@@ -144,6 +151,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     const { numRows, numCols, granularity: newGranularity, updateInterval, granularityTicks, allMIDIEvents, noteNumbers } = createMatrix(source, midiEvents, state.granularity);
     const activeMIDIEventIds = allMIDIEvents.filter(e => unmuted.indexOf(`${e.ticks}-${e.noteNumber}`) !== -1 && e.type === 144).map(e => e.id);
     const selected = getSelectedCells(midiEvents, granularityTicks, noteNumbers);
+    const active = getActiveCells(-1, state.noteNumbers, numCols, numRows);
     return {
       ...state,
       trackIndex,
@@ -151,6 +159,7 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
         numRows,
         numCols,
         selected,
+        active,
       },
       unmuted,
       granularity: newGranularity,
@@ -351,6 +360,17 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
     return {
       ...state,
       renderAction: RenderActions.SET_MIDI_OUT_LATENCY,
+    };
+  } else if (action.type === Actions.HANDLE_INCOMING_MIDI_MESSAGE) {
+    const m = action.payload.midiMessage as WebMidi.MIDIMessageEvent;
+    const type = m.data[0];
+    const noteNumber = type === 128 ? -1 : m.data[1];
+    return {
+      ...state,
+      matrix: {
+        ...state.matrix,
+        active: getActiveCells(noteNumber, state.noteNumbers, state.matrix.numCols, state.matrix.numRows),
+      }
     };
   } else {
     return state;

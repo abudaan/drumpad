@@ -176,6 +176,7 @@ export interface Track {
   needsUpdate: boolean
   partsById: { [id: string]: Part }
   audioLatency: number
+  monitor: boolean
   addPart: (part: Part) => void
   removeEvents: (events: Array<MIDIEvent>) => void
   removeAllEvents: () => void
@@ -201,14 +202,16 @@ export interface AssetPack {
 }
 
 export interface MIDIPort {
-  id: string,
-  connection: string,
-  manufacturer: string,
-  name: string,
-  state: string,
-  type: string,
-  verions: string,
-  onstatechange: () => {},
+  id: string
+  connection: string
+  manufacturer: string
+  name: string
+  state: string
+  type: string
+  verions: string
+  onstatechange: () => void
+  addEventListener: (type: string, callback: (m: WebMidi.MIDIMessageEvent) => void) => void
+  removeEventListener: (type: string, callback: (m: WebMidi.MIDIMessageEvent) => void) => void
 }
 
 export interface MIDIPortsObject {
@@ -267,6 +270,7 @@ export interface MatricSelectedCells {
 
 export type MatrixType = {
   selected: { [id: string]: boolean }
+  active: { [id: string]: boolean }
   numRows: number
   numCols: number
 }

@@ -21,8 +21,9 @@ import {
   selectMIDIOutPort,
   updateMIDIOutLatency,
   choosingMIDIOutLatency,
+  handleIncomingMIDIMessage,
 } from '../actions/actions'
-import { State, SongPosition, MatrixType, MIDIEvent, MatricSelectedCells } from '../interfaces';
+import { State, SongPosition, MatrixType, MIDIEvent, MatricSelectedCells, MIDIPortsObject } from '../interfaces';
 import getInstrument from '../reducers/instrument_selector';
 import Matrix from '../components/matrix';
 import Controls from '../components/controls';
@@ -77,6 +78,7 @@ type PropTypes = {
   midiOutputsList: Array<[string, string]>,
   connectedMIDIInputs: Array<[string, boolean]>,
   connectedMIDIOutputs: Array<[string, boolean]>,
+  midiInputs: MIDIPortsObject,
 
   // from instrument_selector
   instrumentName: string,
@@ -101,6 +103,7 @@ type PropTypes = {
   removeRow: (noteNumber: number) => void,
   selectMIDIInPort: (portId: string) => void,
   selectMIDIOutPort: (portId: string) => void,
+  handleIncomingMIDIMessage: (m: WebMidi.MIDIMessageEvent) => void,
 };
 
 const mapStateToProps = (state: State) => {
@@ -134,6 +137,7 @@ const mapStateToProps = (state: State) => {
     midiOutputsList: state.song.midiOutputsList,
     connectedMIDIInputs: state.song.connectedMIDIInputs,
     connectedMIDIOutputs: state.song.connectedMIDIOutputs,
+    midiInputs: state.song.midiInputs,
 
     // from controls_reducer
     trackIndex: state.controls.trackIndex,
@@ -173,6 +177,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     selectMIDIOutPort,
     updateMIDIOutLatency,
     choosingMIDIOutLatency,
+    handleIncomingMIDIMessage,
   }, dispatch);
 }
 
@@ -258,6 +263,8 @@ class App extends React.PureComponent {
         connectedMIDIInputs={this.props.connectedMIDIInputs}
         connectedMIDIOutputs={this.props.connectedMIDIOutputs}
         midiOutLatency={this.props.midiOutLatency}
+        midiInputs={this.props.midiInputs}
+        handleIncomingMIDIMessage={this.props.handleIncomingMIDIMessage}
       >
       </Song>}
     </div>

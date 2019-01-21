@@ -757,6 +757,11 @@
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-5.5.0.tgz#146c2a29ee7d3bae4bf2fcb274636e264c813c45"
   integrity sha512-41qEJgBH/TWgo5NFSvBCJ1qkoi3Q6ONSF2avrHq1LVEZfYpdHmj0y9SuTK+u9ZhG1sYQKBL1AWXKyLWP4RaUoQ==
 
+"@types/webmidi@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@types/webmidi/-/webmidi-2.0.2.tgz#0466cf747aaed2b914a1e2564635bbda217cb256"
+  integrity sha512-m/5kolDeFVi/tiE2OFaj0KCfz1mfefBh7MZ1RXowd8hP455b0qkkeOLUhjXK0fDDU+e8WKVJ7EP+NG8+LwCghA==
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
@@ -3129,10 +3134,10 @@ hash.js@^1.0.0, hash.js@^1.0.3:
     inherits "^2.0.3"
     minimalistic-assert "^1.0.1"
 
-heartbeat-sequencer@^0.0.11:
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/heartbeat-sequencer/-/heartbeat-sequencer-0.0.11.tgz#c5464e094218924c5c81d8f9b64fe4ec2c3a7afe"
-  integrity sha512-QS4zw7OaIiVp/R42mOYBBTFGrljWF/E07OBaAr2ZkD3G3XlqniTIOVA6zZuxr+l6BSuYziZ/iiXj5pN6gtTobQ==
+heartbeat-sequencer@^0.0.12:
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/heartbeat-sequencer/-/heartbeat-sequencer-0.0.12.tgz#9ed97bd929317853c2ae584dfde575ce0f349b2b"
+  integrity sha512-sNeKb1d6eBVKw9B8/AqFNHgWy8/zGIXb2h4j46eiT/MXVm9FCnd5eXPqTGFbMgMl/r4GK/8fF9C0iEAq/jvbCg==
 
 hex-color-regex@^1.1.0:
   version "1.1.0"
@@ -3533,6 +3538,11 @@ isobject@^3.0.0, isobject@^3.0.1:
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
   integrity sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
 
+jazz-midi@^1.6.7:
+  version "1.6.7"
+  resolved "https://registry.yarnpkg.com/jazz-midi/-/jazz-midi-1.6.7.tgz#8e8da4eb4be2dfe75f515799ad66105f9ecc956c"
+  integrity sha512-b7UuvlFQ+KherGIPrFv+XMKWNTy3FZvpEGGr+3LdzA2VMg46V9ynDGflZJ0hFMnMHFemFihWCfKOWS1Z2vGotA==
+
 js-base64@^2.1.9:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.5.0.tgz#42255ba183ab67ce59a0dee640afdc00ab5ae93e"
@@ -3618,6 +3628,13 @@ json5@^2.1.0:
   integrity sha512-8Mh9h6xViijj36g7Dxi+Y4S6hNGV96vcJZr/SrlHh1LR/pEn/8j/+qIBbs44YKl69Lrfctp4QD+AdWLTMqEZAQ==
   dependencies:
     minimist "^1.2.0"
+
+jzz@^0.6.6:
+  version "0.6.6"
+  resolved "https://registry.yarnpkg.com/jzz/-/jzz-0.6.6.tgz#92f10cb149dcfab67f125f6a0eec56a8dd382e57"
+  integrity sha512-Rx0ICIJfiZnXTGxY/h+IYn7lXTNzcw9Acog8HpelPSrcqo5OjOmReeE7eGWonqN+QZrZ3RcD6wGy9L8f+lrfZw==
+  dependencies:
+    jazz-midi "^1.6.7"
 
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
   version "3.2.2"

@@ -138,6 +138,9 @@ class Matrix extends React.PureComponent {
           classNames.push('selected');
           this.dirtyCells[id] = true;
         }
+        if (this.props.matrix.active[id] === true) {
+          classNames.push('active');
+        }
 
         // add Cell.tsx back in so you can highlight the cells that are hovered / dragged
         rows.push(
