@@ -7,7 +7,7 @@
     "@types/ramda": "^0.25.46",
     "@types/redux-thunk": "^2.1.0",
     "@types/webmidi": "^2.0.2",
-    "heartbeat-sequencer": "^0.0.12",
+    "heartbeat-sequencer": "^0.0.13",
     "jzz": "^0.6.6",
     "ramda": "^0.26.1",
     "react": "^16.7.0",

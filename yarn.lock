@@ -3134,10 +3134,10 @@ hash.js@^1.0.0, hash.js@^1.0.3:
     inherits "^2.0.3"
     minimalistic-assert "^1.0.1"
 
-heartbeat-sequencer@^0.0.12:
-  version "0.0.12"
-  resolved "https://registry.yarnpkg.com/heartbeat-sequencer/-/heartbeat-sequencer-0.0.12.tgz#9ed97bd929317853c2ae584dfde575ce0f349b2b"
-  integrity sha512-sNeKb1d6eBVKw9B8/AqFNHgWy8/zGIXb2h4j46eiT/MXVm9FCnd5eXPqTGFbMgMl/r4GK/8fF9C0iEAq/jvbCg==
+heartbeat-sequencer@^0.0.13:
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/heartbeat-sequencer/-/heartbeat-sequencer-0.0.13.tgz#5b8fea00cd98b239fe75a90a0c75787b2187150a"
+  integrity sha512-1t/AX64u8B5uMQ+naZcVCoMsedGo0g0vwsEjoMU2l8bT/y1jW/pWGv+ibB8TxCnVDrtevnhWbG2fN37uDP4EmQ==
 
 hex-color-regex@^1.1.0:
   version "1.1.0"
