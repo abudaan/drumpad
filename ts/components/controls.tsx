@@ -20,10 +20,10 @@ type PropTypes = {
   midiOutputsList: Array<[string, string]>,
   midiOutLatencyTmp: number,
 
-  choosingTempo: (event: React.ChangeEvent) => void,
-  updateTempo: (event: React.MouseEvent) => void,
-  choosingMIDIOutLatency: (event: React.ChangeEvent) => void,
-  updateMIDIOutLatency: (event: React.MouseEvent) => void,
+  choosingTempo: (event: React.ChangeEvent<HTMLInputElement>) => void,
+  updateTempo: (event: React.FormEvent<HTMLInputElement>) => void,
+  choosingMIDIOutLatency: (event: React.ChangeEvent<HTMLInputElement>) => void,
+  updateMIDIOutLatency: (event: React.FormEvent<HTMLInputElement>) => void,
   play: (event: React.MouseEvent) => void,
   stop: (event: React.MouseEvent) => void,
   setLoop: (loop: boolean) => void,
@@ -159,7 +159,7 @@ class Controls extends React.PureComponent {
           max={this.props.maxTempo}
           label="tempo"
           value={this.props.tempoTmp}
-          onMouseUp={this.props.updateTempo}
+          onInput={this.props.updateTempo}
           onChange={this.props.choosingTempo}
           disabled={!this.props.enabled}
         />
@@ -180,7 +180,7 @@ class Controls extends React.PureComponent {
           max={1000}
           label="latency"
           value={this.props.midiOutLatencyTmp}
-          onMouseUp={this.props.updateMIDIOutLatency}
+          onInput={this.props.updateMIDIOutLatency}
           onChange={this.props.choosingMIDIOutLatency}
           disabled={!this.props.enabled}
         />

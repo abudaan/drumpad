@@ -1,39 +1,39 @@
-import React, { ChangeEvent, MouseEvent } from 'react'
+import React from 'react'
 
-interface PropTypes {
+interface PropsType {
   max: number,
   min: number,
   value: number
   id?: string,
   label?: string,
-  onChange: (event: ChangeEvent) => void,
-  onMouseDown?: (event: MouseEvent) => void,
-  onMouseUp?: (event: MouseEvent) => void,
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void, // move slider thumb
+  onInput: (event: React.FormEvent<HTMLInputElement>) => void, // release slider thumb
   step?: number,
   type?: string,
   disabled: boolean,
 };
 
 interface Slider {
-  props: PropTypes,
+  props: PropsType,
 };
 
 
 /* React wrapper for input type Range */
-class Slider extends React.PureComponent{
+class Slider extends React.PureComponent {
   static defaultProps = {
     step: 1,
   }
-  render(){
+
+  render() {
     let value = this.props.value
     let id = this.props.id || `slider-${Date.now()}`;
 
-    function createLabel(props:PropTypes){
+    function createLabel(props: PropsType) {
       let label = `${value}`;
-      if(props.label){
+      if (props.label) {
         label = props.label + ': <em>' + value + '</em>'
       }
-      return {__html: label}
+      return { __html: label }
     }
 
     return (
@@ -48,8 +48,8 @@ class Slider extends React.PureComponent{
           max={this.props.max}
           step={this.props.step}
           onChange={this.props.onChange}
-          onMouseUp={this.props.onMouseUp}
-          onMouseDown={this.props.onMouseDown}
+          onTouchEndCapture={this.props.onInput}
+          onMouseUpCapture={this.props.onInput}
         />
       </div>
     )

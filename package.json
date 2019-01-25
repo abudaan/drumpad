@@ -1,7 +1,7 @@
 {
   "name": "drumpad",
   "description": "simple drumpad app using heartbeat and React/Redux",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "license": "MIT",
   "dependencies": {
     "@types/ramda": "^0.25.46",
@@ -46,6 +46,7 @@
     "start": "parcel index.html",
     "start-secure": "parcel index.html --https",
     "all": "npm run clean && npm run copy && npm run start",
-    "build": "parcel build index.html --public-url='/drummachine/v0.0.4'"
+    "build": "parcel build index.html --public-url='/drummachine/'$npm_package_version",
+    "build-local": "parcel build index.html"
   }
 }

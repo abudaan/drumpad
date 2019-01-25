@@ -1,6 +1,5 @@
 import { Dispatch, Action } from 'redux';
 import { SongPosition, IAction, MatricSelectedCells, MIDIPortsObject, Config, MIDIFileData, Instrument } from '../interfaces';
-import { ChangeEvent, MouseEvent } from 'react';
 import {
   initSequencer,
   loadJSON,
@@ -153,14 +152,14 @@ export const stop = (): Action => ({
   type: SEQUENCER_STOP,
 });
 
-export const choosingMIDIOutLatency = (e: ChangeEvent<HTMLInputElement>): IAction<any> => ({
+export const choosingMIDIOutLatency = (e: React.ChangeEvent<HTMLInputElement>): IAction<any> => ({
   type: CHOOSING_MIDI_OUT_LATENCY,
   payload: {
     latencyTmp: parseInt(e.target.value, 10),
   }
 });
 
-export const updateMIDIOutLatency = (e: MouseEvent<HTMLInputElement>): IAction<any> => {
+export const updateMIDIOutLatency = (e: React.FormEvent<HTMLInputElement>): IAction<any> => {
   const t = e.target as HTMLInputElement;
   return {
     type: UPDATE_MIDI_OUT_LATENCY,
@@ -170,14 +169,14 @@ export const updateMIDIOutLatency = (e: MouseEvent<HTMLInputElement>): IAction<a
   }
 };
 
-export const choosingTempo = (e: ChangeEvent<HTMLInputElement>): IAction<any> => ({
+export const choosingTempo = (e: React.ChangeEvent<HTMLInputElement>): IAction<any> => ({
   type: CHOOSING_TEMPO,
   payload: {
     tempoTmp: parseInt(e.target.value, 10),
   }
 });
 
-export const updateTempo = (e: MouseEvent<HTMLInputElement>): IAction<any> => {
+export const updateTempo = (e: React.FormEvent<HTMLInputElement>): IAction<any> => {
   const t = e.target as HTMLInputElement;
   return {
     type: UPDATE_TEMPO,
