@@ -1,10 +1,12 @@
 import React, { RefObject } from 'react'
+import { curry } from 'ramda';
 
 interface PropTypes {
   noteNumbers: Array<number>,
   instrumentNoteNumbers: Array<number>,
   selectNoteNumber: (newValue: number, oldValue: number) => void
   removeRow: (noteNumber: number) => void
+  handleFileUpload: (e: React.ChangeEvent, fileType: string) => void
 };
 
 interface SamplesList {
@@ -12,11 +14,20 @@ interface SamplesList {
 };
 
 class SamplesList extends React.PureComponent {
-  divRef: RefObject<HTMLDivElement>
+  fileUploadRef: RefObject<HTMLInputElement>
+  boundOnClick: (e: React.FormEvent) => void
 
   constructor(props: PropTypes) {
     super(props);
-    this.divRef = React.createRef();
+    this.fileUploadRef = React.createRef();
+    this.boundOnClick = this.onClick.bind(this);
+  }
+
+  onClick() {
+    if (this.fileUploadRef.current) {
+      this.fileUploadRef.current.click();
+      this.fileUploadRef.current.value = '';
+    }
   }
 
   checkIfDisabled (index: number, noteNumber: number): boolean {
@@ -49,7 +60,15 @@ class SamplesList extends React.PureComponent {
         >
           {this.getOptions(n)}
         </select>
-        <button disabled>upload sample</button>
+        <input 
+          type="file"
+          onChange={e => { this.props.handleFileUpload(e, 'sample') }}
+          multiple={true}
+          className="upload-file"
+          ref={this.fileUploadRef}
+          accept=".wav, .ogg, .mp3"
+        />
+        <button onClick={this.boundOnClick}>upload sample</button>
         <button onClick={() => { this.props.removeRow(n) }}>remove row</button>
       </div>)}
     </div>;

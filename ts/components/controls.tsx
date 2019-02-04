@@ -1,5 +1,5 @@
-// import * as R from 'ramda';
-import React from 'react';
+import { curry } from 'ramda';
+import React, { RefObject } from 'react';
 import Slider from './slider';
 interface Controls {
   props: PropTypes,
@@ -33,11 +33,28 @@ type PropTypes = {
   addRow: () => void,
   selectMIDIInPort: (portId: string) => void,
   selectMIDIOutPort: (portId: string) => void,
+  handleFileUpload: (e: React.ChangeEvent, fileType: string) => void,
 };
 
 class Controls extends React.PureComponent {
+  boundOnClick: (e: React.FormEvent) => void
+  fileUploadRef: RefObject<HTMLInputElement>
   static defaultProps = {
   }
+
+  constructor(props: PropTypes) {
+    super(props);
+    this.boundOnClick = this.onClick.bind(this);
+    this.fileUploadRef = React.createRef();
+  }
+
+  onClick(e: React.FormEvent) {
+    if (this.fileUploadRef.current) {
+      this.fileUploadRef.current.click();
+      this.fileUploadRef.current.value = '';
+    }
+  }
+
   render() {
     const labelPlay = this.props.playing ? 'pause' : 'play';
     const labelLoop = this.props.loop ? 'loop off' : 'loop on';
@@ -174,6 +191,19 @@ class Controls extends React.PureComponent {
         {selectInstrument}
         {selectMIDIIn}
         {selectMIDIOut}
+
+        <input
+          type="file"
+          onChange={e => { this.props.handleFileUpload(e, 'assetpack') }}
+          multiple={true}
+          className="upload-file"
+          accept=".mid, .midi, .json"
+          ref={this.fileUploadRef}
+        />
+        <button
+          type="button"
+          onClick={this.boundOnClick}
+        >select file</button>
 
         <Slider
           min={0}

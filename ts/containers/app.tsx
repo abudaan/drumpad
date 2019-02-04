@@ -22,6 +22,7 @@ import {
   updateMIDIOutLatency,
   choosingMIDIOutLatency,
   handleIncomingMIDIMessage,
+  handleFileUpload,
 } from '../actions/actions'
 import { State, SongPosition, MatrixType, MIDIEvent, MatricSelectedCells, MIDIPortsObject } from '../interfaces';
 import getInstrument from '../reducers/instrument_selector';
@@ -93,8 +94,8 @@ type PropTypes = {
   stop: (e: React.MouseEvent) => void,
   choosingTempo: (e: React.ChangeEvent) => void,
   choosingMIDIOutLatency: (e: React.ChangeEvent) => void,
-  updateTempo: (e: React.MouseEvent) => void,
-  updateMIDIOutLatency: (e: React.MouseEvent) => void,
+  updateTempo: (e: React.FormEvent) => void,
+  updateMIDIOutLatency: (e: React.FormEvent) => void,
   updateEvents: (cells: MatricSelectedCells) => void,
   updatePosition: (pos: SongPosition) => void,
   playSampleFromCell: (id: string, type: number) => void,
@@ -104,6 +105,7 @@ type PropTypes = {
   selectMIDIInPort: (portId: string) => void,
   selectMIDIOutPort: (portId: string) => void,
   handleIncomingMIDIMessage: (m: WebMidi.MIDIMessageEvent) => void,
+  handleFileUpload: (e: React.ChangeEvent, fileType: string) => void,
 };
 
 const mapStateToProps = (state: State) => {
@@ -178,6 +180,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     updateMIDIOutLatency,
     choosingMIDIOutLatency,
     handleIncomingMIDIMessage,
+    handleFileUpload,
   }, dispatch);
 }
 
@@ -212,6 +215,7 @@ class App extends React.PureComponent {
         updateTempo={this.props.updateTempo}
         choosingMIDIOutLatency={this.props.choosingMIDIOutLatency}
         updateMIDIOutLatency={this.props.updateMIDIOutLatency}
+        handleFileUpload={this.props.handleFileUpload}
         setLoop={this.props.setLoop}
         addRow={this.props.addRow}
         midiInputsList={this.props.midiInputsList}
@@ -219,7 +223,7 @@ class App extends React.PureComponent {
         selectMIDIInPort={this.props.selectMIDIInPort}
         selectMIDIOutPort={this.props.selectMIDIOutPort}
         midiOutLatencyTmp={this.props.midiOutLatencyTmp}
-      >
+        >
       </Controls>
 
       <div id="matrix-container">
@@ -228,6 +232,7 @@ class App extends React.PureComponent {
           selectNoteNumber={this.props.selectNoteNumber}
           noteNumbers={this.props.noteNumbers}
           instrumentNoteNumbers={this.props.instrumentNoteNumbers}
+          handleFileUpload={this.props.handleFileUpload}
         />
         <Matrix
           matrix={this.props.matrix}

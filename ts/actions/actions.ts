@@ -38,6 +38,7 @@ export const SELECT_NOTE_NUMBER = 'SELECT_NOTE_NUMBER';
 export const SELECT_MIDI_IN_PORT = 'SELECT_MIDI_IN_PORT';
 export const SELECT_MIDI_OUT_PORT = 'SELECT_MIDI_OUT_PORT';
 export const HANDLE_INCOMING_MIDI_MESSAGE = 'HANDLE_INCOMING_MIDI_MESSAGE';
+export const HANDLE_FILE_UPLOAD = 'HANDLE_FILE_UPLOAD';
 
 
 export interface LoadConfigPayload extends Config {
@@ -288,9 +289,21 @@ export const selectMIDIOutPort = (portId: string) => ({
 });
 
 
-export const handleIncomingMIDIMessage = (midiMessage: WebMidi.MIDIMessageEvent) =>({
+export const handleIncomingMIDIMessage = (midiMessage: WebMidi.MIDIMessageEvent) => ({
   type: HANDLE_INCOMING_MIDI_MESSAGE,
   payload: {
     midiMessage,
   }
-})
+});
+
+export const handleFileUpload = (e: React.ChangeEvent, fileType: string) => {
+  const target = e.target as HTMLInputElement;
+  const files = target.files as FileList;
+  return {
+    type: HANDLE_FILE_UPLOAD,
+    payload: {
+      files,
+      fileType,
+    }
+  };
+};

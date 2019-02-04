@@ -372,6 +372,9 @@ const song = (state: SongState = songInitialState, action: IAction<any>) => {
         active: getActiveCells(noteNumber, state.noteNumbers, state.matrix.numCols, state.matrix.numRows),
       }
     };
+  } else if (action.type === Actions.HANDLE_FILE_UPLOAD) {
+    console.log(action.payload.files, action.payload.fileType);
+    return state;
   } else {
     return state;
   }
